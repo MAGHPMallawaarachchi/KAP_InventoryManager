@@ -117,8 +117,7 @@
                                 CaretBrush="#E4E6EB"
                                 Height="28"
                                 VerticalContentAlignment="Center"
-                                Margin="0,5,0,0"
-                                PreviewKeyDown="TextBox_PreviewKeyDown">
+                                Margin="0,5,0,0">
                             <TextBox.Style>
                                 <Style TargetType="TextBox">
                                     <Setter Property="BorderThickness" Value="0,0,0,1"/>
@@ -150,7 +149,7 @@
 
                         <TextBlock Text="Password" Foreground="#E4E6EB" FontSize="13" FontWeight="Medium" Margin="0,30,0,0"/>
 
-                        <TextBox x:Name="txtPassword"
+                        <PasswordBox x:Name="txtPassword"
                                  FontSize="12"
                                  FontWeight="Regular"
                                  Background="Transparent"
@@ -158,17 +157,16 @@
                                  CaretBrush="#E4E6EB"
                                  Height="28"
                                  VerticalContentAlignment="Center"
-                                 Margin="0,5,0,0"
-                                 PreviewKeyDown="TextBox_PreviewKeyDown">
+                                 Margin="0,5,0,0">
 
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
+                            <PasswordBox.Style>
+                                <Style TargetType="PasswordBox">
                                     <Setter Property="BorderThickness" Value="0,0,0,1"/>
                                     <Setter Property="BorderBrush" Value="#3A3B3C"/>
                                     <Setter Property="Padding" Value="0"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
-                                            <ControlTemplate TargetType="TextBox">
+                                            <ControlTemplate TargetType="PasswordBox">
                                                 <Border Background="{TemplateBinding Background}"
                                                         BorderBrush="{TemplateBinding BorderBrush}"
                                                         BorderThickness="{TemplateBinding BorderThickness}">
@@ -186,9 +184,9 @@
                                         </Setter.Value>
                                     </Setter>
                                 </Style>
-                            </TextBox.Style>
+                            </PasswordBox.Style>
                             
-                        </TextBox>
+                        </PasswordBox>
 
                         <Button Margin="0,30,0,0"
                                 Content="Log In"

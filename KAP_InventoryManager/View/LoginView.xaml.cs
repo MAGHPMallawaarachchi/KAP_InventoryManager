@@ -45,22 +45,5 @@ namespace KAP_InventoryManager.View
             
         }
 
-        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            TextBox currentTextBox = (TextBox)sender;
-
-            if (e.Key == Key.Up)
-            {
-                txtUsername.Focus();
-                e.Handled = true;
-            }
-            else if (e.Key == Key.Down)
-            {
-                txtPassword.Focus();
-                e.Handled = true;
-            }
-        }
-
-
     }
 }
