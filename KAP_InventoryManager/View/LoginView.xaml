@@ -1,0 +1,295 @@
+﻿<Window x:Class="KAP_InventoryManager.View.LoginView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:KAP_InventoryManager.View"
+        mc:Ignorable="d"
+        Title="LoginView" Height="550" Width="800"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        MouseDown="Window_MouseDown"
+        Background="Transparent"
+        AllowsTransparency="True">
+
+    <Border CornerRadius="10" Background="#18191A">
+        <Border CornerRadius="10">
+            <Border.Background>
+                <ImageBrush ImageSource="/Images/bg-gradient.png" Stretch="Uniform" AlignmentX="Left"/>
+            </Border.Background>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="25"/>
+                        <ColumnDefinition Width="25"/>
+                        <ColumnDefinition Width="5"/>
+
+                    </Grid.ColumnDefinitions>
+
+                    <Button 
+                        Grid.Column="1" 
+                        FontFamily="{StaticResource FontAwesome}"
+                        Content="&#xf2d1;"
+                        FontSize="14" 
+                        BorderThickness="0"
+                        Foreground="#E4E6EB"
+                        Cursor="Hand"
+                        Click="btnMinimize_Click" Margin="0,0,0,10">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Width="20" Height="20"
+                                        Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    
+                    <Button 
+                        Grid.Column="2" 
+                        FontFamily="{StaticResource FontAwesome}"
+                        Content="&#xf00d;"
+                        FontSize="16"
+                        BorderThickness="0"
+                        Foreground="#E4E6EB"
+                        Cursor="Hand"
+                        Click="btnClose_Click">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Width="20" Height="20"
+                                        Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Image Source="/Images/Logo.png" Height="150"/>
+
+                    <StackPanel Grid.Column='1' Margin="60,100,60,100" Orientation="Vertical">
+
+                        <TextBlock Text="Login" Foreground="#E4E6EB" FontSize="40" FontWeight="Bold"/>
+                        <TextBlock Text="Username" Foreground="#E4E6EB" FontSize="13" FontWeight="Medium" Margin="0,30,0,0"/>
+
+                        <TextBox x:Name="txtUsername"
+                                FontSize="12"
+                                FontWeight="Regular"
+                                Background="Transparent"
+                                Foreground="#E4E6EB"
+                                CaretBrush="#E4E6EB"
+                                Height="28"
+                                VerticalContentAlignment="Center"
+                                Margin="0,5,0,0"
+                                PreviewKeyDown="TextBox_PreviewKeyDown">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    <Setter Property="BorderBrush" Value="#3A3B3C"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                                    <ScrollViewer x:Name="PART_ContentHost" />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="BorderBrush" Value="#2374E1"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsFocused" Value="True">
+                                                        <Setter Property="BorderBrush" Value="#2374E1"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+
+
+                        <TextBlock Text="Password" Foreground="#E4E6EB" FontSize="13" FontWeight="Medium" Margin="0,30,0,0"/>
+
+                        <TextBox x:Name="txtPassword"
+                                 FontSize="12"
+                                 FontWeight="Regular"
+                                 Background="Transparent"
+                                 Foreground="#E4E6EB"
+                                 CaretBrush="#E4E6EB"
+                                 Height="28"
+                                 VerticalContentAlignment="Center"
+                                 Margin="0,5,0,0"
+                                 PreviewKeyDown="TextBox_PreviewKeyDown">
+
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                    <Setter Property="BorderBrush" Value="#3A3B3C"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                                    <ScrollViewer x:Name="PART_ContentHost" />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="BorderBrush" Value="#2374E1"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsFocused" Value="True">
+                                                        <Setter Property="BorderBrush" Value="#2374E1"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TextBox.Style>
+                            
+                        </TextBox>
+
+                        <Button Margin="0,30,0,0"
+                                Content="Log In"
+                                FontWeight="Medium"
+                                BorderThickness="0"
+                                Foreground="#E4E6EB"
+                                Cursor="Hand"
+                                Click="btnMinimize_Click"
+                                Height="25"
+                                Width="280"
+                                HorizontalAlignment="Center">
+
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#2374E1"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Grid RenderTransformOrigin="0.5, 0.5">
+                                                    <Grid.RenderTransform>
+                                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                                    </Grid.RenderTransform>
+                                                    <Border Background="{TemplateBinding Background}" CornerRadius="3"/>
+                                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                        <ContentPresenter.RenderTransform>
+                                                            <ScaleTransform ScaleX="1" ScaleY="1" CenterX="0.5" CenterY="0.5"/>
+                                                        </ContentPresenter.RenderTransform>
+                                                    </ContentPresenter>
+                                                    <Grid.Triggers>
+                                                        <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                                                     To="0.98"
+                                                                                     Duration="0:0:0.2"/>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                                                     To="0.98"
+                                                                                     Duration="0:0:0.2"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </EventTrigger>
+                                                        <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                                                            <BeginStoryboard>
+                                                                <Storyboard>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                                                     To="1"
+                                                                                     Duration="0:0:0.2"/>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                                                     To="1"
+                                                                                     Duration="0:0:0.2"/>
+                                                                </Storyboard>
+                                                            </BeginStoryboard>
+                                                        </EventTrigger>
+                                                    </Grid.Triggers>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                        <Button Content="Forgot username or password?"
+                                FontSize="10"
+                                Margin="0,10,0,0"
+                                Click="ForgotPasswordButton_Click"
+                                Cursor="Hand"
+                                HorizontalAlignment="Left">
+
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="#B0B3B8"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="BorderBrush" Value="Transparent"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Foreground" Value="#E4E6EB"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+
+                    </StackPanel>
+
+                    <TextBlock></TextBlock>
+                </Grid>
+            </Grid>
+        </Border>
+    </Border>
+</Window>
