@@ -199,16 +199,6 @@
     <Compile Include="CustomControls\BindablePasswordBox.xaml.cs">
       <DependentUpon>BindablePasswordBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="KAPInventoryManagerDataSet.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>KAPInventoryManagerDataSet.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="KAPInventoryManagerDataSet1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>KAPInventoryManagerDataSet1.xsd</DependentUpon>
-    </Compile>
     <Compile Include="Model\IUserRepository.cs" />
     <Compile Include="Model\UserModel.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
@@ -260,28 +250,6 @@
     </EmbeddedResource>
     <Resource Include="Fonts\FontAwesome.otf" />
     <None Include="appsettings.json" />
-    <None Include="KAPInventoryManagerDataSet.xsc">
-      <DependentUpon>KAPInventoryManagerDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="KAPInventoryManagerDataSet.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>KAPInventoryManagerDataSet.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="KAPInventoryManagerDataSet.xss">
-      <DependentUpon>KAPInventoryManagerDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="KAPInventoryManagerDataSet1.xsc">
-      <DependentUpon>KAPInventoryManagerDataSet1.xsd</DependentUpon>
-    </None>
-    <None Include="KAPInventoryManagerDataSet1.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>KAPInventoryManagerDataSet1.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="KAPInventoryManagerDataSet1.xss">
-      <DependentUpon>KAPInventoryManagerDataSet1.xsd</DependentUpon>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
