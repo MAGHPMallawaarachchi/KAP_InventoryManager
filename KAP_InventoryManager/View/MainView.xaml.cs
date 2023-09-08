@@ -24,5 +24,10 @@ namespace KAP_InventoryManager
         {
             InitializeComponent();
         }
+
+        private void InitializeComponent()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
