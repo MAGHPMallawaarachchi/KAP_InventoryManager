@@ -50,7 +50,30 @@ namespace KAP_InventoryManager.Repositories
 
         public UserModel GetByUsername(string username)
         {
-            throw new NotImplementedException();
+            UserModel user = null;
+            using (var connection = GetConnection())
+            using (var command = new SqlCommand())
+            {
+                connection.Open();
+                command.Connection = connection;
+                command.CommandText = "Select *from [User] where username=@username";
+                command.Parameters.Add("@Username", SqlDbType.NVarChar).Value = username;
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        user = new UserModel() 
+                        {
+                            Id = reader[0].ToString(),
+                            UserName = reader[1].ToString(),
+                            Password = string.Empty,
+                            Name = reader[3].ToString(),
+                            Email = reader[4].ToString(),
+                        };
+                    }
+                }
+            }
+            return user;
         }
 
         public void Remove(int id)

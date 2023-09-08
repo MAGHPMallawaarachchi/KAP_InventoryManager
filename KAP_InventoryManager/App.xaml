@@ -4,7 +4,17 @@
              xmlns:local="clr-namespace:KAP_InventoryManager"
              Startup="ApplicationStart">
     <Application.Resources>
-        <FontFamily x:Key="FontAwesome">/Fonts/FontAwesome.otf#Font Awesome 6 Free Solid</FontFamily>
+
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources\CustomColors.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <FontFamily x:Key="FontAwesome">/Fonts/FontAwesome.otf#Font Awesome 6 Free Solid</FontFamily>
+            
+        </ResourceDictionary>
+
     </Application.Resources>
-    
+
 </Application>

@@ -10,24 +10,31 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace KAP_InventoryManager
+namespace KAP_InventoryManager.View
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for MainView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainView : Window
     {
-        public MainWindow()
+        public MainView()
         {
             InitializeComponent();
+            MaxHeight = SystemParameters.VirtualScreenHeight;
+            MaxWidth = SystemParameters.VirtualScreenWidth;
         }
 
-        private void InitializeComponent()
+        private void btnMinimize_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            WindowState = WindowState.Minimized;
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
+
 }

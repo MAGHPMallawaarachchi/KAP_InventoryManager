@@ -26,7 +26,7 @@
         <Binding Path="IsViewVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibility}"/>
     </Window.Visibility>
 
-    <Border CornerRadius="10" Background="#18191A">
+    <Border CornerRadius="10" Background="{StaticResource Color1}">
         <Border CornerRadius="10">
             <Border.Background>
                 <ImageBrush ImageSource="/Images/bg-gradient.png" Stretch="Uniform" AlignmentX="Left"/>
@@ -53,7 +53,7 @@
                         Content="&#xf2d1;"
                         FontSize="14" 
                         BorderThickness="0"
-                        Foreground="#E4E6EB"
+                        Foreground="{StaticResource Color5}"
                         Cursor="Hand"
                         Click="btnMinimize_Click" Margin="0,0,0,10">
                         <Button.Style>
@@ -83,7 +83,7 @@
                         Content="&#xf00d;"
                         FontSize="16"
                         BorderThickness="0"
-                        Foreground="#E4E6EB"
+                        Foreground="{StaticResource Color5}"
                         Cursor="Hand"
                         Click="btnClose_Click">
                         <Button.Style>
@@ -119,16 +119,16 @@
 
                     <StackPanel Grid.Column='1' Margin="60,100,60,100" Orientation="Vertical">
 
-                        <TextBlock Text="Login" Foreground="#E4E6EB" FontSize="40" FontWeight="Bold"/>
-                        <TextBlock Text="Username" Foreground="#E4E6EB" FontSize="13" FontWeight="Medium" Margin="0,30,0,0"/>
+                        <TextBlock Text="Login" Foreground="{StaticResource Color5}" FontSize="40" FontWeight="Bold"/>
+                        <TextBlock Text="Username" Foreground="{StaticResource Color5}" FontSize="13" FontWeight="Medium" Margin="0,30,0,0"/>
 
                         <TextBox x:Name="txtUsername"
                                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
                                 FontSize="12"
                                 FontWeight="Regular"
                                 Background="Transparent"
-                                Foreground="#E4E6EB"
-                                CaretBrush="#E4E6EB"
+                                Foreground="{StaticResource Color5}"
+                                CaretBrush="{StaticResource Color5}"
                                 Height="28"
                                 VerticalContentAlignment="Center"
                                 Margin="0,5,0,0">
@@ -136,7 +136,7 @@
                             <TextBox.Style>
                                 <Style TargetType="TextBox">
                                     <Setter Property="BorderThickness" Value="0,0,0,1"/>
-                                    <Setter Property="BorderBrush" Value="#3A3B3C"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource Color3}"/>
                                     <Setter Property="Padding" Value="0"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
@@ -148,10 +148,10 @@
                                                 </Border>
                                                 <ControlTemplate.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="BorderBrush" Value="#2374E1"/>
+                                                        <Setter Property="BorderBrush" Value="{StaticResource Blue}"/>
                                                     </Trigger>
                                                     <Trigger Property="IsFocused" Value="True">
-                                                        <Setter Property="BorderBrush" Value="#2374E1"/>
+                                                        <Setter Property="BorderBrush" Value="{StaticResource Blue}"/>
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -162,7 +162,7 @@
                         </TextBox>
 
 
-                        <TextBlock Text="Password" Foreground="#E4E6EB" FontSize="13" FontWeight="Medium" Margin="0,30,0,0"/>
+                        <TextBlock Text="Password" Foreground="{StaticResource Color5}" FontSize="13" FontWeight="Medium" Margin="0,30,0,0"/>
 
                         <customcontrols:BindablePasswordBox 
                             Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -172,7 +172,7 @@
                         </customcontrols:BindablePasswordBox>
 
                         <TextBlock Text="{Binding ErrorMessage}" 
-                                   Foreground="#DA0000" 
+                                   Foreground="{StaticResource Red}" 
                                    FontSize="10" 
                                    Margin="0,10,0,0"
                                    TextWrapping="Wrap"/>
@@ -183,7 +183,7 @@
                                 Content="Log In"
                                 FontWeight="Medium"
                                 BorderThickness="0"
-                                Foreground="#E4E6EB"
+                                Foreground="{StaticResource Color5}"
                                 Cursor="Hand"
                                 Height="25"
                                 Width="280"
@@ -191,7 +191,7 @@
 
                             <Button.Style>
                                 <Style TargetType="Button">
-                                    <Setter Property="Background" Value="#2374E1"/>
+                                    <Setter Property="Background" Value="{StaticResource Blue}"/>
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="Button">
@@ -249,7 +249,7 @@
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="Background" Value="Transparent"/>
-                                    <Setter Property="Foreground" Value="#B0B3B8"/>
+                                    <Setter Property="Foreground" Value="{StaticResource Color4}"/>
                                     <Setter Property="BorderThickness" Value="0"/>
                                     <Setter Property="BorderBrush" Value="Transparent"/>
                                     <Setter Property="Padding" Value="0"/>
@@ -263,7 +263,7 @@
                                                 </Border>
                                                 <ControlTemplate.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Foreground" Value="#E4E6EB"/>
+                                                        <Setter Property="Foreground" Value="{StaticResource Color5}"/>
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
