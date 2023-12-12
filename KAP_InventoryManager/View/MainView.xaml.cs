@@ -35,6 +35,7 @@ namespace KAP_InventoryManager.View
         {
             Application.Current.Shutdown();
         }
+
     }
 
 }
