@@ -6,11 +6,12 @@
         xmlns:local="clr-namespace:KAP_InventoryManager"
         xmlns:locals="clr-namespace:KAP_InventoryManager.View"
         xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         mc:Ignorable="d"
         Title="Kamal Auto Parts" 
         WindowState="Maximized"        
         WindowStartupLocation="CenterScreen"      
-        Background="Transparent" d:DesignHeight="1080" d:DesignWidth="1920"
+        Background="Transparent" d:DesignHeight="1080" d:DesignWidth="1920" Icon="/Images/logo_small.png"
         >
 
     <Window.DataContext>
@@ -25,31 +26,92 @@
             </Grid.ColumnDefinitions>
 
             <Grid Background="{StaticResource Color2}">
+                <StackPanel Margin="20,40,20,20">
+                    <StackPanel 
+                        Orientation="Horizontal"
+                        Height="80"
+                        Margin="0,0,0,60">
+                        <Image Source="/Images/logo_horizontal.png" Width="226"/>
+                    </StackPanel>
+
+                    <StackPanel Margin="12,0,12,0">
+                        <RadioButton Style="{StaticResource menuButton}" Margin="0,0,0,40">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:IconImage 
+                                    Icon="Home" 
+                                    Style="{StaticResource menuButtonIcon}"/>
+                                <TextBlock Text="Home" Style="{StaticResource menuButtontext}"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Style="{StaticResource menuButton}" Margin="0,0,0,40">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:IconImage 
+                                    Icon="Box" 
+                                    Style="{StaticResource menuButtonIcon}"/>
+                                <TextBlock Text="Inventory" Style="{StaticResource menuButtontext}"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Style="{StaticResource menuButton}" Margin="0,0,0,40">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:IconImage 
+                                    Icon="UserAlt" 
+                                    Style="{StaticResource menuButtonIcon}"/>
+                                <TextBlock Text="Customers" Style="{StaticResource menuButtontext}"/>
+                            </StackPanel>
+                        </RadioButton>
+
+                        <RadioButton Style="{StaticResource menuButton}" Margin="0,0,0,40">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:IconImage 
+                                    Icon="FileInvoice" 
+                                    Style="{StaticResource menuButtonIcon}"/>
+                                <TextBlock Text="Invoices" Style="{StaticResource menuButtontext}"/>
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+                </StackPanel>
                 
             </Grid>
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
                     <RowDefinition Height="70"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
                 <Grid Background="{StaticResource Color2}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="336*"/>
+                        <ColumnDefinition Width="39*"/>
+                        <ColumnDefinition Width="8*"/>
                         <ColumnDefinition Width="40"/>
                         <ColumnDefinition Width="40"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="40"/>
+                    </Grid.ColumnDefinitions>
+                </Grid>
+
+                <Grid Background="{StaticResource Color2}" Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="375"/>
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="{Binding CurrentUserAccount.DisplayName}"
                                FontSize="16"
                                FontWeight="Medium"
                                VerticalAlignment="Center"
-                               Grid.Column="3"
-                               Foreground="{StaticResource Color5}"/>
+                               Grid.Column="5"
+                               Foreground="{StaticResource Color5}" Margin="0,0,40,0"/>
                 </Grid>
+
+                <Grid Background="{StaticResource Color1}" Grid.Row="2">
+                    
+                </Grid>
+                
             </Grid>
         </Grid>
 
