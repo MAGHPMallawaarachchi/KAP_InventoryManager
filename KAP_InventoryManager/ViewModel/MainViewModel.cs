@@ -41,14 +41,16 @@ namespace KAP_InventoryManager.ViewModel
             var user = userRepository.GetByUsername(Thread.CurrentPrincipal.Identity.Name);
             if (user != null)
             {
-                CurrentUserAccount.Username = user.UserName;
-                CurrentUserAccount.DisplayName = $"Hello {user.Name}!";
-                CurrentUserAccount.ProfilePicture = null;
+                CurrentUserAccount = new UserAccountModel()
+                {
+                    Username = user.UserName,
+                    DisplayName = $"Hello {user.Name}!"
+                };
             }
             else
             {
-                CurrentUserAccount.DisplayName = "Invalid User";
-                //Hide child view
+                MessageBox.Show("Invalid user, not logged in");
+                Application.Current.Shutdown();
             }
         }
     }

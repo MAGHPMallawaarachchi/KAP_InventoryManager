@@ -64,26 +64,27 @@ namespace KAP_InventoryManager.Repositories
         public UserModel GetByUsername(string username)
         {
             UserModel user = null;
+
             using (var connection = GetConnection())
-            using (var command = new SqlCommand())
+            using (var command = new SqlCommand("SELECT * FROM Admin WHERE Username = @Username", connection))
             {
                 connection.Open();
-                command.Connection = connection;
-                command.CommandText = "Select *from [Admin] where username=@username";
+
                 command.Parameters.Add("@Username", SqlDbType.NVarChar).Value = username;
+
                 using (var reader = command.ExecuteReader())
                 {
                     if (reader.Read())
                     {
-                        user = new UserModel() 
+                        user = new UserModel()
                         {
-                            UserName = reader[1].ToString(),
-                            Password = string.Empty,
-                            Name = reader[3].ToString(),
+                            UserName = reader["Username"].ToString(),
+                            Name = reader["Name"].ToString(),
                         };
                     }
                 }
             }
+
             return user;
         }
 
