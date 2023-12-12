@@ -20,18 +20,31 @@ namespace KAP_InventoryManager.Repositories
         public bool AuthenticateUser(NetworkCredential credential)
         {
             bool validUser;
+
             using (var connection = GetConnection())
-            using (var command = new SqlCommand())
+            using (var command = new SqlCommand("UserLogin", connection))
             {
                 connection.Open();
-                command.Connection = connection;
-                command.CommandText = "Select *from [User] where username=@username and [password]=@password";
-                command.Parameters.Add("@Username", SqlDbType.NVarChar).Value = credential.UserName;
-                command.Parameters.Add("@Password", SqlDbType.NVarChar).Value = credential.Password;
-                validUser = command.ExecuteScalar() == null ? false : true;
+                command.CommandType = CommandType.StoredProcedure;
+
+                // Add parameters
+                command.Parameters.AddWithValue("@EnteredUsername", credential.UserName);
+                command.Parameters.AddWithValue("@EnteredPassword", credential.Password);
+
+                // Add output parameter for login success
+                command.Parameters.Add("@LoginSuccess", SqlDbType.Bit).Direction = ParameterDirection.Output;
+
+                // Execute the stored procedure
+                command.ExecuteNonQuery();
+
+                // Retrieve the output parameter value
+                validUser = Convert.ToBoolean(command.Parameters["@LoginSuccess"].Value);
             }
+
             return validUser;
         }
+
+
 
         public void Edit(UserModel userModel)
         {
@@ -56,7 +69,7 @@ namespace KAP_InventoryManager.Repositories
             {
                 connection.Open();
                 command.Connection = connection;
-                command.CommandText = "Select *from [User] where username=@username";
+                command.CommandText = "Select *from [Admin] where username=@username";
                 command.Parameters.Add("@Username", SqlDbType.NVarChar).Value = username;
                 using (var reader = command.ExecuteReader())
                 {
@@ -64,11 +77,9 @@ namespace KAP_InventoryManager.Repositories
                     {
                         user = new UserModel() 
                         {
-                            Id = reader[0].ToString(),
                             UserName = reader[1].ToString(),
                             Password = string.Empty,
                             Name = reader[3].ToString(),
-                            Email = reader[4].ToString(),
                         };
                     }
                 }

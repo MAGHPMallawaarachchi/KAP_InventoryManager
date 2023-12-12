@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using KAP_InventoryManager.Model;
+using KAP_InventoryManager.Repositories;
 
 namespace KAP_InventoryManager.ViewModel
 {
