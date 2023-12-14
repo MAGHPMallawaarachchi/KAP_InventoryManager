@@ -1,4 +1,5 @@
 ﻿using KAP_InventoryManager.Model;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,28 +23,27 @@ namespace KAP_InventoryManager.Repositories
             bool validUser;
 
             using (var connection = GetConnection())
-            using (var command = new SqlCommand("UserLogin", connection))
+            using (var command = new MySqlCommand("UserLogin", connection))
             {
                 connection.Open();
                 command.CommandType = CommandType.StoredProcedure;
 
                 // Add parameters
-                command.Parameters.AddWithValue("@EnteredUsername", credential.UserName);
-                command.Parameters.AddWithValue("@EnteredPassword", credential.Password);
+                command.Parameters.AddWithValue("@p_EnteredUsername", credential.UserName);
+                command.Parameters.AddWithValue("@p_EnteredPassword", credential.Password);
 
                 // Add output parameter for login success
-                command.Parameters.Add("@LoginSuccess", SqlDbType.Bit).Direction = ParameterDirection.Output;
+                command.Parameters.Add("@p_LoginSuccess", MySqlDbType.Bit).Direction = ParameterDirection.Output;
 
                 // Execute the stored procedure
                 command.ExecuteNonQuery();
 
                 // Retrieve the output parameter value
-                validUser = Convert.ToBoolean(command.Parameters["@LoginSuccess"].Value);
+                validUser = Convert.ToBoolean(command.Parameters["@p_LoginSuccess"].Value);
             }
 
             return validUser;
         }
-
 
 
         public void Edit(UserModel userModel)
@@ -66,11 +66,11 @@ namespace KAP_InventoryManager.Repositories
             UserModel user = null;
 
             using (var connection = GetConnection())
-            using (var command = new SqlCommand("SELECT * FROM Admin WHERE Username = @Username", connection))
+            using (var command = new MySqlCommand("SELECT * FROM Admin WHERE Username = @Username", connection))
             {
                 connection.Open();
 
-                command.Parameters.Add("@Username", SqlDbType.NVarChar).Value = username;
+                command.Parameters.Add("@Username", MySqlDbType.VarChar).Value = username;
 
                 using (var reader = command.ExecuteReader())
                 {
