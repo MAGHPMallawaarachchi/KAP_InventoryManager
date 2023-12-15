@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
 
@@ -13,6 +14,8 @@ namespace KAP_InventoryManager.ViewModel
     public class MainViewModel : ViewModelBase
     {
         private UserAccountModel _currentUserAccount;
+        private ViewModelBase _currentChildView;
+
         private readonly IUserRepository userRepository;
 
         public UserAccountModel CurrentUserAccount
@@ -29,12 +32,63 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public ViewModelBase CurrentChildView
+        {
+            get
+            {
+                return _currentChildView;
+            }
+
+            set
+            {
+                _currentChildView = value;
+                OnPropertyChanged(nameof(CurrentChildView));
+            }
+        }
+
+        public ICommand ShowHomeViewCommand { get; }
+        public ICommand ShowInventoryViewCommand { get; }
+        public ICommand ShowCustomersViewCommand {  get; }
+        public ICommand ShowInvoicesViewCommand { get; }
+
         public MainViewModel()
         {
             userRepository = new UserRepository();
-            _currentUserAccount = new UserAccountModel(); // Initialize CurrentUserAccount
+
+            // Initialize CurrentUserAccount
+            _currentUserAccount = new UserAccountModel();
+
+            //Initialize commands
+            ShowHomeViewCommand = new ViewModelCommand(ExecuteShowHomeViewCommand);
+            ShowInventoryViewCommand = new ViewModelCommand(ExecuteShowInventoryViewCommand);
+            ShowCustomersViewCommand = new ViewModelCommand(ExecuteShowCustomersViewCommand);
+            ShowInvoicesViewCommand = new ViewModelCommand(ExecuteShowInvoicesViewCommand);
+
+            //default view
+            ExecuteShowHomeViewCommand(null);
+
             LoadCurrentUserData();
         }
+        private void ExecuteShowHomeViewCommand(object obj)
+        {
+            CurrentChildView = new HomeViewModel();
+        }
+
+        private void ExecuteShowInventoryViewCommand(object obj)
+        {
+            CurrentChildView = new InventoryViewModel();
+        }
+        private void ExecuteShowCustomersViewCommand(object obj)
+        {
+            CurrentChildView = new CustomersViewModel();
+        }
+
+        private void ExecuteShowInvoicesViewCommand(object obj)
+        {
+            CurrentChildView = new InvoicesViewModel();
+        }
+
+
 
         private void LoadCurrentUserData()
         {

@@ -161,9 +161,9 @@
                     </Grid>
 
                     <!-- Child Views -->
-                    <Grid Background="{StaticResource Color1}" Grid.Row="1">
-
-                    </Grid>
+                    <ContentControl Background="{StaticResource Color1}" 
+                                    Grid.Row="1"
+                                    Margin="25,25,25,25"/>
 
                 </Grid>
             </Grid>
