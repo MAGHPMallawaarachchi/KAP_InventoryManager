@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ using KAP_InventoryManager.Repositories;
 
 namespace KAP_InventoryManager.ViewModel
 {
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel:ViewModelBase
     {
         private UserAccountModel _currentUserAccount;
         private ViewModelBase _currentChildView;
@@ -53,10 +54,21 @@ namespace KAP_InventoryManager.ViewModel
 
         public MainViewModel()
         {
-            userRepository = new UserRepository();
-
-            // Initialize CurrentUserAccount
-            _currentUserAccount = new UserAccountModel();
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                // Design-time initialization
+                _currentUserAccount = new UserAccountModel
+                {
+                    DisplayName = "Design Time User",
+                };
+            }
+            else
+            {
+                // Runtime initialization
+                userRepository = new UserRepository();
+                _currentUserAccount = new UserAccountModel();
+                LoadCurrentUserData();
+            }
 
             //Initialize commands
             ShowHomeViewCommand = new ViewModelCommand(ExecuteShowHomeViewCommand);
@@ -66,8 +78,6 @@ namespace KAP_InventoryManager.ViewModel
 
             //default view
             ExecuteShowHomeViewCommand(null);
-
-            LoadCurrentUserData();
         }
         private void ExecuteShowHomeViewCommand(object obj)
         {
@@ -88,8 +98,6 @@ namespace KAP_InventoryManager.ViewModel
             CurrentChildView = new InvoicesViewModel();
         }
 
-
-
         private void LoadCurrentUserData()
         {
             var user = userRepository.GetByUsername(Thread.CurrentPrincipal.Identity.Name);
@@ -104,6 +112,7 @@ namespace KAP_InventoryManager.ViewModel
                 //Hide child view
             }
         }
+
     }
 
 }

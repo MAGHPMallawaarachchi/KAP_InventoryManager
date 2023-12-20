@@ -11,12 +11,22 @@
         Title="Kamal Auto Parts" 
         WindowState="Maximized"        
         WindowStartupLocation="CenterScreen"      
-        Background="Transparent" d:DesignHeight="720" d:DesignWidth="1280" Icon="/Images/logo_small.png" WindowStyle="None"
-        >
+        Background="Transparent" 
+        d:DesignHeight="720" 
+        d:DesignWidth="1280" 
+        Icon="/Images/logo_small.png" 
+        WindowStyle="None">
 
     <Window.DataContext>
         <viewModel:MainViewModel/>
     </Window.DataContext>
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
+            <locals:HomeView/>
+        </DataTemplate>
+    </Window.Resources>
+    
     <Grid>
         <Border Background="{StaticResource Color1}"/>
         <Grid>
@@ -58,7 +68,7 @@
 
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="210"/>
+                    <ColumnDefinition Width="180"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
@@ -69,7 +79,7 @@
                         <RowDefinition Height="100"/>
                     </Grid.RowDefinitions>
 
-                    <Grid Margin="20,40,20,20">
+                    <Grid Margin="16,40,16,16">
                         <StackPanel>
                             <StackPanel 
                                 Orientation="Horizontal"
@@ -78,11 +88,13 @@
                                 <Image Source="/Images/logo_horizontal.png" Width="139"/>
                             </StackPanel>
 
-                            <StackPanel Margin="10,0,10,0">
+                            <StackPanel>
                                 <RadioButton Style="{StaticResource menuButton}"    
-                                             Margin="0,0,0,20"
-                                             Cursor="Hand">
-                                    <StackPanel Orientation="Horizontal">
+                                             Margin="0,0,0,5"
+                                             Cursor="Hand"
+                                             IsChecked="True"
+                                             Command="{Binding ShowHomeViewCommand}">
+                                    <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
                                         <fa:IconImage 
                                             Icon="Home" 
                                             Style="{StaticResource menuButtonIcon}"/>
@@ -91,50 +103,86 @@
                                 </RadioButton>
 
                                 <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,20"
-                                             Cursor="Hand">
-                                    <StackPanel Orientation="Horizontal">
+                                             Margin="0,0,0,5"
+                                             Cursor="Hand"
+                                             Command="{Binding ShowInventoryViewCommand}">
+                                    <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
                                         <fa:IconImage 
-                                            Icon="Box" 
+                                            Icon="BoxArchive" 
                                             Style="{StaticResource menuButtonIcon}"/>
                                         <TextBlock Text="Inventory" Style="{StaticResource menuButtontext}"/>
                                     </StackPanel>
                                 </RadioButton>
 
                                 <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,20"
-                                             Cursor="Hand">
-                                    <StackPanel Orientation="Horizontal">
+                                             Margin="0,0,0,5"
+                                             Cursor="Hand"
+                                             Command="{Binding ShowCustomersViewCommand}">
+                                    <StackPanel Orientation="Horizontal" Margin="10,8,10,8" >
                                         <fa:IconImage 
-                                            Icon="UserAlt" 
+                                            Icon="Users" 
                                             Style="{StaticResource menuButtonIcon}"/>
                                         <TextBlock Text="Customers" Style="{StaticResource menuButtontext}"/>
                                     </StackPanel>
                                 </RadioButton>
 
                                 <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,20"
-                                             Cursor="Hand">
-                                    <StackPanel Orientation="Horizontal">
+                                             Margin="0,0,0,5"
+                                             Cursor="Hand"
+                                             Command="{Binding ShowInvoicesViewCommand}">
+                                    <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
                                         <fa:IconImage 
                                             Icon="FileInvoice" 
                                             Style="{StaticResource menuButtonIcon}"/>
                                         <TextBlock Text="Invoices" Style="{StaticResource menuButtontext}"/>
                                     </StackPanel>
                                 </RadioButton>
+                                <RadioButton Style="{StaticResource menuButton}" 
+                                             Margin="0,0,0,5"
+                                             Cursor="Hand"
+                                             Command="{Binding ShowInvoicesViewCommand}">
+                                    <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
+                                        <fa:IconImage 
+                                            Icon="ArrowsTurnToDots" 
+                                            Style="{StaticResource menuButtonIcon}"/>
+                                        <TextBlock Text="Returns" Style="{StaticResource menuButtontext}"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton Style="{StaticResource menuButton}" 
+                                             Margin="0,0,0,5"
+                                             Cursor="Hand"
+                                             Command="{Binding ShowInvoicesViewCommand}">
+                                    <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
+                                        <fa:IconImage 
+                                            Icon="Box" 
+                                            Style="{StaticResource menuButtonIcon}"/>
+                                        <TextBlock Text="Shipments" Style="{StaticResource menuButtontext}"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton Style="{StaticResource menuButton}" 
+                                             Margin="0,0,0,5"
+                                             Cursor="Hand"
+                                             Command="{Binding ShowInvoicesViewCommand}">
+                                    <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
+                                        <fa:IconImage 
+                                            Icon="UserAlt" 
+                                            Style="{StaticResource menuButtonIcon}"/>
+                                        <TextBlock Text="Sales Reps" Style="{StaticResource menuButtontext}"/>
+                                    </StackPanel>
+                                </RadioButton>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
-                    <Grid Grid.Row="1" Margin="30,0,30,0">
-                        <Button Style="{StaticResource logoutButton}"
-                                Cursor="Hand">
-                            <StackPanel Orientation="Horizontal">
+                    <Grid Grid.Row="1" Margin="16,0,16,0">
+                        <Button Style="{StaticResource logoutButton}" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
                                 <fa:IconImage 
                                     Icon="RightFromBracket" 
-                                    Style="{StaticResource logoutButtonIcon}"/>
+                                    Style="{StaticResource menuButtonIcon}"/>
                                 <TextBlock Text="Logout" Style="{StaticResource menuButtontext}"/>
                             </StackPanel>
                         </Button>
+
                     </Grid>
                 </Grid>
 
@@ -152,7 +200,7 @@
                             <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="{Binding CurrentUserAccount.DisplayName}"
+                        <TextBlock Text="{Binding CurrentUserAccount?.DisplayName}"
                                    FontSize="16"
                                    FontWeight="Medium"
                                    VerticalAlignment="Center"
@@ -161,7 +209,8 @@
                     </Grid>
 
                     <!-- Child Views -->
-                    <ContentControl Background="{StaticResource Color1}" 
+                    <ContentControl Content="{Binding CurrentChildView}"
+                                    Background="{StaticResource Color1}" 
                                     Grid.Row="1"
                                     Margin="25,25,25,25"/>
 
