@@ -236,8 +236,14 @@
     <Compile Include="CustomControls\Button.xaml.cs">
       <DependentUpon>Button.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\NumberCard.xaml.cs">
+      <DependentUpon>NumberCard.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\SearchBar.xaml.cs">
       <DependentUpon>SearchBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\TextCard.xaml.cs">
+      <DependentUpon>TextCard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\IUserRepository.cs" />
     <Compile Include="ViewModel\CustomersViewModel.cs" />
@@ -294,7 +300,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="CustomControls\NumberCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CustomControls\SearchBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CustomControls\TextCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

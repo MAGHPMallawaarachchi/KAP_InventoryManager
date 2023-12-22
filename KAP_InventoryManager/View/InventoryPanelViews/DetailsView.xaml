@@ -4,9 +4,223 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:KAP_InventoryManager.View.InventoryViewPanels"
+             xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+             d:DesignHeight="565" d:DesignWidth="800"
+             Background="Transparent">
+    <Border x:Name="SearchBorder" BorderBrush="{StaticResource Color2}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Color2}">
+        <Grid Margin="20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Background="Transparent" BorderBrush="{StaticResource Color3}" BorderThickness="1" CornerRadius="8" Margin="0,0,0,20">
+                    <Grid Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Height="140" Width="140" Margin="0,0,20,0"/>
+                        <StackPanel Grid.Column="1">
+                            <Grid>
+                                <StackPanel Orientation="Vertical"
+                                            HorizontalAlignment="Left">
+                                    <TextBlock Text="YB03-1001" 
+                                               Style="{StaticResource numbers}"/>
+                                    <TextBlock Text="Steering Gear Boot"
+                                               Style="{StaticResource sub-header}"/>
+                                </StackPanel>
+                                <Border Background="Transparent" 
+                                        BorderBrush="{StaticResource Blue}"
+                                        CornerRadius="5"
+                                        BorderThickness="1.5"
+                                        Height="25"
+                                        VerticalAlignment="Top"
+                                        HorizontalAlignment="Right">
+                                    <TextBlock Text="Seiki" 
+                                               Foreground="{StaticResource Blue}"
+                                               FontFamily="Inter"
+                                               FontWeight="SemiBold"
+                                               FontSize="14"
+                                               VerticalAlignment="Center"
+                                               Margin="10,0,10,0"/>
+                                </Border>
+                            </Grid>
+                            <Grid Height="90" Margin="0,15,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="OEM Number"
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text=":" Grid.Column="1"
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text="45535-0K010" Grid.Column="2"
+                                           Style="{StaticResource regular-text}"/>
+
+                                <TextBlock Text="Description" Grid.Row="1"
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text="TOYOTA HILUX KUN 15 R/H" 
+                                           Grid.Column="2" Grid.Row="1"
+                                           Style="{StaticResource regular-text}"/>
+
+                                <TextBlock Text="Supplier" Grid.Row="2"
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text="Chai Mongkol" 
+                                           Grid.Column="2" Grid.Row="2"
+                                           Style="{StaticResource regular-text}"/>
+          
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Background="Transparent" BorderBrush="{StaticResource Color3}" BorderThickness="1" CornerRadius="8" Grid.Row="1" Margin="0,0,0,20">
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" Margin="20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <customcontrols:NumberCard BackColor="#284B32"
+                                   IconColor="{StaticResource Green}"
+                                   Text="Total Quantity"
+                                   Value="1000"
+                                   Icon="Tag"
+                                   Grid.Column="0"
+                                   Margin="0,0,20,0"/>
+                            <customcontrols:NumberCard BackColor="#233D5E"
+                                   IconColor="{StaticResource Blue}"
+                                   Text="Quantity In Hand"
+                                   Value="400"
+                                   Icon="LayerGroup"
+                                   Grid.Column="1"
+                                   Margin="0,0,20,0"/>
+                            <customcontrols:NumberCard BackColor="#5F401B"
+                                   IconColor="{StaticResource Orange}"
+                                   Text="Quantity Sold"
+                                   Value="600"
+                                   Icon="HourglassHalf"
+                                   Grid.Column="2"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border Background="Transparent" BorderBrush="{StaticResource Color3}" BorderThickness="1" CornerRadius="8" Grid.Row="2">
+                    
+                </Border>
+            </Grid>
             
-    </Grid>
+            <Grid Grid.Column="1" Margin="20,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Background="Transparent" BorderBrush="{StaticResource Color3}" BorderThickness="1" CornerRadius="8" Margin="0,0,0,20">
+                    <StackPanel Orientation="Vertical" Margin="20">
+                        <customcontrols:TextCard Text="Pricing Details" Width="100" HorizontalAlignment="Left"/>
+                        <Grid Height="60" Margin="0,15,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Buying Price"
+                                       Style="{StaticResource regular-text}"/>
+                            <TextBlock Text=":" Grid.Column="1"
+                                       Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="Rs.650.00" Grid.Column="2"
+                                       Style="{StaticResource regular-text}"/>
+
+                            <TextBlock Text="Description" Grid.Row="1"
+                                       Style="{StaticResource regular-text}"/>
+                            <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
+                                       Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="Rs.1,475.00" 
+                                       Grid.Column="2" Grid.Row="1"
+                                       Style="{StaticResource regular-text}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="1" Background="{StaticResource Color3}" CornerRadius="8" Margin="0,0,0,20">
+                    <StackPanel Orientation="Vertical" Margin="20">
+                        <Grid Margin="0,0,0,4">
+                            <TextBlock Text="Revenue" 
+                                       Style="{StaticResource card-header}"/>
+                            <TextBlock Text="This Month" 
+                                       Style="{StaticResource regular-text}" 
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <Line X1="0" Y1="0" 
+                              X2="1" Y2="0" 
+                              Stretch="Fill" 
+                              Stroke="#4F5051" 
+                              StrokeThickness="1" 
+                              Margin="0,0,0,8"/>
+
+                        <Grid Margin="0,0,0,4">
+                            <TextBlock Text="Rs 320,000.00" 
+                                       Style="{StaticResource numbers}"/>
+                            <StackPanel Orientation="Horizontal" 
+                                        HorizontalAlignment="Right"
+                                        Margin="0,0,0,2">
+                                <fa:IconImage
+                                    Icon="ArrowUp"
+                                    Height="10"
+                                    Foreground="{StaticResource Green}"
+                                    VerticalAlignment="Bottom"
+                                    Margin="0,0,2,2.5"/>
+                                <TextBlock Text="10.3%"
+                                           FontFamily="Inter"
+                                           FontSize="12"
+                                           Foreground="{StaticResource Green}"
+                                           FontWeight="Medium"
+                                           VerticalAlignment="Bottom"/>
+                            </StackPanel>
+                        </Grid>
+                        <TextBlock Text="Compared to Rs 290,000 last month"
+                                   Style="{StaticResource light-text}"
+                                   Margin="0,0,0,8"/>
+                        <Grid>
+                            <TextBlock Text="Today's Revenue"
+                                       Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="Rs 10,000.00"
+                                       Style="{StaticResource regular-text}"
+                                       HorizontalAlignment="Right"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border Background="Transparent" BorderBrush="{StaticResource Color3}" BorderThickness="1" CornerRadius="8" Grid.Row="2">
+                    
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
 </UserControl>
