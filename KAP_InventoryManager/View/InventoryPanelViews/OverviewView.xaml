@@ -4,9 +4,106 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:KAP_InventoryManager.View.InventoryViewPanels"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="565" d:DesignWidth="800"
+             Background="Transparent">
+    <Border x:Name="SearchBorder" BorderBrush="{StaticResource Color3}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Color2}">
+        <Grid Margin="20">
+            <Grid.RowDefinitions >
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Border Background="Transparent" BorderBrush="{StaticResource Color3}" BorderThickness="1" CornerRadius="8">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" Margin="20">
+                    <TextBlock Text="Inventory Overview" Style="{StaticResource card-header}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Horizontal" 
+                                    Margin="0,12,0,0">
+                            <Border Background="#284B32" 
+                                    CornerRadius="6"
+                                    Height="36"
+                                    Width="36">
+                                <fa:IconImage Icon="Tag"
+                                              Foreground="{StaticResource Green}"
+                                              Margin="6"/>
+                            </Border>
+                            <StackPanel Orientation="Vertical" 
+                                        Margin="6,6,0,0">
+                                <TextBlock Text="Items" 
+                                               Style="{StaticResource regular}"/>
+                                <TextBlock Text="786"
+                                               Style="{StaticResource numbers}"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" 
+                                    Margin="0,12,0,0" 
+                                    Grid.Column="1">
+                            <Border Background="#233D5E" 
+                                    CornerRadius="6"
+                                    Height="36"
+                                    Width="36">
+                                <fa:IconImage Icon="LayerGroup"
+                                              Foreground="{StaticResource Blue}"
+                                              Margin="6"/>
+                            </Border>
+                            <StackPanel Orientation="Vertical" 
+                                        Margin="6,6,0,0">
+                                <TextBlock Text="Categories" 
+                                           Style="{StaticResource regular}"/>
+                                <TextBlock Text="12"
+                                           Style="{StaticResource numbers}"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" 
+                                    Margin="0,12,0,0" 
+                                    Grid.Column="2">
+                            <Border Background="#5F401B" 
+                                    CornerRadius="6"
+                                    Height="36"
+                                    Width="36">
+                                <fa:IconImage Icon="HourglassHalf"
+                                              Foreground="{StaticResource Orange}"
+                                              Margin="6"/>
+                            </Border>
+                            <StackPanel Orientation="Vertical" 
+                                        Margin="6,6,0,0">
+                                <TextBlock Text="Low In Stock" 
+                                           Style="{StaticResource regular}"/>
+                                <TextBlock Text="10"
+                                           Style="{StaticResource numbers}"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" 
+                                    Margin="0,12,0,0" 
+                                    Grid.Column="3">
+                            <Border Background="#5A1A1B" 
+                                    CornerRadius="6"
+                                    Height="36"
+                                    Width="36">
+                                <fa:IconImage Icon="HourglassEnd"
+                                              Foreground="{StaticResource Red}"
+                                              Margin="6"/>
+                            </Border>
+                            <StackPanel Orientation="Vertical" 
+                                        Margin="6,6,0,0">
+                                <TextBlock Text="Out Of Stock" 
+                                           Style="{StaticResource regular}"/>
+                                <TextBlock Text="3"
+                                           Style="{StaticResource numbers}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+        
 </UserControl>

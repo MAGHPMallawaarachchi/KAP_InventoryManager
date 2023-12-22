@@ -192,7 +192,7 @@
                 <!-- Main View -->
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="45"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
