@@ -242,6 +242,9 @@
     <Compile Include="Model\IUserRepository.cs" />
     <Compile Include="ViewModel\CustomersViewModel.cs" />
     <Compile Include="ViewModel\HomeViewModel.cs" />
+    <Compile Include="ViewModel\InventoryPanelViewModels\DetailsViewModel.cs" />
+    <Compile Include="ViewModel\InventoryPanelViewModels\OverviewViewModel.cs" />
+    <Compile Include="ViewModel\InventoryPanelViewModels\TransactionsViewModel.cs" />
     <Compile Include="ViewModel\InventoryViewModel.cs" />
     <Compile Include="ViewModel\InvoicesViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -261,6 +264,15 @@
     </Compile>
     <Compile Include="View\InventoryView.xaml.cs">
       <DependentUpon>InventoryView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InventoryPanelViews\DetailsView.xaml.cs">
+      <DependentUpon>DetailsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InventoryPanelViews\OverviewView.xaml.cs">
+      <DependentUpon>OverviewView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InventoryPanelViews\TransactionsView.xaml.cs">
+      <DependentUpon>TransactionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\InvoicesView.xaml.cs">
       <DependentUpon>InvoicesView.xaml</DependentUpon>
@@ -311,6 +323,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\InventoryView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InventoryPanelViews\DetailsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InventoryPanelViews\OverviewView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InventoryPanelViews\TransactionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -372,8 +396,6 @@
   <ItemGroup>
     <Resource Include="Images\logo_horizontal.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="View\InventoryViewPanels\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
