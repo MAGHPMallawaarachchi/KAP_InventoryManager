@@ -24,7 +24,8 @@ namespace KAP_InventoryManager.View
         public MainView()
         {
             InitializeComponent();
-            this.MaxHeight = SystemParameters.VirtualScreenHeight;
+            this.Width = SystemParameters.WorkArea.Width;
+            this.Height = SystemParameters.WorkArea.Height;
         }
 
         [DllImport("user32.dll")]
@@ -53,6 +54,7 @@ namespace KAP_InventoryManager.View
             WindowInteropHelper helper = new WindowInteropHelper(this);
             SendMessage(helper.Handle, 161, 2, 0);
         }
+
     }
 
 }

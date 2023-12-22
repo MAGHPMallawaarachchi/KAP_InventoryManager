@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 {
-    public class OverviewViewModel
+    public class OverviewViewModel:ViewModelBase
     {
     }
 }

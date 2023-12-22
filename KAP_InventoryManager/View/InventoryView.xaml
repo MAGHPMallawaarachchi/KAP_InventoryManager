@@ -6,14 +6,28 @@
              xmlns:local="clr-namespace:KAP_InventoryManager.View"
              xmlns:locals="clr-namespace:KAP_InventoryManager.View"
              xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel"
+             xmlns:panelModel ="clr-namespace:KAP_InventoryManager.ViewModel.InventoryPanelViewModels"
              xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
+             xmlns:panels ="clr-namespace:KAP_InventoryManager.View.InventoryViewPanels"
              mc:Ignorable="d" 
              d:DesignHeight="610" d:DesignWidth="1060">
     
     <UserControl.DataContext>
         <viewModel:InventoryViewModel/>
     </UserControl.DataContext>
-    
+
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type panelModel:OverviewViewModel}">
+            <panels:OverviewView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type panelModel:DetailsViewModel}">
+            <panels:DetailsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type panelModel:TransactionsViewModel}">
+            <panels:TransactionsView/>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="23"/>
@@ -65,7 +79,8 @@
                         Style="{StaticResource panelButton}"
                         Cursor="Hand"
                         IsChecked="True"
-                        Margin="0,0,8,0">
+                        Margin="0,0,8,0"
+                        Command="{Binding ShowOverviewViewCommand}">
                         <TextBlock Text="Overview" 
                                    Style="{StaticResource button-text}"
                                    Margin="8"/>
@@ -73,7 +88,8 @@
                     <RadioButton 
                         Style="{StaticResource panelButton}"
                         Cursor="Hand"
-                        Margin="0,0,8,0">
+                        Margin="0,0,8,0"
+                        Command="{Binding ShowDetailsViewCommand}">
                         <TextBlock Text="Details" 
                                    Style="{StaticResource button-text}"
                                    Margin="8"/>
@@ -81,14 +97,16 @@
                     <RadioButton 
                         Style="{StaticResource panelButton}"
                         Cursor="Hand"
-                        Margin="0,0,8,0">
+                        Margin="0,0,8,0"
+                        Command="{Binding ShowTransactionsViewCommand}">
                         <TextBlock Text="Transactions" 
                                    Style="{StaticResource button-text}"
                                    Margin="8"/>
                     </RadioButton>
                 </StackPanel>
 
-                <ContentControl Grid.Row="1"/>
+                <ContentControl Grid.Row="1" 
+                                Content="{Binding CurrentChildView}"/>
             </Grid>
         </Grid>
     </Grid>
