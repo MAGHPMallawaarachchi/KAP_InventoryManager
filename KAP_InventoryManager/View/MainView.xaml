@@ -25,6 +25,9 @@
         <DataTemplate DataType="{x:Type viewModel:HomeViewModel}">
             <locals:HomeView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:InventoryViewModel}">
+            <locals:InventoryView/>
+        </DataTemplate>
     </Window.Resources>
     
     <Grid>
@@ -90,7 +93,7 @@
 
                             <StackPanel>
                                 <RadioButton Style="{StaticResource menuButton}"    
-                                             Margin="0,0,0,5"
+                                             Margin="0,0,0,12"
                                              Cursor="Hand"
                                              IsChecked="True"
                                              Command="{Binding ShowHomeViewCommand}">
@@ -103,7 +106,7 @@
                                 </RadioButton>
 
                                 <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,5"
+                                             Margin="0,0,0,12"
                                              Cursor="Hand"
                                              Command="{Binding ShowInventoryViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
@@ -115,7 +118,7 @@
                                 </RadioButton>
 
                                 <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,5"
+                                             Margin="0,0,0,12"
                                              Cursor="Hand"
                                              Command="{Binding ShowCustomersViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8" >
@@ -127,7 +130,7 @@
                                 </RadioButton>
 
                                 <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,5"
+                                             Margin="0,0,0,12"
                                              Cursor="Hand"
                                              Command="{Binding ShowInvoicesViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
@@ -138,7 +141,7 @@
                                     </StackPanel>
                                 </RadioButton>
                                 <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,5"
+                                             Margin="0,0,0,12"
                                              Cursor="Hand"
                                              Command="{Binding ShowInvoicesViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
@@ -149,7 +152,7 @@
                                     </StackPanel>
                                 </RadioButton>
                                 <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,5"
+                                             Margin="0,0,0,12"
                                              Cursor="Hand"
                                              Command="{Binding ShowInvoicesViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
@@ -160,7 +163,7 @@
                                     </StackPanel>
                                 </RadioButton>
                                 <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,5"
+                                             Margin="0,0,0,12"
                                              Cursor="Hand"
                                              Command="{Binding ShowInvoicesViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
@@ -210,9 +213,8 @@
 
                     <!-- Child Views -->
                     <ContentControl Content="{Binding CurrentChildView}"
-                                    Background="{StaticResource Color1}" 
                                     Grid.Row="1"
-                                    Margin="25,25,25,25"/>
+                                    Margin="20,20,20,20"/>
 
                 </Grid>
             </Grid>

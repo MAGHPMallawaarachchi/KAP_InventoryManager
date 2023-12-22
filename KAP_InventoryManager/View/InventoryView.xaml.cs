@@ -24,5 +24,20 @@ namespace KAP_InventoryManager.View
         {
             InitializeComponent();
         }
+
+        public void ExecuteSearch(string searchText)
+        {
+
+        }
+
+        private void OnSearchTextChanged(object sender, string searchText)
+        {
+
+        }
+
+        public void OnCustomButtonClick(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

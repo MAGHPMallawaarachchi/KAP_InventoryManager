@@ -11,6 +11,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles\CustomColors.xaml"/>
                 <ResourceDictionary Source="Styles\ButtonStyles.xaml"/>
+                <ResourceDictionary Source="Styles\TextStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <FontFamily x:Key="FontAwesome">/Fonts/FontAwesome.otf#Font Awesome 6 Free Solid</FontFamily>

@@ -4,9 +4,94 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:KAP_InventoryManager.View"
+             xmlns:locals="clr-namespace:KAP_InventoryManager.View"
+             xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel"
+             xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="655" d:DesignWidth="1080">
+    
+    <UserControl.DataContext>
+        <viewModel:InventoryViewModel/>
+    </UserControl.DataContext>
+    
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="26"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             
+            <TextBlock Text="Inventory" Style="{StaticResource header}" 
+           HorizontalAlignment="Left" VerticalAlignment="Center"/>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <customcontrols:SearchBar/>
+                <customcontrols:Button
+                    ButtonText="Filter"
+                    ButtonBackgroundColor="{StaticResource Color3}"
+                    ButtonIcon="Filter"
+                    Margin="12,0,0,0"/>
+                <customcontrols:Button
+                    ButtonText="Add Item"
+                    ButtonBackgroundColor="{StaticResource Blue}"
+                    ButtonIcon="Add"
+                    Margin="12,0,0,0"/>
+            </StackPanel>
+        </Grid>
+        
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Border Margin="0,22,0,0" Background="{StaticResource Color2}" CornerRadius="8">
+                <StackPanel Orientation="Vertical" Margin="20,20,20,20">
+                    <TextBlock Text="Items" Style="{StaticResource card-header}"/>
+                </StackPanel>
+            </Border>
+            <Grid Grid.Column="1" Margin="20,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal" Margin="26,0,0,0">
+                    <RadioButton 
+                        Style="{StaticResource panelButton}"
+                        Cursor="Hand"
+                        IsChecked="True"
+                        Margin="0,0,8,0">
+                        <TextBlock Text="Overview" 
+                                   Style="{StaticResource button-text}"
+                                   Margin="8"/>
+                    </RadioButton>
+                    <RadioButton 
+                        Style="{StaticResource panelButton}"
+                        Cursor="Hand"
+                        Margin="0,0,8,0">
+                        <TextBlock Text="Details" 
+                                   Style="{StaticResource button-text}"
+                                   Margin="8"/>
+                    </RadioButton>
+                    <RadioButton 
+                        Style="{StaticResource panelButton}"
+                        Cursor="Hand"
+                        Margin="0,0,8,0">
+                        <TextBlock Text="Transactions" 
+                                   Style="{StaticResource button-text}"
+                                   Margin="8"/>
+                    </RadioButton>
+                </StackPanel>
+
+                <ContentControl Grid.Row="1"/>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>
+
+
