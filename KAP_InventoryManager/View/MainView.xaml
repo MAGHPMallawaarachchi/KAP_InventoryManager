@@ -8,13 +8,13 @@
         xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         mc:Ignorable="d"
-        Title="Kamal Auto Parts" 
+        Title="Kamal Auto Parts"        
         WindowState="Maximized"        
         WindowStartupLocation="CenterScreen"      
         Background="Transparent" 
         d:DesignHeight="720" 
         d:DesignWidth="1280" 
-        Icon="/Images/logo_small.png" 
+        Icon="/Images/logo_small.png"
         WindowStyle="None">
 
     <Window.DataContext>
@@ -43,7 +43,8 @@
                         Orientation="Horizontal"
                         FlowDirection="RightToLeft"
                         Background="{StaticResource Color1}"
-                        MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown">
+                        MouseLeftButtonDown="pnlControlBar_MouseLeftButtonDown"
+                        MouseEnter="pnlControlBar_MouseEnter">
                 <Button x:Name="btnClose"
                         Style="{StaticResource controlBarButton}"
                         Click="btnClose_Click">
@@ -66,7 +67,7 @@
                                   Width="12"/>
                 </Button>
                 
-            </StackPanel>
+            </StackPanel> 
 
 
             <Grid Grid.Row="1">
@@ -203,7 +204,7 @@
                             <ColumnDefinition Width="200"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="{Binding CurrentUserAccount?.DisplayName}"
+                        <TextBlock Text="{Binding CurrentUserAccount.DisplayName}"
                                    FontSize="16"
                                    FontWeight="Medium"
                                    VerticalAlignment="Center"

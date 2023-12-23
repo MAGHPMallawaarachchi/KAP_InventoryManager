@@ -23,13 +23,11 @@ namespace KAP_InventoryManager.View
     {
         public MainView()
         {
-            InitializeComponent();
-            this.Width = SystemParameters.WorkArea.Width;
-            this.Height = SystemParameters.WorkArea.Height;
+            InitializeComponent();       
         }
 
         [DllImport("user32.dll")]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
 
         private void btnMinimize_Click(object sender, RoutedEventArgs e)
         {
@@ -53,6 +51,11 @@ namespace KAP_InventoryManager.View
         {
             WindowInteropHelper helper = new WindowInteropHelper(this);
             SendMessage(helper.Handle, 161, 2, 0);
+        }
+
+        private void pnlControlBar_MouseEnter(object sender, MouseEventArgs e)
+        {
+
         }
 
     }
