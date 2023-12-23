@@ -10,32 +10,55 @@
              Background="Transparent">
 
     <Border x:Name="SearchBorder" BorderBrush="{StaticResource Color3}" BorderThickness="1" CornerRadius="5" Background="{StaticResource Color3}">
-        <StackPanel Orientation="Horizontal" Margin="10,2,10,2">
+        <StackPanel Orientation="Horizontal" Margin="10,2,10,2" Cursor="IBeam">
             <fa:IconImage
                 Icon="Search"
                 Foreground="{StaticResource Color5}"
                 Height="12"
                 Margin="0,0,6,0"/>
             <TextBox x:Name="SearchTextBox"
-                     Text="Search here..."
+                     Text="{Binding Text, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}"
                      FontFamily="Inter"
                      FontSize="12"
                      Foreground="{StaticResource Color5}"
                      VerticalAlignment="Center"
                      Background="{StaticResource Color3}"
                      BorderThickness="0"
-                     Width="120"
+                     Width="180"
                      KeyDown="OnSearchTextBoxKeyDown">
                 <TextBox.Style>
                     <Style TargetType="TextBox">
-                        <Style.Triggers>
-                            <Trigger Property="IsFocused" Value="True">
-                                <Setter Property="BorderBrush" Value="{StaticResource Blue}"/>
-                            </Trigger>
-                            <Trigger Property="IsFocused" Value="False">
-                                <Setter Property="BorderBrush" Value="{StaticResource Color3}"/>
-                            </Trigger>
-                        </Style.Triggers>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource Color3}"/>
+                        <Setter Property="Padding" Value="6,0,6,0"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TextBox">
+                                    <Grid>
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="5">
+                                            <ScrollViewer x:Name="PART_ContentHost" />
+                                        </Border>
+                                        <TextBlock x:Name="PlaceholderTextBlock"
+                                   Text="Seacrh here..."
+                                   Style="{StaticResource regular-text}"
+                                   Margin="10,0,10,0"                                     
+                                   Visibility="Collapsed"
+                                   Cursor="IBeam"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Cursor" Value="IBeam"/>
+                                        </Trigger>
+                                        <Trigger Property="Text" Value="">
+                                            <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </TextBox.Style>
             </TextBox>

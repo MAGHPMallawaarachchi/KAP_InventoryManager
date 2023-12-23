@@ -44,17 +44,19 @@
            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Height="30">
-                <customcontrols:SearchBar/>
+                <customcontrols:SearchBar Width="220"/>
                 <customcontrols:Button
                     ButtonText="Filter"
                     ButtonBackgroundColor="{StaticResource Color3}"
                     ButtonIcon="Filter"
                     Margin="12,0,0,0"/>
                 <customcontrols:Button
+                    x:Name="AddItemButton"
                     ButtonText="Add Item"
                     ButtonBackgroundColor="{StaticResource Blue}"
                     ButtonIcon="Add"
-                    Margin="12,0,0,0"/>
+                    Margin="12,0,0,0"
+                    ButtonClickHandler="AddItemButton_Click"/>
             </StackPanel>
         </Grid>
         

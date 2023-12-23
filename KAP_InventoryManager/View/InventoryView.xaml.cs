@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KAP_InventoryManager.View.Modals;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,9 +36,11 @@ namespace KAP_InventoryManager.View
 
         }
 
-        public void OnCustomButtonClick(object sender, RoutedEventArgs e)
+        private void AddItemButton_Click(object sender, RoutedEventArgs e)
         {
-
+            var newItemModalWindow = new NewItemModal();
+            newItemModalWindow.ShowDialog();
         }
+
     }
 }

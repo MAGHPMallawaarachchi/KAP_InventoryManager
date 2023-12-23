@@ -342,11 +342,17 @@
     <Compile Include="CustomControls\Button.xaml.cs">
       <DependentUpon>Button.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CustomControls\DiscardButton.xaml.cs">
+      <DependentUpon>DiscardButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\NumberCard.xaml.cs">
       <DependentUpon>NumberCard.xaml</DependentUpon>
     </Compile>
     <Compile Include="CustomControls\SearchBar.xaml.cs">
       <DependentUpon>SearchBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\TextBox.xaml.cs">
+      <DependentUpon>TextBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="CustomControls\TextCard.xaml.cs">
       <DependentUpon>TextCard.xaml</DependentUpon>
@@ -395,6 +401,9 @@
     <Compile Include="View\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Modals\NewItemModal.xaml.cs">
+      <DependentUpon>NewItemModal.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ReturnsView.xaml.cs">
       <DependentUpon>ReturnsView.xaml</DependentUpon>
     </Compile>
@@ -406,11 +415,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="CustomControls\DiscardButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CustomControls\NumberCard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CustomControls\SearchBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CustomControls\TextBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -467,6 +484,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Modals\NewItemModal.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
