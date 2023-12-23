@@ -7,8 +7,9 @@
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              mc:Ignorable="d" 
              d:DesignHeight="30">
-    <Border x:Name="SearchBorder" BorderBrush="Transparent" BorderThickness="0" CornerRadius="5" Background="{Binding ButtonBackgroundColor}">
-        <Button BorderThickness="0" Background="Transparent">
+
+    <Button BorderThickness="0"
+            Cursor="Hand">
             <StackPanel Orientation="Horizontal" Margin="10,2,10,2" HorizontalAlignment="Center">
                 <fa:IconImage
                     Icon="{Binding ButtonIcon}"
@@ -22,6 +23,54 @@
                             VerticalAlignment="Center">
                 </TextBlock>
             </StackPanel>
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="{Binding ButtonBackgroundColor}"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid RenderTransformOrigin="0.5, 0.5">
+                                    <Grid.RenderTransform>
+                                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                                    </Grid.RenderTransform>
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="5"/>
+                                    <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <ContentPresenter.RenderTransform>
+                                            <ScaleTransform ScaleX="1" ScaleY="1" CenterX="0.5" CenterY="0.5"/>
+                                        </ContentPresenter.RenderTransform>
+                                    </ContentPresenter>
+                                    <Grid.Triggers>
+                                        <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                         To="0.98"
+                                                         Duration="0:0:0.2"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                         To="0.98"
+                                                         Duration="0:0:0.2"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                        <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                         To="1"
+                                                         Duration="0:0:0.2"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                         To="1"
+                                                         Duration="0:0:0.2"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Grid.Triggers>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Button.Style>
         </Button>
-    </Border>
+
 </UserControl>
