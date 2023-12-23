@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:KAP_InventoryManager.CustomControls"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              mc:Ignorable="d" 
-             d:DesignHeight="25">
+             d:DesignHeight="30">
     <Border x:Name="SearchBorder" BorderBrush="Transparent" BorderThickness="0" CornerRadius="5" Background="{Binding ButtonBackgroundColor}">
         <Button BorderThickness="0" Background="Transparent">
             <StackPanel Orientation="Horizontal" Margin="10,2,10,2" HorizontalAlignment="Center">

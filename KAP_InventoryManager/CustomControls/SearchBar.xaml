@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:KAP_InventoryManager.CustomControls"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              mc:Ignorable="d" 
-             d:DesignHeight="25" d:DesignWidth="160"
+             d:DesignHeight="25" d:DesignWidth="220"
              Background="Transparent">
 
     <Border x:Name="SearchBorder" BorderBrush="{StaticResource Color3}" BorderThickness="1" CornerRadius="5" Background="{StaticResource Color3}">
