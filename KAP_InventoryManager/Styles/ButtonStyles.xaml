@@ -141,6 +141,10 @@
         <Setter Property="Background" Value="{StaticResource Blue}"/>
         <Setter Property="Foreground" Value="{StaticResource Color5}"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
+
+        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Self}, Path=Tag}"/>
+        <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=CommandParameter}"/>
+        
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>

@@ -24,6 +24,7 @@ namespace KAP_InventoryManager.View.Modals
         public NewItemModal()
         {
             InitializeComponent();
+            DataContext = new ViewModel.ModalViewModels.NewItemModalViewModel();
         }
 
         [DllImport("user32.dll")]
