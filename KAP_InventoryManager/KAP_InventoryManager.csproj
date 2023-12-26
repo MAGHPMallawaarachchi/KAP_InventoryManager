@@ -357,7 +357,12 @@
     <Compile Include="CustomControls\TextCard.xaml.cs">
       <DependentUpon>TextCard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\BrandModel.cs" />
+    <Compile Include="Model\IItemRepository.cs" />
+    <Compile Include="Model\ItemModel.cs" />
     <Compile Include="Model\IUserRepository.cs" />
+    <Compile Include="Model\SupplierModel.cs" />
+    <Compile Include="Repositories\ItemRepository.cs" />
     <Compile Include="ViewModel\CustomersViewModel.cs" />
     <Compile Include="ViewModel\HomeViewModel.cs" />
     <Compile Include="ViewModel\InventoryPanelViewModels\DetailsViewModel.cs" />
@@ -447,6 +452,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Styles\DataGridStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\TextBoxStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Styles\TextStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
