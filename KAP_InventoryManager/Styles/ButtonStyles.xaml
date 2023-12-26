@@ -135,4 +135,71 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Add button -->
+    <Style x:Key="AddButton" TargetType="Button">
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Background" Value="{StaticResource Blue}"/>
+        <Setter Property="Foreground" Value="{StaticResource Color5}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid RenderTransformOrigin="0.5, 0.5">
+                        <Grid.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                        </Grid.RenderTransform>
+                        <Border Background="{TemplateBinding Background}" CornerRadius="5"/>
+                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <ContentPresenter.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1" CenterX="0.5" CenterY="0.5"/>
+                            </ContentPresenter.RenderTransform>
+                        </ContentPresenter>
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                 To="0.98"
+                                 Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                 To="0.98"
+                                 Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                 To="1"
+                                 Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                 To="1"
+                                 Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Add button icon -->
+    <Style x:Key="AddButtonIcon" TargetType="fa:IconImage">
+        <Setter Property="Foreground" Value="{StaticResource Color5}"/>
+        <Setter Property="Height" Value="12"/>
+        <Setter Property="Margin" Value="0,0,6,0"/>
+    </Style>
+
+    <!-- Add button text -->
+    <Style x:Key="AddButtontext" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource Color5}"/>
+        <Setter Property="FontFamily" Value="Inter"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
 </ResourceDictionary>
