@@ -7,6 +7,7 @@
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
         xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
         xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel.ModalViewModels"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="" Width="370"
         WindowStyle="None"
@@ -87,13 +88,19 @@
                              Style="{StaticResource ModalTextBox}"
                              Grid.Column="1" Grid.Row="5"/>
 
-                    <TextBox Text="{Binding BuyingPrice, UpdateSourceTrigger=PropertyChanged}" 
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="1" Grid.Row="6"/>
+                    <xctk:DecimalUpDown Value="{Binding BuyingPrice}"
+                                        Grid.Column="1" Grid.Row="6"
+                                        Style="{StaticResource DecimalUpDownStyle}"
+                                        Foreground="{StaticResource Color4}"
+                                        IsTabStop="True"
+                                        Height="32"/>
 
-                    <TextBox Text="{Binding UnitPrice, UpdateSourceTrigger=PropertyChanged}" 
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="1" Grid.Row="7"/>
+
+                    <xctk:DecimalUpDown Value="{Binding UnitPrice}"
+                                        Style="{StaticResource DecimalUpDownStyle}"
+                                        Foreground="{StaticResource Color4}"
+                                        IsTabStop="True"
+                                        Grid.Column="1" Grid.Row="7"/>
 
                 </Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,20,0,0">
