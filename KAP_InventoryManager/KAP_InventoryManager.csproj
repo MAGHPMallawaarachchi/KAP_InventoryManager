@@ -357,9 +357,6 @@
     <Compile Include="CustomControls\Button.xaml.cs">
       <DependentUpon>Button.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CustomControls\DiscardButton.xaml.cs">
-      <DependentUpon>DiscardButton.xaml</DependentUpon>
-    </Compile>
     <Compile Include="CustomControls\NumberCard.xaml.cs">
       <DependentUpon>NumberCard.xaml</DependentUpon>
     </Compile>
@@ -430,10 +427,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CustomControls\Button.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="CustomControls\DiscardButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
