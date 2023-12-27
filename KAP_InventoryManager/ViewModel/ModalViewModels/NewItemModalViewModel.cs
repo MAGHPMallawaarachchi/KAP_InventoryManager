@@ -105,11 +105,18 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         }
 
         public ICommand AddItemCommand { get; }
+        public ICommand DiscardCommand { get; }
 
         public NewItemModalViewModel()
         {
             ItemRepository = new ItemRepository();
             AddItemCommand = new ViewModelCommand(ExecuteAddItemCommand, CanExecuteAddItemCommand);
+            DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
+        }
+
+        private void ExecuteDiscardCommand(object obj)
+        {
+            ClearTextBoxes();
         }
 
         private bool CanExecuteAddItemCommand(object obj)
@@ -145,6 +152,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 };
 
                 ItemRepository.Add(newItem);
+                ClearTextBoxes();
                 MessageBox.Show("Item added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
@@ -154,5 +162,16 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        private void ClearTextBoxes()
+        {
+            PartNo = string.Empty;
+            OEMNo = string.Empty;
+            Description = string.Empty;
+            BrandID = string.Empty;
+            Category = string.Empty;
+            SupplierID = string.Empty;
+            BuyingPrice = 0;
+            UnitPrice = 0;
+        }
     }
 }

@@ -206,4 +206,58 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
+    <!-- Discard button -->
+    <Style x:Key="DiscardButton" TargetType="Button">
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource Color4}"/>
+        <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource Self}, Path=Tag}"/>
+        <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=CommandParameter}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid RenderTransformOrigin="0.5, 0.5">
+                        <Grid.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                        </Grid.RenderTransform>
+                        <Border BorderBrush="{StaticResource Color4}" CornerRadius="5" BorderThickness="1"/>
+                        <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <ContentPresenter.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1" CenterX="0.5" CenterY="0.5"/>
+                            </ContentPresenter.RenderTransform>
+                        </ContentPresenter>
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                             To="0.98"
+                             Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                             To="0.98"
+                             Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                             To="1"
+                             Duration="0:0:0.2"/>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                             To="1"
+                             Duration="0:0:0.2"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>
