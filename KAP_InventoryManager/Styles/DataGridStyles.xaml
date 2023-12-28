@@ -53,7 +53,7 @@
 
     <Style x:Key="DataGridStyle" TargetType="{x:Type DataGrid}">
         <Setter Property="Background" Value="{StaticResource Color2}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Color2}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="{StaticResource Color4}" />
         <Setter Property="FontFamily" Value="Inter"/>

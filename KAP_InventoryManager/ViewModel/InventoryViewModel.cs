@@ -1,16 +1,33 @@
-﻿using KAP_InventoryManager.ViewModel.InventoryPanelViewModels;
+﻿using KAP_InventoryManager.Model;
+using KAP_InventoryManager.Repositories;
+using KAP_InventoryManager.ViewModel.InventoryPanelViewModels;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace KAP_InventoryManager.ViewModel
 {
-    public class InventoryViewModel:ViewModelBase
+    public class InventoryViewModel : ViewModelBase
     {
         private ViewModelBase _currentChildView;
+
+        private IEnumerable<InventoryItemModel> _inventoryItems;
+        public IEnumerable<InventoryItemModel> InventoryItems
+        {
+            get { return _inventoryItems; }
+            set
+            {
+                _inventoryItems = value;
+                OnPropertyChanged(nameof(InventoryItems));
+            }
+        }
 
         public ViewModelBase CurrentChildView
         {
@@ -29,6 +46,7 @@ namespace KAP_InventoryManager.ViewModel
         public ICommand ShowOverviewViewCommand { get; }
         public ICommand ShowDetailsViewCommand { get; }
         public ICommand ShowTransactionsViewCommand { get; }
+        public ICommand GetAllCommand { get; }
 
         public InventoryViewModel()
         {
@@ -39,6 +57,20 @@ namespace KAP_InventoryManager.ViewModel
 
             //default view
             ExecuteShowOverviewViewCommand(null);
+            GetAllAndPopulateDataGrid();
+        }
+
+        public void GetAllAndPopulateDataGrid()
+        {
+            try
+            {
+                ItemRepository itemrepo = new ItemRepository();
+                InventoryItems = itemrepo.GetAllInventoryItems();
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to fetch items. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ExecuteShowTransactionsViewCommand(object obj)

@@ -57,4 +57,12 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
+    <Style x:Key="table-header" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource Color4}"/>
+        <Setter Property="FontFamily" Value="Inter"/>
+        <Setter Property="FontWeight" Value="Regular"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
 </ResourceDictionary>

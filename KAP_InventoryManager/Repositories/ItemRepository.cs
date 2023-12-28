@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace KAP_InventoryManager.Repositories
 {
@@ -40,7 +41,6 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-
         public void Delete(string partNo)
         {
             throw new NotImplementedException();
@@ -51,10 +51,69 @@ namespace KAP_InventoryManager.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<UserModel> GetAll()
+        public IEnumerable<ItemModel> GetAll()
         {
-            throw new NotImplementedException();
+            List<ItemModel> items = new List<ItemModel>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SELECT * FROM Item", connection))
+            {
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ItemModel item = new ItemModel()
+                        {
+                            PartNo = reader["PartNo"].ToString(),
+                            OEMNo = reader["OemNo"].ToString(),
+                            Description = reader["Description"].ToString(),
+                            BrandID = reader["BrandID"].ToString(),
+                            Category = reader["Category"].ToString(),
+                            SupplierID = reader["SupplierID"].ToString(),
+                            TotalQty = (Int32)reader["TotalQty"],
+                            QtySold = (Int32)reader["QtySold"],
+                            QtyInHand = (Int32)reader["QtyInHand"],
+                            BuyingPrice = (Decimal)reader["BuyingPrice"],
+                            UnitPrice = (Decimal)reader["UnitPrice"]
+                        };
+
+                        items.Add(item);
+                    }
+                }
+            }
+            return items;
         }
+
+        public IEnumerable<InventoryItemModel> GetAllInventoryItems()
+        {
+            List<InventoryItemModel> items = new List<InventoryItemModel>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("GetItemList", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        InventoryItemModel item = new InventoryItemModel()
+                        {
+                            AutoID = (Int32)reader["AutoID"],
+                            PartNo = reader["PartNo"].ToString(),
+                            QtyInHand = (Int32)reader["QtyInHand"]
+                        };
+
+                        items.Add(item);
+                    }
+                }
+            }
+            return items;
+        }
+
 
         public ItemModel GetByPartNo(string partNo)
         {

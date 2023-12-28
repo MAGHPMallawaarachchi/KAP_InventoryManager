@@ -16,7 +16,7 @@ namespace KAP_InventoryManager.Model
         public string SupplierID { get; set; }
         public int TotalQty { get; set; }
         public int QtyInHand { get; set; }
-        public int qtySold { get; set; }
+        public int QtySold { get; set; }
         public decimal BuyingPrice { get; set; }
         public decimal UnitPrice { get; set; }
     }

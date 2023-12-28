@@ -368,6 +368,7 @@
     </Compile>
     <Compile Include="Model\BrandModel.cs" />
     <Compile Include="Model\IItemRepository.cs" />
+    <Compile Include="Model\InventoryItemModel.cs" />
     <Compile Include="Model\ItemModel.cs" />
     <Compile Include="Model\IUserRepository.cs" />
     <Compile Include="Model\SupplierModel.cs" />
@@ -457,6 +458,10 @@
     <Page Include="Styles\DataGridStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\ListBoxStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\TextBoxStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -552,6 +557,8 @@
   <ItemGroup>
     <Resource Include="Images\logo_horizontal.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Utils\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -13,7 +13,7 @@ namespace KAP_InventoryManager.Model
         void Edit(ItemModel item);
         void Delete(string partNo);
         ItemModel GetByPartNo(string partNo);
-        IEnumerable<UserModel> GetAll();
+        IEnumerable<ItemModel> GetAll();
         //...
     }
 }

@@ -14,6 +14,7 @@
                 <ResourceDictionary Source="Styles\TextStyles.xaml"/>
                 <ResourceDictionary Source="Styles\DataGridStyles.xaml"/>
                 <ResourceDictionary Source="Styles\TextBoxStyles.xaml"/>
+                <ResourceDictionary Source="Styles\ListBoxStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <FontFamily x:Key="FontAwesome">/Fonts/FontAwesome.otf#Font Awesome 6 Free Solid</FontFamily>
