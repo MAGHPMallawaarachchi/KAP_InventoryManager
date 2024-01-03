@@ -14,6 +14,11 @@ namespace KAP_InventoryManager.Model
         void Delete(string partNo);
         ItemModel GetByPartNo(string partNo);
         IEnumerable<ItemModel> GetAll();
+        IEnumerable<InventoryItemModel> GetAllInventoryItems();
+        int GetItemCount();
+        int GetOutOfStockCount();
+        int GetLowInStockCount();
+        int GetCategoryCount();
         //...
     }
 }

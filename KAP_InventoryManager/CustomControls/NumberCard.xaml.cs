@@ -24,7 +24,7 @@ namespace KAP_InventoryManager.CustomControls
             DependencyProperty.Register("Text", typeof(string), typeof(NumberCard));
 
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(string), typeof(NumberCard));
+            DependencyProperty.Register("Value", typeof(int), typeof(NumberCard));
 
         public static readonly DependencyProperty IconProperty =
             DependencyProperty.Register("Icon", typeof(string), typeof(NumberCard));
@@ -40,9 +40,9 @@ namespace KAP_InventoryManager.CustomControls
             get { return (string)GetValue(TextProperty); }
             set { SetValue(TextProperty, value); }
         }
-        public string Value
+        public int Value
         {
-            get { return (string)GetValue(ValueProperty); }
+            get { return (int)GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
         }
 
@@ -65,7 +65,7 @@ namespace KAP_InventoryManager.CustomControls
         public NumberCard()
         {
             InitializeComponent();
-            DataContext = this;
+            this.DataContext = this;
         }
     }
 }

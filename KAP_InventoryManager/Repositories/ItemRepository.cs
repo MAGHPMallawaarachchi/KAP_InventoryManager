@@ -114,10 +114,88 @@ namespace KAP_InventoryManager.Repositories
             return items;
         }
 
-
         public ItemModel GetByPartNo(string partNo)
         {
             throw new NotImplementedException();
         }
+
+        public int GetItemCount()
+        {
+            int itemCount = 0;
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                using (var command = new MySqlCommand("SELECT COUNT(PartNo) AS ItemCount FROM Item", connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        if (!reader.IsDBNull(reader.GetOrdinal("ItemCount")))
+                        {
+                            itemCount = reader.GetInt32("ItemCount");
+                        }
+                    }
+                }
+            }
+
+            return itemCount;
+        }
+
+
+        public int GetOutOfStockCount()
+        {
+            int itemCount = 0;
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                using (var command = new MySqlCommand("SELECT COUNT(PartNo) AS ItemCount FROM Item WHERE QtyInHand = 0", connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        if (!reader.IsDBNull(reader.GetOrdinal("ItemCount")))
+                        {
+                            itemCount = reader.GetInt32("ItemCount");
+                        }
+                    }
+                }
+            }
+
+            return itemCount;
+        }
+
+        public int GetLowInStockCount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetCategoryCount()
+        {
+            int categoryCount = 0;
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+
+                using (var command = new MySqlCommand("SELECT COUNT(*) AS CategoryCount FROM BrandCategory", connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        if (!reader.IsDBNull(reader.GetOrdinal("CategoryCount")))
+                        {
+                            categoryCount = reader.GetInt32("CategoryCount");
+                        }
+                    }
+                }
+            }
+
+            return categoryCount;
+        }
+
     }
 }

@@ -6,9 +6,15 @@
              xmlns:local="clr-namespace:KAP_InventoryManager.View.InventoryViewPanels"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
+             xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel.InventoryPanelViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="670" d:DesignWidth="940"
              Background="Transparent">
+
+    <UserControl.DataContext>
+        <viewModel:OverviewViewModel/>
+    </UserControl.DataContext>
+    
     <Border x:Name="SearchBorder" BorderBrush="{StaticResource Color2}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Color2}">
         <Grid Margin="20">
             <Grid.RowDefinitions >
@@ -26,30 +32,82 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <customcontrols:NumberCard BackColor="#284B32"
-                                                   IconColor="{StaticResource Green}"
-                                                   Text="Items"
-                                                   Value="786"
-                                                   Icon="Tag"
-                                                   Grid.Column="0"/>
-                        <customcontrols:NumberCard BackColor="#233D5E"
-                                                   IconColor="{StaticResource Blue}"
-                                                   Text="Categories"
-                                                   Value="12"
-                                                   Icon="LayerGroup"
-                                                   Grid.Column="1"/>
-                        <customcontrols:NumberCard BackColor="#5F401B"
-                                                   IconColor="{StaticResource Orange}"
-                                                   Text="Low In Stock"
-                                                   Value="10"
-                                                   Icon="HourglassHalf"
-                                                   Grid.Column="2"/>
-                        <customcontrols:NumberCard BackColor="#5A1A1B"
-                                                   IconColor="{StaticResource Red}"
-                                                   Text="Out Of Stock"
-                                                   Value="3"
-                                                   Icon="HourglassEnd"
-                                                   Grid.Column="3"/>
+                        <StackPanel Orientation="Horizontal"
+                                    Grid.Column="0">
+                            <Border Background="#284B32" 
+                                    CornerRadius="6"        
+                                    Height="42"        
+                                    Width="42">
+                                <fa:IconImage Icon="Tag"                  
+                                              Foreground="{StaticResource Green}"                
+                                              Margin="6"/>
+                            </Border>
+                            <StackPanel Orientation="Vertical"             
+                                        Margin="6,6,0,0">
+                                <TextBlock Text="Items"                
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text="{Binding ItemCount}"
+                                           Style="{StaticResource numbers}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Grid.Column="1">
+                            <Border Background="#233D5E" 
+                                    CornerRadius="6"        
+                                    Height="42"        
+                                    Width="42">
+                                <fa:IconImage Icon="LayerGroup"                  
+                                              Foreground="{StaticResource Blue}"                
+                                              Margin="6"/>
+                            </Border>
+                            <StackPanel Orientation="Vertical"             
+                                        Margin="6,6,0,0">
+                                <TextBlock Text="Categories"                
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text="{Binding CategoryCount}"
+                                           Style="{StaticResource numbers}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Grid.Column="2">
+                            <Border Background="#5F401B" 
+                                    CornerRadius="6"        
+                                    Height="42"        
+                                    Width="42">
+                                <fa:IconImage Icon="HourglassHalf"                  
+                                              Foreground="{StaticResource Orange}"                
+                                              Margin="6"/>
+                            </Border>
+                            <StackPanel Orientation="Vertical"             
+                                        Margin="6,6,0,0">
+                                <TextBlock Text="Low In Stock"                
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text="0"
+                                           Style="{StaticResource numbers}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Grid.Column="3">
+                            <Border Background="#5A1A1B" 
+                                    CornerRadius="6"        
+                                    Height="42"        
+                                    Width="42">
+                                <fa:IconImage Icon="HourglassEnd"                  
+                                              Foreground="{StaticResource Red}"                
+                                              Margin="6"/>
+                            </Border>
+                            <StackPanel Orientation="Vertical"             
+                                        Margin="6,6,0,0">
+                                <TextBlock Text="Out Of Stock"                
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text="{Binding OutOfStockCount}"
+                                           Style="{StaticResource numbers}"/>
+                            </StackPanel>
+                        </StackPanel>
+
                     </Grid>
                 </StackPanel>
             </Border>
