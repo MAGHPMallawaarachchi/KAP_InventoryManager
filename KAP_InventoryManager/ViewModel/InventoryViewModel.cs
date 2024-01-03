@@ -16,7 +16,9 @@ namespace KAP_InventoryManager.ViewModel
 {
     public class InventoryViewModel : ViewModelBase
     {
-        private ViewModelBase _currentChildView;
+        private readonly IItemRepository ItemRepository;
+
+        private ViewModelBase _currentChildView;       
 
         private IEnumerable<InventoryItemModel> _inventoryItems;
         public IEnumerable<InventoryItemModel> InventoryItems
@@ -50,6 +52,8 @@ namespace KAP_InventoryManager.ViewModel
 
         public InventoryViewModel()
         {
+            ItemRepository = new ItemRepository();
+
             //Initialize commands
             ShowOverviewViewCommand = new ViewModelCommand(ExecuteShowOverviewViewCommand);
             ShowDetailsViewCommand = new ViewModelCommand(ExecuteShowDetailsViewCommand);
@@ -57,15 +61,14 @@ namespace KAP_InventoryManager.ViewModel
 
             //default view
             ExecuteShowOverviewViewCommand(null);
-            GetAllAndPopulateDataGrid();
+            PopulateDataGrid();
         }
 
-        public void GetAllAndPopulateDataGrid()
+        private void PopulateDataGrid()
         {
             try
-            {
-                ItemRepository itemrepo = new ItemRepository();
-                InventoryItems = itemrepo.GetAllInventoryItems();
+            {            
+                InventoryItems = ItemRepository.GetAllInventoryItems();
             }
             catch (MySqlException ex)
             {
