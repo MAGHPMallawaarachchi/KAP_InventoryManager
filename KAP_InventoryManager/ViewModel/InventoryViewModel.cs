@@ -19,8 +19,9 @@ namespace KAP_InventoryManager.ViewModel
         private readonly IItemRepository ItemRepository;
 
         private ViewModelBase _currentChildView;       
-
         private IEnumerable<InventoryItemModel> _inventoryItems;
+        private InventoryItemModel _selectedInventoryItem;
+
         public IEnumerable<InventoryItemModel> InventoryItems
         {
             get { return _inventoryItems; }
@@ -42,6 +43,18 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _currentChildView = value;
                 OnPropertyChanged(nameof(CurrentChildView));
+            }
+        }
+        public InventoryItemModel SelectedInventoryItem
+        {
+            get { return _selectedInventoryItem; }
+            set
+            {
+                _selectedInventoryItem = value;
+                OnPropertyChanged(nameof(SelectedInventoryItem));
+
+                // Show the details view with the selected part number
+                ExecuteShowDetailsViewCommand(_selectedInventoryItem?.PartNo);
             }
         }
 
@@ -83,7 +96,14 @@ namespace KAP_InventoryManager.ViewModel
 
         private void ExecuteShowDetailsViewCommand(object obj)
         {
-            CurrentChildView = new DetailsViewModel();
+            if (obj is string partNumber && !string.IsNullOrEmpty(partNumber))
+            {
+                CurrentChildView = new DetailsViewModel(partNumber);
+            }
+            else
+            {
+                MessageBox.Show("Something went wrong!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ExecuteShowOverviewViewCommand(object obj)

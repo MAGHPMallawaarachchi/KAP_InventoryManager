@@ -6,9 +6,15 @@
              xmlns:local="clr-namespace:KAP_InventoryManager.View.InventoryViewPanels"
              xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel.InventoryPanelViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="670" d:DesignWidth="940"
              Background="Transparent">
+    
+    <UserControl.DataContext>
+        <viewModel:DetailsViewModel/>
+    </UserControl.DataContext>
+    
     <Border x:Name="SearchBorder" BorderBrush="{StaticResource Color2}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Color2}">
         <Grid Margin="20">
             <Grid.RowDefinitions>
@@ -38,7 +44,7 @@
                                 <Grid>
                                     <StackPanel Orientation="Vertical"
                                     HorizontalAlignment="Left">
-                                        <TextBlock Text="YB03-1001" 
+                                        <TextBlock Text="{Binding PartNumber}" 
                                        Style="{StaticResource numbers}"/>
                                         <TextBlock Text="Steering Gear Boot"
                                        Style="{StaticResource sub-header}"/>
