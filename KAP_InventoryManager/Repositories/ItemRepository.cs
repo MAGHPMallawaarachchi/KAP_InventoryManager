@@ -119,22 +119,23 @@ namespace KAP_InventoryManager.Repositories
             throw new NotImplementedException();
         }
 
-        public int GetItemCount()
+        public async Task<int> GetItemCount()
         {
             int itemCount = 0;
 
             using (var connection = GetConnection())
             {
-                connection.Open();
+                await connection.OpenAsync();
 
                 using (var command = new MySqlCommand("SELECT COUNT(PartNo) AS ItemCount FROM Item", connection))
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    if (reader.Read())
+                    if (await reader.ReadAsync())
                     {
+                        string itemCountString = reader["ItemCount"].ToString();
                         if (!reader.IsDBNull(reader.GetOrdinal("ItemCount")))
                         {
-                            itemCount = reader.GetInt32("ItemCount");
+                            itemCount = int.Parse(itemCountString);
                         }
                     }
                 }
@@ -144,22 +145,23 @@ namespace KAP_InventoryManager.Repositories
         }
 
 
-        public int GetOutOfStockCount()
+        public async Task<int> GetOutOfStockCount()
         {
             int itemCount = 0;
 
             using (var connection = GetConnection())
             {
-                connection.Open();
+                await connection.OpenAsync();
 
                 using (var command = new MySqlCommand("SELECT COUNT(PartNo) AS ItemCount FROM Item WHERE QtyInHand = 0", connection))
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    if (reader.Read())
+                    if (await reader.ReadAsync())
                     {
+                        string itemCountString = reader["ItemCount"].ToString();
                         if (!reader.IsDBNull(reader.GetOrdinal("ItemCount")))
                         {
-                            itemCount = reader.GetInt32("ItemCount");
+                            itemCount = int.Parse(itemCountString);
                         }
                     }
                 }
@@ -173,22 +175,23 @@ namespace KAP_InventoryManager.Repositories
             throw new NotImplementedException();
         }
 
-        public int GetCategoryCount()
+        public async Task<int> GetCategoryCount()
         {
             int categoryCount = 0;
 
             using (var connection = GetConnection())
             {
-                connection.Open();
+                await connection.OpenAsync();
 
                 using (var command = new MySqlCommand("SELECT COUNT(*) AS CategoryCount FROM BrandCategory", connection))
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    if (reader.Read())
+                    if (await reader.ReadAsync())
                     {
+                        string categoryCountString = reader["CategoryCount"].ToString();
                         if (!reader.IsDBNull(reader.GetOrdinal("CategoryCount")))
                         {
-                            categoryCount = reader.GetInt32("CategoryCount");
+                            categoryCount = int.Parse(categoryCountString);
                         }
                     }
                 }

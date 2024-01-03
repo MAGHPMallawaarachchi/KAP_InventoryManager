@@ -15,10 +15,10 @@ namespace KAP_InventoryManager.Model
         ItemModel GetByPartNo(string partNo);
         IEnumerable<ItemModel> GetAll();
         IEnumerable<InventoryItemModel> GetAllInventoryItems();
-        int GetItemCount();
-        int GetOutOfStockCount();
+        Task<int> GetItemCount();
+        Task<int> GetOutOfStockCount();
         int GetLowInStockCount();
-        int GetCategoryCount();
+        Task<int> GetCategoryCount();
         //...
     }
 }

@@ -54,13 +54,13 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
             PopulateInventorySummary();
         }
 
-        private void PopulateInventorySummary()
+        private async void PopulateInventorySummary()
         {
             try
             {
-                ItemCount = ItemRepository.GetItemCount();
-                CategoryCount = ItemRepository.GetCategoryCount();
-                OutOfStockCount = ItemRepository.GetOutOfStockCount();
+                ItemCount = await ItemRepository.GetItemCount();
+                CategoryCount = await ItemRepository.GetCategoryCount();
+                OutOfStockCount = await ItemRepository.GetOutOfStockCount();
             }
             catch(MySqlException ex)
             {
