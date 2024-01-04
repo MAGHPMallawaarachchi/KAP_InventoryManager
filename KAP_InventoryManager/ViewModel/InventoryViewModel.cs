@@ -23,6 +23,27 @@ namespace KAP_InventoryManager.ViewModel
         private IEnumerable<InventoryItemModel> _inventoryItems;
         private InventoryItemModel _selectedInventoryItem;
         private ItemModel _item;
+        private bool _isCheckedOverview = true;
+        private bool _isCheckedDetails = false;
+
+        public bool IsCheckedOverview
+        {
+            get { return _isCheckedOverview; }
+            set
+            {
+                _isCheckedOverview = value;
+                OnPropertyChanged(nameof(IsCheckedOverview));
+            }
+        }
+
+        public bool IsCheckedDetails { 
+            get { return _isCheckedDetails; }
+            set
+            {
+                _isCheckedDetails = value;
+                OnPropertyChanged(nameof(IsCheckedDetails));
+            }
+        }
 
         public ItemModel SelectedItem
         {
@@ -86,9 +107,10 @@ namespace KAP_InventoryManager.ViewModel
             ShowDetailsViewCommand = new ViewModelCommand(ExecuteShowDetailsViewCommand);
             ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);
 
-            //default view
-            ExecuteShowOverviewViewCommand(null);
             PopulateDataGrid();
+            SelectedInventoryItem = InventoryItems?.FirstOrDefault();
+
+            ExecuteShowOverviewViewCommand(null); 
         }
 
         private void PopulateDataGrid()
@@ -118,11 +140,16 @@ namespace KAP_InventoryManager.ViewModel
             };
 
             Messenger.Default.Send(item);
+
             CurrentChildView = detailsViewModel;
+            IsCheckedDetails = true;
+            IsCheckedOverview = false;
         }
 
         private void ExecuteShowOverviewViewCommand(object obj)
         {
+            IsCheckedOverview = true;
+            IsCheckedDetails = false;
             CurrentChildView = new OverviewViewModel();
         }
 

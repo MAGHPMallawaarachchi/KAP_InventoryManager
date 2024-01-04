@@ -21,7 +21,7 @@ namespace KAP_InventoryManager.ViewModel
         private string _errorMessage;
         private bool _isViewVisible = true;
 
-        private IUserRepository UserRepository;
+        private readonly IUserRepository UserRepository;
 
         public string Username {
             get
