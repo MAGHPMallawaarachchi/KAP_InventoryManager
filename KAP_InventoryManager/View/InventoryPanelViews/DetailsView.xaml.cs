@@ -1,4 +1,6 @@
-﻿using System;
+﻿using KAP_InventoryManager.Model;
+using KAP_InventoryManager.ViewModel.InventoryPanelViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

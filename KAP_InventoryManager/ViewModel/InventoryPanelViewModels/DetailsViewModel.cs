@@ -1,33 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using GalaSoft.MvvmLight.Messaging;
+using KAP_InventoryManager.Model;
+using KAP_InventoryManager.Repositories;
+using MySql.Data.MySqlClient;
+using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 {
     public class DetailsViewModel : ViewModelBase
     {
-        private string _partNumber;
+        private ItemModel _item;
 
-        public string PartNumber
+        public ItemModel Item
         {
-            get { return _partNumber; }
+            get { return _item; }
             set
             {
-                _partNumber = value;
-                OnPropertyChanged(nameof(PartNumber));
+                if (_item != value)
+                {
+                    _item = value;
+                    OnPropertyChanged(nameof(Item));
+                }
             }
-        }
-
-        public DetailsViewModel(string partNumber)
-        {
-            PartNumber = partNumber;
         }
 
         public DetailsViewModel()
         {
-            
+            Messenger.Default.Register<ItemModel>(this, HandleItemMessage);
+        }
+
+        private void HandleItemMessage(ItemModel item)
+        {
+            Item = item;
         }
     }
+
 }

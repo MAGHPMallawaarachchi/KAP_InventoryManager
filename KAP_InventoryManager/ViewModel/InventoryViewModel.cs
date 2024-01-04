@@ -1,4 +1,5 @@
-﻿using KAP_InventoryManager.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
 using KAP_InventoryManager.ViewModel.InventoryPanelViewModels;
 using MySql.Data.MySqlClient;
@@ -21,6 +22,20 @@ namespace KAP_InventoryManager.ViewModel
         private ViewModelBase _currentChildView;       
         private IEnumerable<InventoryItemModel> _inventoryItems;
         private InventoryItemModel _selectedInventoryItem;
+        private ItemModel _item;
+
+        public ItemModel SelectedItem
+        {
+            get { return _item; }
+            set
+            {
+                if (_item != value)
+                {
+                    _item = value;
+                    OnPropertyChanged(nameof(SelectedItem));
+                }
+            }
+        }
 
         public IEnumerable<InventoryItemModel> InventoryItems
         {
@@ -53,8 +68,7 @@ namespace KAP_InventoryManager.ViewModel
                 _selectedInventoryItem = value;
                 OnPropertyChanged(nameof(SelectedInventoryItem));
 
-                // Show the details view with the selected part number
-                ExecuteShowDetailsViewCommand(_selectedInventoryItem?.PartNo);
+                ExecuteShowDetailsViewCommand(null);
             }
         }
 
@@ -96,19 +110,59 @@ namespace KAP_InventoryManager.ViewModel
 
         private void ExecuteShowDetailsViewCommand(object obj)
         {
-            if (obj is string partNumber && !string.IsNullOrEmpty(partNumber))
+            ItemModel item = LoadItemData();
+
+            DetailsViewModel detailsViewModel = new DetailsViewModel
             {
-                CurrentChildView = new DetailsViewModel(partNumber);
-            }
-            else
-            {
-                MessageBox.Show("Something went wrong!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                Item = item
+            };
+
+            Messenger.Default.Send(item);
+            CurrentChildView = detailsViewModel;
         }
 
         private void ExecuteShowOverviewViewCommand(object obj)
         {
             CurrentChildView = new OverviewViewModel();
+        }
+
+        public ItemModel LoadItemData()
+        {
+            try
+            {
+                var item = ItemRepository.GetByPartNo(SelectedInventoryItem.PartNo);
+
+                if (item != null)
+                {
+                    SelectedItem = new ItemModel
+                    {
+                        PartNo = item.PartNo,
+                        OEMNo = item.OEMNo,
+                        Description = item.Description,
+                        BrandID = item.BrandID,
+                        Category = item.Category,
+                        SupplierID = item.SupplierID,
+                        TotalQty = item.TotalQty,
+                        QtyInHand = item.QtyInHand,
+                        QtySold = item.QtySold,
+                        BuyingPrice = item.BuyingPrice,
+                        UnitPrice = item.UnitPrice
+                    };
+
+                    return item;
+
+                }
+                else
+                {
+                    Console.WriteLine("No item found");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading item data: {ex.Message}");
+                return null;
+            }
         }
     }
 }

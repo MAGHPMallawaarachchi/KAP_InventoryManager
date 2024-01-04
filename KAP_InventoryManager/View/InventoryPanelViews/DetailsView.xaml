@@ -10,7 +10,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="670" d:DesignWidth="940"
              Background="Transparent">
-    
+
     <UserControl.DataContext>
         <viewModel:DetailsViewModel/>
     </UserControl.DataContext>
@@ -44,25 +44,26 @@
                                 <Grid>
                                     <StackPanel Orientation="Vertical"
                                     HorizontalAlignment="Left">
-                                        <TextBlock Text="{Binding PartNumber}" 
-                                       Style="{StaticResource numbers}"/>
-                                        <TextBlock Text="Steering Gear Boot"
-                                       Style="{StaticResource sub-header}"/>
+                                        <TextBlock x:Name="txtPartNumber"
+                                                   Text="{Binding Item.PartNo}" 
+                                                   Style="{StaticResource numbers}"/>
+                                        <TextBlock Text="{Binding Item.Category, Mode=TwoWay}"
+                                                   Style="{StaticResource sub-header}"/>
                                     </StackPanel>
                                     <Border Background="Transparent" 
-                                BorderBrush="{StaticResource Blue}"
-                                CornerRadius="5"
-                                BorderThickness="1.5"
-                                Height="25"
-                                VerticalAlignment="Top"
-                                HorizontalAlignment="Right">
-                                        <TextBlock Text="Seiki" 
-                                       Foreground="{StaticResource Blue}"
-                                       FontFamily="Inter"
-                                       FontWeight="SemiBold"
-                                       FontSize="14"
-                                       VerticalAlignment="Center"
-                                       Margin="10,0,10,0"/>
+                                            BorderBrush="{StaticResource Blue}"
+                                            CornerRadius="5"
+                                            BorderThickness="1.5"
+                                            Height="25"
+                                            VerticalAlignment="Top"
+                                            HorizontalAlignment="Right">
+                                        <TextBlock Text="{Binding Item.BrandID}" 
+                                                   Foreground="{StaticResource Blue}"
+                                                   FontFamily="Inter"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="14"
+                                                   VerticalAlignment="Center"
+                                                   Margin="10,0,10,0"/>
                                     </Border>
                                 </Grid>
                                 <Grid Height="90" Margin="0,15,0,0">
@@ -81,14 +82,14 @@
                                    Style="{StaticResource regular-text}"/>
                                     <TextBlock Text=":" Grid.Column="1"
                                    Style="{StaticResource regular-text}"/>
-                                    <TextBlock Text="45535-0K010" Grid.Column="2"
+                                    <TextBlock Text="{Binding Item.OEMNo}" Grid.Column="2"
                                    Style="{StaticResource regular-text}"/>
 
                                     <TextBlock Text="Description" Grid.Row="1"
                                    Style="{StaticResource regular-text}"/>
                                     <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
                                    Style="{StaticResource regular-text}"/>
-                                    <TextBlock Text="TOYOTA HILUX KUN 15 R/H" 
+                                    <TextBlock Text="{Binding Item.Description}" 
                                    Grid.Column="2" Grid.Row="1"
                                    Style="{StaticResource regular-text}"/>
 
@@ -96,7 +97,7 @@
                                    Style="{StaticResource regular-text}"/>
                                     <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
                                    Style="{StaticResource regular-text}"/>
-                                    <TextBlock Text="Chai Mongkol" 
+                                    <TextBlock Text="{Binding Item.SupplierID}" 
                                    Grid.Column="2" Grid.Row="2"
                                    Style="{StaticResource regular-text}"/>
 
@@ -112,27 +113,65 @@
                                     <ColumnDefinition/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
+                              
+                                <StackPanel Orientation="Horizontal"
+                                            Grid.Column="0">
+                                    <Border Background="#284B32" 
+                                            CornerRadius="6"        
+                                            Height="42"        
+                                            Width="42">
+                                        <fa:IconImage Icon="BoxesStacked"                  
+                                              Foreground="{StaticResource Green}"
+                                              Margin="6"/>
+                                    </Border>
+                                    
+                                    <StackPanel Orientation="Vertical"             
+                                        Margin="6,6,0,0">
+                                        <TextBlock Text="Total Quantity"                
+                                           Style="{StaticResource regular-text}"/>
+                                        <TextBlock Text="{Binding Item.TotalQty}"
+                                           Style="{StaticResource numbers}"/>
+                                    </StackPanel>
+                                </StackPanel>
 
-                                <customcontrols:NumberCard BackColor="#284B32"
-                           IconColor="{StaticResource Green}"
-                           Text="Total Quantity"
-                           Value="1000"
-                           Icon="Tag"
-                           Grid.Column="0"
-                           Margin="0,0,20,0"/>
-                                <customcontrols:NumberCard BackColor="#233D5E"
-                           IconColor="{StaticResource Blue}"
-                           Text="Quantity In Hand"
-                           Value="400"
-                           Icon="LayerGroup"
-                           Grid.Column="1"
-                           Margin="0,0,20,0"/>
-                                <customcontrols:NumberCard BackColor="#5F401B"
-                           IconColor="{StaticResource Orange}"
-                           Text="Quantity Sold"
-                           Value="600"
-                           Icon="HourglassHalf"
-                           Grid.Column="2"/>
+                                <StackPanel Orientation="Horizontal"
+                                            Grid.Column="1">
+                                    <Border Background="#233D5E" 
+                                            CornerRadius="6"        
+                                            Height="42"        
+                                            Width="42">
+                                        <fa:IconImage Icon="Box"                  
+                                              Foreground="{StaticResource Blue}"               
+                                              Margin="6"/>
+                                    </Border>
+                                    <StackPanel Orientation="Vertical"             
+                                                Margin="6,6,0,0">
+                                        <TextBlock Text="Quantity In Hand"                
+                                                   Style="{StaticResource regular-text}"/>
+                                        <TextBlock Text="{Binding Item.QtyInHand}"
+                                                   Style="{StaticResource numbers}"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal"
+                                            Grid.Column="2">
+                                    <Border Background="#403F64" 
+                                            CornerRadius="6"        
+                                            Height="42"        
+                                            Width="42">
+                                        <fa:IconImage Icon="Tag"                  
+                                              Foreground="#908AFF"             
+                                              Margin="6"/>
+                                    </Border>
+                                    <StackPanel Orientation="Vertical"             
+                                                Margin="6,6,0,0">
+                                        <TextBlock Text="Quantity Sold"                
+                                                   Style="{StaticResource regular-text}"/>
+                                        <TextBlock Text="{Binding Item.QtySold}"
+                                                   Style="{StaticResource numbers}"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                
                             </Grid>
                         </StackPanel>
                     </Border>
@@ -162,19 +201,23 @@
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Text="Buying Price"
-                               Style="{StaticResource regular-text}"/>
+                                           Style="{StaticResource regular-text}"/>
+                                
                                 <TextBlock Text=":" Grid.Column="1"
-                               Style="{StaticResource regular-text}"/>
-                                <TextBlock Text="Rs.650.00" Grid.Column="2"
-                               Style="{StaticResource regular-text}"/>
+                                           Style="{StaticResource regular-text}"/>
+                                
+                                <TextBlock Text="{Binding Item.BuyingPrice}" Grid.Column="2"
+                                           Style="{StaticResource regular-text}"/>
 
-                                <TextBlock Text="Description" Grid.Row="1"
-                               Style="{StaticResource regular-text}"/>
+                                <TextBlock Text="Unit Price" Grid.Row="1"
+                                           Style="{StaticResource regular-text}"/>
+                                
                                 <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
-                               Style="{StaticResource regular-text}"/>
-                                <TextBlock Text="Rs.1,475.00" 
-                               Grid.Column="2" Grid.Row="1"
-                               Style="{StaticResource regular-text}"/>
+                                           Style="{StaticResource regular-text}"/>
+                                
+                                <TextBlock Text="{Binding Item.UnitPrice}" 
+                                           Grid.Column="2" Grid.Row="1"
+                                           Style="{StaticResource regular-text}"/>
                             </Grid>
                         </StackPanel>
                     </Border>
