@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -59,13 +60,17 @@ namespace KAP_InventoryManager.Repositories
             using (var command = new MySqlCommand("SELECT * FROM Item", connection))
             {
                 connection.Open();
+                int counter = 0;
 
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
+                        counter++;
+
                         ItemModel item = new ItemModel()
                         {
+                            Id = counter,
                             PartNo = reader["PartNo"].ToString(),
                             OEMNo = reader["OemNo"].ToString(),
                             Description = reader["Description"].ToString(),
@@ -77,34 +82,6 @@ namespace KAP_InventoryManager.Repositories
                             QtyInHand = (Int32)reader["QtyInHand"],
                             BuyingPrice = (Decimal)reader["BuyingPrice"],
                             UnitPrice = (Decimal)reader["UnitPrice"]
-                        };
-
-                        items.Add(item);
-                    }
-                }
-            }
-            return items;
-        }
-
-        public IEnumerable<InventoryItemModel> GetAllInventoryItems()
-        {
-            List<InventoryItemModel> items = new List<InventoryItemModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("GetItemList", connection))
-            {
-                command.CommandType = CommandType.StoredProcedure;
-                connection.Open();
-
-                using (var reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        InventoryItemModel item = new InventoryItemModel()
-                        {
-                            AutoID = (Int32)reader["AutoID"],
-                            PartNo = reader["PartNo"].ToString(),
-                            QtyInHand = (Int32)reader["QtyInHand"]
                         };
 
                         items.Add(item);

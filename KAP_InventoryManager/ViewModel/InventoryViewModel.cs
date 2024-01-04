@@ -20,9 +20,9 @@ namespace KAP_InventoryManager.ViewModel
         private readonly IItemRepository ItemRepository;
 
         private ViewModelBase _currentChildView;       
-        private IEnumerable<InventoryItemModel> _inventoryItems;
-        private InventoryItemModel _selectedInventoryItem;
-        private ItemModel _item;
+        private IEnumerable<ItemModel> _items;
+        private ItemModel _selectedItem;
+
         private bool _isCheckedOverview = true;
         private bool _isCheckedDetails = false;
 
@@ -45,26 +45,25 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        public ItemModel SelectedItem
+
+        public IEnumerable<ItemModel> Items
         {
-            get { return _item; }
+            get { return _items; }
             set
             {
-                if (_item != value)
-                {
-                    _item = value;
-                    OnPropertyChanged(nameof(SelectedItem));
-                }
+                _items = value;
+                OnPropertyChanged(nameof(Items));
             }
         }
-
-        public IEnumerable<InventoryItemModel> InventoryItems
+        public ItemModel SelectedItem
         {
-            get { return _inventoryItems; }
+            get { return _selectedItem; }
             set
             {
-                _inventoryItems = value;
-                OnPropertyChanged(nameof(InventoryItems));
+                _selectedItem = value;
+                OnPropertyChanged(nameof(SelectedItem));
+
+                ExecuteShowDetailsViewCommand(null);
             }
         }
 
@@ -79,17 +78,6 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _currentChildView = value;
                 OnPropertyChanged(nameof(CurrentChildView));
-            }
-        }
-        public InventoryItemModel SelectedInventoryItem
-        {
-            get { return _selectedInventoryItem; }
-            set
-            {
-                _selectedInventoryItem = value;
-                OnPropertyChanged(nameof(SelectedInventoryItem));
-
-                ExecuteShowDetailsViewCommand(null);
             }
         }
 
@@ -107,17 +95,17 @@ namespace KAP_InventoryManager.ViewModel
             ShowDetailsViewCommand = new ViewModelCommand(ExecuteShowDetailsViewCommand);
             ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);
 
-            PopulateDataGrid();
-            SelectedInventoryItem = InventoryItems?.FirstOrDefault();
+            PopulateListBox();
+            SelectedItem = Items?.FirstOrDefault();
 
             ExecuteShowOverviewViewCommand(null); 
         }
 
-        private void PopulateDataGrid()
+        private void PopulateListBox()
         {
             try
             {            
-                InventoryItems = ItemRepository.GetAllInventoryItems();
+                Items = ItemRepository.GetAll();
             }
             catch (MySqlException ex)
             {
@@ -132,14 +120,13 @@ namespace KAP_InventoryManager.ViewModel
 
         private void ExecuteShowDetailsViewCommand(object obj)
         {
-            ItemModel item = LoadItemData();
 
             DetailsViewModel detailsViewModel = new DetailsViewModel
             {
-                Item = item
+                Item = SelectedItem
             };
 
-            Messenger.Default.Send(item);
+            Messenger.Default.Send(SelectedItem);
 
             CurrentChildView = detailsViewModel;
             IsCheckedDetails = true;
@@ -151,45 +138,6 @@ namespace KAP_InventoryManager.ViewModel
             IsCheckedOverview = true;
             IsCheckedDetails = false;
             CurrentChildView = new OverviewViewModel();
-        }
-
-        public ItemModel LoadItemData()
-        {
-            try
-            {
-                var item = ItemRepository.GetByPartNo(SelectedInventoryItem.PartNo);
-
-                if (item != null)
-                {
-                    SelectedItem = new ItemModel
-                    {
-                        PartNo = item.PartNo,
-                        OEMNo = item.OEMNo,
-                        Description = item.Description,
-                        BrandID = item.BrandID,
-                        Category = item.Category,
-                        SupplierID = item.SupplierID,
-                        TotalQty = item.TotalQty,
-                        QtyInHand = item.QtyInHand,
-                        QtySold = item.QtySold,
-                        BuyingPrice = item.BuyingPrice,
-                        UnitPrice = item.UnitPrice
-                    };
-
-                    return item;
-
-                }
-                else
-                {
-                    Console.WriteLine("No item found");
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error loading item data: {ex.Message}");
-                return null;
-            }
         }
     }
 }

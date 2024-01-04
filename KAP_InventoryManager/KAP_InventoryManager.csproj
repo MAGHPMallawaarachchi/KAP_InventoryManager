@@ -383,7 +383,6 @@
     </Compile>
     <Compile Include="Model\BrandModel.cs" />
     <Compile Include="Model\IItemRepository.cs" />
-    <Compile Include="Model\InventoryItemModel.cs" />
     <Compile Include="Model\ItemModel.cs" />
     <Compile Include="Model\IUserRepository.cs" />
     <Compile Include="Model\SupplierModel.cs" />
