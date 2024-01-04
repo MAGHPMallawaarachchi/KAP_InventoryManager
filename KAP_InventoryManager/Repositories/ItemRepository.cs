@@ -116,7 +116,38 @@ namespace KAP_InventoryManager.Repositories
 
         public ItemModel GetByPartNo(string partNo)
         {
-            throw new NotImplementedException();
+            ItemModel item = null;
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SELECT * FROM Item WHERE PartNo = @PartNo", connection))
+            {
+                command.Parameters.Add("@PartNo", MySqlDbType.VarChar).Value = partNo;
+
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        item = new ItemModel()
+                        {
+                            PartNo = reader["PartNo"].ToString(),
+                            OEMNo = reader["OEMNo"] is DBNull ? null : reader["OEMNo"].ToString(),
+                            Description = reader["Description"] is DBNull ? null : reader["Description"].ToString(),
+                            BrandID = reader["BrandID"] is DBNull ? null : reader["BrandID"].ToString(),
+                            Category = reader["Category"] is DBNull ? null : reader["Category"].ToString(),
+                            SupplierID = reader["SupplierID"] is DBNull ? null : reader["SupplierID"].ToString(),
+                            TotalQty = reader["TotalQty"] is DBNull ? 0 : Convert.ToInt32(reader["TotalQty"]),
+                            QtyInHand = reader["QtyInHand"] is DBNull ? 0 : Convert.ToInt32(reader["QtyInHand"]),
+                            QtySold = reader["QtySold"] is DBNull ? 0 : Convert.ToInt32(reader["QtySold"]),
+                            BuyingPrice = reader["BuyingPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["BuyingPrice"]),
+                            UnitPrice = reader["UnitPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["UnitPrice"]),
+                        };
+                    }
+                }
+            }
+
+            return item;
         }
 
         public async Task<int> GetItemCount()
