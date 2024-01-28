@@ -18,33 +18,23 @@ namespace KAP_InventoryManager.ViewModel
     public class InventoryViewModel : ViewModelBase
     {
         private readonly IItemRepository ItemRepository;
-
-        private ViewModelBase _currentChildView;       
+     
         private IEnumerable<ItemModel> _items;
         private ItemModel _selectedItem;
 
-        private bool _isCheckedOverview = true;
-        private bool _isCheckedDetails = false;
+        public ObservableCollection<ViewModelBase> ViewModels { get; } = new ObservableCollection<ViewModelBase>();
 
-        public bool IsCheckedOverview
+        private ViewModelBase _selectedViewModel;
+
+        public ViewModelBase SelectedViewModel
         {
-            get { return _isCheckedOverview; }
+            get => _selectedViewModel;
             set
             {
-                _isCheckedOverview = value;
-                OnPropertyChanged(nameof(IsCheckedOverview));
+                _selectedViewModel = value;
+                OnPropertyChanged(nameof(SelectedViewModel));
             }
         }
-
-        public bool IsCheckedDetails { 
-            get { return _isCheckedDetails; }
-            set
-            {
-                _isCheckedDetails = value;
-                OnPropertyChanged(nameof(IsCheckedDetails));
-            }
-        }
-
 
         public IEnumerable<ItemModel> Items
         {
@@ -67,20 +57,6 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        public ViewModelBase CurrentChildView
-        {
-            get
-            {
-                return _currentChildView;
-            }
-
-            set
-            {
-                _currentChildView = value;
-                OnPropertyChanged(nameof(CurrentChildView));
-            }
-        }
-
         public ICommand ShowOverviewViewCommand { get; }
         public ICommand ShowDetailsViewCommand { get; }
         public ICommand ShowTransactionsViewCommand { get; }
@@ -90,15 +66,19 @@ namespace KAP_InventoryManager.ViewModel
         {
             ItemRepository = new ItemRepository();
 
-            //Initialize commands
+            // Initialize and add your view models to the collection
+            ViewModels.Add(new OverviewViewModel());
+            ViewModels.Add(new DetailsViewModel());
+            ViewModels.Add(new TransactionsViewModel());
+
             ShowOverviewViewCommand = new ViewModelCommand(ExecuteShowOverviewViewCommand);
             ShowDetailsViewCommand = new ViewModelCommand(ExecuteShowDetailsViewCommand);
             ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);
 
-            PopulateListBox();
-            SelectedItem = Items?.FirstOrDefault();
+            // Set the default selected view model
+            SelectedViewModel = ViewModels.First();
 
-            ExecuteShowOverviewViewCommand(null); 
+            PopulateListBox();
         }
 
         private void PopulateListBox()
@@ -115,29 +95,19 @@ namespace KAP_InventoryManager.ViewModel
 
         private void ExecuteShowTransactionsViewCommand(object obj)
         {
-            CurrentChildView = new TransactionsViewModel();
+            SelectedViewModel = ViewModels.OfType<TransactionsViewModel>().FirstOrDefault();
         }
 
         private void ExecuteShowDetailsViewCommand(object obj)
         {
-
-            DetailsViewModel detailsViewModel = new DetailsViewModel
-            {
-                Item = SelectedItem
-            };
-
             Messenger.Default.Send(SelectedItem);
 
-            CurrentChildView = detailsViewModel;
-            IsCheckedDetails = true;
-            IsCheckedOverview = false;
+            SelectedViewModel = ViewModels.OfType<DetailsViewModel>().FirstOrDefault();
         }
 
         private void ExecuteShowOverviewViewCommand(object obj)
         {
-            IsCheckedOverview = true;
-            IsCheckedDetails = false;
-            CurrentChildView = new OverviewViewModel();
+            SelectedViewModel = ViewModels.OfType<OverviewViewModel>().FirstOrDefault();
         }
     }
 }

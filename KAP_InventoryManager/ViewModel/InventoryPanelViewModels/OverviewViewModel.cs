@@ -12,6 +12,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 {
     public class OverviewViewModel : ViewModelBase
     {
+        public string DisplayName => "Overview";
         private readonly IItemRepository ItemRepository;
 
         private int _itemCount;
