@@ -12,6 +12,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 {
     public class DetailsViewModel : ViewModelBase
     {
+        public string DisplayName => "Details";
         private ItemModel _item;
 
         public ItemModel Item

@@ -8,5 +8,6 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 {
     public class TransactionsViewModel : ViewModelBase
     {
+        public string DisplayName => "Transactions";
     }
 }

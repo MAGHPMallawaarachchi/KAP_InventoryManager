@@ -134,45 +134,57 @@
                 </StackPanel>
             </Border>
             <Grid Grid.Column="1" Margin="20,0,0,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="25"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal" Margin="26,0,0,0">
-                    <RadioButton 
-                        Style="{StaticResource panelButton}"
-                        Cursor="Hand"
-                        IsChecked="{Binding IsCheckedOverview}"
-                        Margin="0,0,8,0"
-                        Command="{Binding ShowOverviewViewCommand}">
-                        <TextBlock Text="Overview" 
-                                   Style="{StaticResource button-text}"
-                                   Margin="8"/>
-                    </RadioButton>
-                    <RadioButton 
-                        Style="{StaticResource panelButton}"
-                        Cursor="Hand"
-                        IsChecked="{Binding IsCheckedDetails}"
-                        Margin="0,0,8,0"
-                        Command="{Binding ShowDetailsViewCommand}">
-                        <TextBlock Text="Details" 
-                                   Style="{StaticResource button-text}"
-                                   Margin="8"/>
-                    </RadioButton>
-                    <RadioButton 
-                        Style="{StaticResource panelButton}"
-                        Cursor="Hand"
-                        Margin="0,0,8,0"
-                        Command="{Binding ShowTransactionsViewCommand}">
-                        <TextBlock Text="Transactions" 
-                                   Style="{StaticResource button-text}"
-                                   Margin="8"/>
-                    </RadioButton>
-                </StackPanel>
+                <TabControl ItemsSource="{Binding ViewModels}" 
+                            SelectedItem="{Binding SelectedViewModel}"
+                            Background="Transparent"
+                            BorderBrush="Transparent"
+                            BorderThickness="0"
+                            Foreground="Transparent">
 
-                <ContentControl Grid.Row="1" 
-                                Content="{Binding CurrentChildView}"/>
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName}"
+                                       Style="{StaticResource button-text}"/>
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <ContentControl Content="{Binding}"/>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+
+                    <TabControl.ItemContainerStyle>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TabItem">
+                                        <Grid>
+                                            <Border x:Name="TabBorder" 
+                                                    Background="{StaticResource Color3}"
+                                                    CornerRadius="5,5,0,0"
+                                                    Margin="8,0,0,-2"
+                                                    Cursor="Hand"
+                                                    Height="25"
+                                                    BorderThickness="0">
+                                                <ContentPresenter ContentSource="Header" Margin="8"/>
+                                            </Border>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="TabBorder" 
+                                                        Property="Background" 
+                                                        Value="{StaticResource Color2}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TabControl.ItemContainerStyle>
+                </TabControl>
+
             </Grid>
         </Grid>
     </Grid>
