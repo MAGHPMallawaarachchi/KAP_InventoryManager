@@ -28,6 +28,9 @@
         <DataTemplate DataType="{x:Type viewModel:InventoryViewModel}">
             <locals:InventoryView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:CustomersViewModel}">
+            <locals:CustomersView/>
+        </DataTemplate>
     </Window.Resources>
     
     <Grid>

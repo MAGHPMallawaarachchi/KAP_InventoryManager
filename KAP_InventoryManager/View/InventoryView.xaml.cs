@@ -31,15 +31,15 @@ namespace KAP_InventoryManager.View
             DataContext = new InventoryViewModel();
         }
 
-        public void ExecuteSearch(string searchText)
+/*        public void ExecuteSearch(string searchText)
         {
 
         }
-
-        private void OnSearchTextChanged(object sender, string searchText)
+*/
+/*        private void OnSearchTextChanged(object sender, string searchText)
         {
 
-        }
+        }*/
 
         private void AddItemButton_Click(object sender, RoutedEventArgs e)
         {

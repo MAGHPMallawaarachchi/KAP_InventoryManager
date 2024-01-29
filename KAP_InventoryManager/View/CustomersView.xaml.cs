@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KAP_InventoryManager.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,25 @@ namespace KAP_InventoryManager.View
     /// </summary>
     public partial class CustomersView : UserControl
     {
+        private double progressPercentage;
+        private CustomersViewModel viewModel;
+
         public CustomersView()
         {
             InitializeComponent();
+            viewModel = new CustomersViewModel();
+            DataContext = viewModel;
+            SetProgress(viewModel.ProgressPercentage);
         }
+
+        private void SetProgress(double percentage)
+        {
+            progressPercentage = Math.Max(0, Math.Min(100, percentage));
+
+            double angle = (360 * (100 - progressPercentage)) / 100;
+            ProgressBarClip.Rect = new Rect(0, 0, 100, 100);
+            ProgressBarClip.Transform = new RotateTransform(angle, 50, 0);
+        }
+
     }
 }

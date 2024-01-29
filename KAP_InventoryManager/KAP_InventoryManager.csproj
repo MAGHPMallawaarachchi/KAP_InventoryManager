@@ -382,6 +382,8 @@
       <DependentUpon>TextCard.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\BrandModel.cs" />
+    <Compile Include="Model\CustomerModel.cs" />
+    <Compile Include="Model\ICustomerRepository.cs" />
     <Compile Include="Model\IItemRepository.cs" />
     <Compile Include="Model\ItemModel.cs" />
     <Compile Include="Model\IUserRepository.cs" />

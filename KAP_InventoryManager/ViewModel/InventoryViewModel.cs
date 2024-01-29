@@ -53,7 +53,7 @@ namespace KAP_InventoryManager.ViewModel
                 _selectedItem = value;
                 OnPropertyChanged(nameof(SelectedItem));
 
-                ExecuteShowDetailsViewCommand(null);
+                Messenger.Default.Send(SelectedItem);
             }
         }
 
@@ -101,7 +101,6 @@ namespace KAP_InventoryManager.ViewModel
         private void ExecuteShowDetailsViewCommand(object obj)
         {
             Messenger.Default.Send(SelectedItem);
-
             SelectedViewModel = ViewModels.OfType<DetailsViewModel>().FirstOrDefault();
         }
 
