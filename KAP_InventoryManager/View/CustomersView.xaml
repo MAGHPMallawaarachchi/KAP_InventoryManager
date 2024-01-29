@@ -65,7 +65,7 @@
                         </Grid>
                     </Border>
 
-                    <!-- <ListBox ItemsSource="{Binding Customers}" 
+                    <ListBox ItemsSource="{Binding Customers}" 
                              SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
                              Background="Transparent"
                              BorderThickness="0"
@@ -89,14 +89,14 @@
                                             CornerRadius="3"
                                             Padding="8,2,8,2"
                                             Margin="0,0,12,0">
-                                        <TextBlock Text="{Binding CustomerId}"
+                                        <TextBlock Text="{Binding CustomerID}"
                                                    Style="{StaticResource button-text}"
                                                    HorizontalAlignment="Center"/>
                                     </Border>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
-                    </ListBox> -->
+                    </ListBox>
                 </StackPanel>
             </Border>
             

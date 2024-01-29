@@ -41,7 +41,31 @@ namespace KAP_InventoryManager.Repositories
 
         IEnumerable<CustomerModel> ICustomerRepository.GetAll()
         {
-            throw new NotImplementedException();
+            List<CustomerModel> customers = new List<CustomerModel>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SELECT CustomerID FROM Customer", connection))
+            {
+                connection.Open();
+                int counter = 0;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        counter++;
+
+                        CustomerModel customer = new CustomerModel()
+                        {
+                            Id = counter,
+                            CustomerID = reader["CustomerID"].ToString(),
+                        };
+
+                        customers.Add(customer);
+                    }
+                }
+            }
+            return customers;
         }
     }
 }

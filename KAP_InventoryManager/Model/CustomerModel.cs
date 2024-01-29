@@ -8,6 +8,7 @@ namespace KAP_InventoryManager.Model
 {
     public class CustomerModel
     {
+        public int? Id { get; set; }
         public string CustomerID { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
@@ -15,7 +16,7 @@ namespace KAP_InventoryManager.Model
         public string ContactNo { get; set; }
         public string PaymentType { get; set; }
         public decimal DebtLimit { get; set; }
-        public decimal TotalDebt { get; set;}
+        public decimal? TotalDebt { get; set;}
         public string RepID { get; set; }
     }
 }
