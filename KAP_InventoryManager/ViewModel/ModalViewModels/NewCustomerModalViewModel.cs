@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
+using System.Collections.ObjectModel;
 
 namespace KAP_InventoryManager.ViewModel.ModalViewModels
 {
@@ -21,6 +22,8 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private string _paymentType;
         private decimal _debtLimit;
         private string _repID;
+
+        public ObservableCollection<string> PaymentTypes { get; set; } = new ObservableCollection<string> { "CASH", "CREDIT" };
 
         private readonly ICustomerRepository CustomerRepository;
 
