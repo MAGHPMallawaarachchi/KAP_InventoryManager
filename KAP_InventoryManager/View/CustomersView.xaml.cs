@@ -1,4 +1,5 @@
-﻿using KAP_InventoryManager.ViewModel;
+﻿using KAP_InventoryManager.View.Modals;
+using KAP_InventoryManager.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,5 +42,10 @@ namespace KAP_InventoryManager.View
             ProgressBarClip.Transform = new RotateTransform(angle, 50, 0);
         }
 
+        private void AddCustomerButton_Click(object sender, RoutedEventArgs e)
+        {
+            var newCustomerModalWindow = new NewCustomerModal();
+            newCustomerModalWindow.ShowDialog();
+        }
     }
 }

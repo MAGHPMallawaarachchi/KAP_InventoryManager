@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace KAP_InventoryManager.Model
 {
-    internal class ICustomerRepository
+    internal interface ICustomerRepository
     {
+        void Add(CustomerModel customer);
+        IEnumerable<CustomerModel> GetAll();
     }
 }
