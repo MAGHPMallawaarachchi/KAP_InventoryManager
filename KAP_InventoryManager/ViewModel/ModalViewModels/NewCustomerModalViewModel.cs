@@ -19,11 +19,10 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private string _address;
         private string _city;
         private string _contactNo;
+        private string _email;
         private string _paymentType;
         private decimal _debtLimit;
         private string _repID;
-
-        public ObservableCollection<string> PaymentTypes { get; set; } = new ObservableCollection<string> { "CASH", "CREDIT" };
 
         private readonly ICustomerRepository CustomerRepository;
 
@@ -74,6 +73,16 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 _contactNo = value;
                 OnPropertyChanged(nameof(ContactNo));
+            }
+        }
+
+        public string Email
+        {
+            get { return _email; }
+            set
+            {
+                _email = value;
+                OnPropertyChanged(nameof(Email));
             }
         }
 
@@ -153,6 +162,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                     Address = Address,
                     City = City,
                     ContactNo = ContactNo,
+                    Email = Email,
                     PaymentType = PaymentType,
                     DebtLimit = DebtLimit,
                     RepID = RepID,
@@ -176,6 +186,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             Address = string.Empty;
             City = string.Empty;
             ContactNo = string.Empty;
+            Email = string.Empty;
             PaymentType = string.Empty;
             DebtLimit = 0;
             RepID = string.Empty;
