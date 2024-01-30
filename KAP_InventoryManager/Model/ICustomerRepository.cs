@@ -9,6 +9,6 @@ namespace KAP_InventoryManager.Model
     internal interface ICustomerRepository
     {
         void Add(CustomerModel customer);
-        IEnumerable<CustomerModel> GetAll();
+        Task<IEnumerable<CustomerModel>> GetAllAsync();
     }
 }

@@ -46,7 +46,7 @@ namespace KAP_InventoryManager.ViewModel
         {
             ProgressPercentage = 25;
             CustomerRepository = new CustomerRepository();
-            PopulateListBox();
+            PopulateListBoxAsync();
         }
 
         public double ProgressPercentage
@@ -59,11 +59,11 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private void PopulateListBox()
+        private async void PopulateListBoxAsync()
         {
             try
             {
-                Customers = CustomerRepository.GetAll();
+                Customers = await CustomerRepository.GetAllAsync();
             }
             catch (MySqlException ex)
             {

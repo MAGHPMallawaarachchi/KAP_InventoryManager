@@ -33,25 +33,24 @@ namespace KAP_InventoryManager.Repositories
 
                         command.ExecuteNonQuery();
                     }
-
                     transaction.Commit();
                 }
             }
         }
 
-        IEnumerable<CustomerModel> ICustomerRepository.GetAll()
+        public async Task<IEnumerable<CustomerModel>> GetAllAsync()
         {
             List<CustomerModel> customers = new List<CustomerModel>();
 
             using (var connection = GetConnection())
             using (var command = new MySqlCommand("SELECT CustomerID FROM Customer", connection))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 int counter = 0;
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         counter++;
 
