@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 using System.Collections.ObjectModel;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace KAP_InventoryManager.ViewModel.ModalViewModels
 {
@@ -171,6 +172,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 CustomerRepository.Add(newCustomer);
                 ClearTextBoxes();
                 MessageBox.Show("Customer added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                Messenger.Default.Send("NewCustomerAdded");
 
             }
             catch (MySqlException ex)

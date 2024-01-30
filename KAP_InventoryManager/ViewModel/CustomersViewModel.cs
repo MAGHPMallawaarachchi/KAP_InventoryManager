@@ -29,6 +29,8 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _customers = value;
                 OnPropertyChanged(nameof(Customers));
+
+                SelectedCustomer = Customers.FirstOrDefault();
             }
         }
         public CustomerModel SelectedCustomer
@@ -39,7 +41,10 @@ namespace KAP_InventoryManager.ViewModel
                 _selectedCustomer = value;
                 OnPropertyChanged(nameof(SelectedCustomer));
 
-                PopulateDetails();
+                if (SelectedCustomer != null)
+                {
+                    PopulateDetails();
+                }
             }
         }
 
@@ -58,6 +63,8 @@ namespace KAP_InventoryManager.ViewModel
             DebtPercentage = 25;
             CustomerRepository = new CustomerRepository();
             PopulateListBoxAsync();
+
+            Messenger.Default.Register<string>(this, OnMessageReceived);
         }
 
         public double DebtPercentage
@@ -75,7 +82,6 @@ namespace KAP_InventoryManager.ViewModel
             try
             {
                 Customers = await CustomerRepository.GetAllAsync();
-                SelectedCustomer = Customers.FirstOrDefault();
             }
             catch (MySqlException ex)
             {
@@ -105,6 +111,14 @@ namespace KAP_InventoryManager.ViewModel
             else
             {
                 DebtPercentage = 0;
+            }
+        }
+
+        private void OnMessageReceived(string message)
+        {
+            if (message == "NewCustomerAdded")
+            {
+                PopulateListBoxAsync();
             }
         }
     }
