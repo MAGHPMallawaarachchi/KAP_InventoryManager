@@ -10,5 +10,6 @@ namespace KAP_InventoryManager.Model
     {
         void Add(CustomerModel customer);
         Task<IEnumerable<CustomerModel>> GetAllAsync();
+        CustomerModel GetByCustomerID(string customerID);
     }
 }

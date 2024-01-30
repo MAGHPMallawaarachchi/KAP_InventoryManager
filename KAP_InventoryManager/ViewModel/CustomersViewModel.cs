@@ -19,7 +19,8 @@ namespace KAP_InventoryManager.ViewModel
 
         private IEnumerable<CustomerModel> _customers;
         private CustomerModel _selectedCustomer;
-        private double _progressPercentage;
+        private CustomerModel _currentCustomer;
+        private double _debtPercentage;
 
         public IEnumerable<CustomerModel> Customers
         {
@@ -38,24 +39,34 @@ namespace KAP_InventoryManager.ViewModel
                 _selectedCustomer = value;
                 OnPropertyChanged(nameof(SelectedCustomer));
 
-                Messenger.Default.Send(SelectedCustomer);
+                PopulateDetails();
+            }
+        }
+
+        public CustomerModel CurrentCustomer
+        {
+            get { return _currentCustomer; }
+            set
+            {
+                _currentCustomer = value;
+                OnPropertyChanged(nameof(CurrentCustomer));
             }
         }
 
         public CustomersViewModel() 
         {
-            ProgressPercentage = 25;
+            DebtPercentage = 25;
             CustomerRepository = new CustomerRepository();
             PopulateListBoxAsync();
         }
 
-        public double ProgressPercentage
+        public double DebtPercentage
         {
-            get { return _progressPercentage; }
+            get { return _debtPercentage; }
             set
             {
-                _progressPercentage = value;
-                OnPropertyChanged(nameof(ProgressPercentage));
+                _debtPercentage = value;
+                OnPropertyChanged(nameof(DebtPercentage));
             }
         }
 
@@ -64,10 +75,36 @@ namespace KAP_InventoryManager.ViewModel
             try
             {
                 Customers = await CustomerRepository.GetAllAsync();
+                SelectedCustomer = Customers.FirstOrDefault();
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show($"Failed to fetch customers. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void PopulateDetails()
+        {
+            try
+            {
+                CurrentCustomer = CustomerRepository.GetByCustomerID(SelectedCustomer.CustomerID);
+                CalculateDebtPercentage();
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to fetch customer's details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CalculateDebtPercentage()
+        {
+            if(CurrentCustomer.TotalDebt != 0 && CurrentCustomer.DebtLimit != 0)
+            {
+                DebtPercentage = (double)(CurrentCustomer.TotalDebt / CurrentCustomer.DebtLimit * 100);
+            }
+            else
+            {
+                DebtPercentage = 0;
             }
         }
     }

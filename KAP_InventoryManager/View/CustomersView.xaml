@@ -116,7 +116,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="SUMITH MOTORS" 
+                                <TextBlock Text="{Binding CurrentCustomer.Name}" 
                                            Style="{StaticResource card-header}"
                                            Margin="0,0,0,0"
                                            VerticalAlignment="Center"/>
@@ -128,7 +128,7 @@
                                         Height="25"
                                         VerticalAlignment="Center"
                                         Margin="20,0,0,0">
-                                    <TextBlock Text="CASH" 
+                                    <TextBlock Text="{Binding CurrentCustomer.PaymentType}" 
                                                Foreground="{StaticResource Blue}"
                                                FontFamily="Inter"
                                                FontWeight="SemiBold"
@@ -154,7 +154,7 @@
                                             CornerRadius="3"
                                             Padding="8,2,8,2"
                                             HorizontalAlignment="Left">
-                                        <TextBlock Text="SUMITH_KALUTARA"
+                                        <TextBlock Text="{Binding CurrentCustomer.CustomerID}"
                                                    Style="{StaticResource button-text}"
                                                    HorizontalAlignment="Center"/>
                                     </Border>
@@ -174,7 +174,7 @@
                                                    Style="{StaticResource regular-text}"/>
                                         <TextBlock Text=":" Grid.Column="1"
                                                    Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text="NO. 54, HEENATIYANGALA ROAD, NAGODA, KALUTARA" 
+                                        <TextBlock Text="{Binding CurrentCustomer.Address}" 
                                                    Grid.Column="2"
                                                    Style="{StaticResource regular-text}"/>
 
@@ -182,7 +182,7 @@
                                                    Style="{StaticResource regular-text}"/>
                                         <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
                                                    Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text="077-7172817" 
+                                        <TextBlock Text="{Binding CurrentCustomer.ContactNo}" 
                                                    Grid.Column="2" Grid.Row="1"
                                                    Style="{StaticResource regular-text}"/>
 
@@ -190,7 +190,7 @@
                                                    Style="{StaticResource regular-text}"/>
                                         <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
                                                    Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text="sumith@gmail.com" 
+                                        <TextBlock Text="{Binding CurrentCustomer.Email}" 
                                                    Grid.Column="2" Grid.Row="2"
                                                    Style="{StaticResource regular-text}"/>
 
@@ -225,7 +225,7 @@
                                                 <TextBlock Foreground="{StaticResource Color5}" 
                                                            FontSize="16" 
                                                            FontFamily="Inter"
-                                                           Text="{Binding ProgressPercentage}"/>
+                                                           Text="{Binding DebtPercentage}"/>
                                                 <TextBlock Foreground="{StaticResource Color5}" 
                                                            FontSize="16" 
                                                            FontFamily="Inter"
@@ -245,11 +245,19 @@
                                                 VerticalAlignment="Center">
                                         <TextBlock Style="{StaticResource card-header}"
                                                    Text="Debt Usage"/>
-                                        <TextBlock Style="{StaticResource numbers}"
-                                                   Text="Rs. 26,000.00"
-                                                   Margin="0,20,0,0"/>
-                                        <TextBlock Style="{StaticResource regular-text}"
-                                                   Text="of Rs. 100,000.00"/>
+                                        <StackPanel Orientation="Horizontal"
+                                                    Margin="0,15,0,0">
+                                            <TextBlock Style="{StaticResource numbers}"
+                                                       Text="Rs. "/>
+                                            <TextBlock Style="{StaticResource numbers}"
+                                                       Text="{Binding CurrentCustomer.TotalDebt}"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource regular-text}"
+                                                       Text="of Rs. "/>
+                                            <TextBlock Style="{StaticResource regular-text}"
+                                                       Text="{Binding CurrentCustomer.DebtLimit}"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
                                 
