@@ -8,9 +8,10 @@
              xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel"
              xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="725" d:DesignWidth="1200">
-    
+
     <UserControl.DataContext>
         <viewModel:CustomersViewModel/>
     </UserControl.DataContext>
@@ -205,20 +206,14 @@
                                     Padding="20">
                                 <StackPanel Orientation="Horizontal">
                                     <Grid x:Name="CircularProgressBar" 
-                                          Width="100" 
-                                          Height="100">
-                                        <Ellipse Width="100" 
-                                                 Height="100" 
-                                                 Stroke="{StaticResource Color3}" 
-                                                 StrokeThickness="7"/>
-                                        <Ellipse Width="100" 
-                                                 Height="100" 
-                                                 Stroke="{StaticResource Green}" 
-                                                 StrokeThickness="7">
-                                            <Ellipse.Clip>
-                                                <RectangleGeometry x:Name="ProgressBarClip"/>
-                                            </Ellipse.Clip>
-                                        </Ellipse>
+                                          Width="120" 
+                                          Height="120">
+                                        <lvc:PieChart x:Name="DebtChart" InnerRadius="42" StartingRotationAngle="0">
+                                            <lvc:PieChart.Series>
+                                                <lvc:PieSeries Title="DebtPercentage" Values="0" Fill="{StaticResource Green}"/>
+                                                <lvc:PieSeries Title="DebtRemainder" Values="100" Fill="{StaticResource Color3}"/>
+                                            </lvc:PieChart.Series>
+                                        </lvc:PieChart>
                                         <StackPanel HorizontalAlignment="Center" 
                                                     VerticalAlignment="Center">
                                             <StackPanel Orientation="Horizontal">
@@ -240,6 +235,8 @@
                                                        Margin="0,-2,0,0"/>
                                         </StackPanel>
                                     </Grid>
+                                    
+                                    
 
                                     <StackPanel Margin="20,0,0,0"
                                                 VerticalAlignment="Center">
@@ -262,6 +259,8 @@
                                 </StackPanel>
                                 
                             </Border>
+                            
+
                         </StackPanel>
                     </StackPanel>
                 </Border>

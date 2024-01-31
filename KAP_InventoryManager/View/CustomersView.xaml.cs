@@ -1,5 +1,6 @@
 ﻿using KAP_InventoryManager.View.Modals;
 using KAP_InventoryManager.ViewModel;
+using LiveCharts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,6 @@ namespace KAP_InventoryManager.View
     /// </summary>
     public partial class CustomersView : UserControl
     {
-        private double debtPercentage;
         private CustomersViewModel viewModel;
 
         public CustomersView()
@@ -30,16 +30,8 @@ namespace KAP_InventoryManager.View
             InitializeComponent();
             viewModel = new CustomersViewModel();
             DataContext = viewModel;
-            SetProgress(viewModel.DebtPercentage);
-        }
 
-        private void SetProgress(double percentage)
-        {
-            debtPercentage = Math.Max(0, Math.Min(100, percentage));
-
-            double angle = (360 * (100 - debtPercentage)) / 100;
-            ProgressBarClip.Rect = new Rect(0, 0, 100, 100);
-            ProgressBarClip.Transform = new RotateTransform(angle, 50, 0);
+            UpdateChart();
         }
 
         private void AddCustomerButton_Click(object sender, RoutedEventArgs e)
@@ -47,5 +39,12 @@ namespace KAP_InventoryManager.View
             var newCustomerModalWindow = new NewCustomerModal();
             newCustomerModalWindow.ShowDialog();
         }
+
+        private void UpdateChart()
+        {
+            List<double> chartValues = new List<double> { viewModel.DebtPercentage, viewModel.DebtRemainder };
+            DebtChart.Series[0].Values = new ChartValues<double>(chartValues);
+        }
+
     }
 }

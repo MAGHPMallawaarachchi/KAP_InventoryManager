@@ -17,7 +17,7 @@ namespace KAP_InventoryManager.Model
         public string ContactNo { get; set; }
         public string PaymentType { get; set; }
         public decimal DebtLimit { get; set; }
-        public decimal? TotalDebt { get; set;}
+        public decimal TotalDebt { get; set;}
         public string RepID { get; set; }
     }
 }

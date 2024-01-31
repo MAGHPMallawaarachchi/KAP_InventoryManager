@@ -92,8 +92,8 @@ namespace KAP_InventoryManager.Repositories
                             ContactNo = reader["ContactNo"] is DBNull ? null : reader["ContactNo"].ToString(),
                             Email = reader["Email"] is DBNull ? null : reader["Email"].ToString(),
                             PaymentType = reader["PaymentType"] is DBNull ? null : reader["PaymentType"].ToString(),
-                            DebtLimit = reader["DebtLimit"] is DBNull ? 0 : Convert.ToDecimal(reader["DebtLimit"]),
-                            TotalDebt = reader["TotalDebt"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalDebt"]),
+                            DebtLimit = reader["DebtLimit"] is DBNull ? 99 : Convert.ToDecimal(reader["DebtLimit"]),
+                            TotalDebt = reader["TotalDebt"] is DBNull ? 1 : Convert.ToDecimal(reader["TotalDebt"]),
                             RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
                         };
                     }

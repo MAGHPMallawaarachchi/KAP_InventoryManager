@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
 using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
+using LiveCharts;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,9 @@ namespace KAP_InventoryManager.ViewModel
         private CustomerModel _selectedCustomer;
         private CustomerModel _currentCustomer;
         private double _debtPercentage;
+        private double _debtRemainder;
+
+        public ICommand UpdateChartCommand { get; }
 
         public IEnumerable<CustomerModel> Customers
         {
@@ -60,7 +64,6 @@ namespace KAP_InventoryManager.ViewModel
 
         public CustomersViewModel() 
         {
-            DebtPercentage = 25;
             CustomerRepository = new CustomerRepository();
             PopulateListBoxAsync();
 
@@ -74,6 +77,16 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _debtPercentage = value;
                 OnPropertyChanged(nameof(DebtPercentage));
+            }
+        }
+
+        public double DebtRemainder
+        {
+            get { return _debtRemainder; }
+            set
+            {
+                _debtRemainder = value;
+                OnPropertyChanged(nameof(DebtRemainder));
             }
         }
 
@@ -93,7 +106,7 @@ namespace KAP_InventoryManager.ViewModel
         {
             try
             {
-                CurrentCustomer = CustomerRepository.GetByCustomerID(SelectedCustomer.CustomerID);
+                CurrentCustomer = CustomerRepository.GetByCustomerID(SelectedCustomer.CustomerID);               
                 CalculateDebtPercentage();
             }
             catch (MySqlException ex)
@@ -107,10 +120,12 @@ namespace KAP_InventoryManager.ViewModel
             if(CurrentCustomer.TotalDebt != 0 && CurrentCustomer.DebtLimit != 0)
             {
                 DebtPercentage = (double)(CurrentCustomer.TotalDebt / CurrentCustomer.DebtLimit * 100);
+                DebtRemainder = 100 - DebtPercentage;
             }
             else
             {
                 DebtPercentage = 0;
+                DebtRemainder = 100;
             }
         }
 
