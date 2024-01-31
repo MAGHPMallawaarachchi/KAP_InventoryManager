@@ -31,6 +31,9 @@
         <DataTemplate DataType="{x:Type viewModel:CustomersViewModel}">
             <locals:CustomersView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:SalesRepsViewModel}">
+            <locals:SalesRepsView/>
+        </DataTemplate>
     </Window.Resources>
     
     <Grid>
@@ -169,7 +172,7 @@
                                 <RadioButton Style="{StaticResource menuButton}" 
                                              Margin="0,0,0,12"
                                              Cursor="Hand"
-                                             Command="{Binding ShowInvoicesViewCommand}">
+                                             Command="{Binding ShowSalesRepsViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
                                         <fa:IconImage 
                                             Icon="UserAlt" 

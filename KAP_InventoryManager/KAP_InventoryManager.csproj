@@ -413,6 +413,7 @@
     <Compile Include="ViewModel\ModalViewModels\NewCustomerModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\NewItemModalViewModel.cs" />
     <Compile Include="ViewModel\ReturnsViewModel.cs" />
+    <Compile Include="ViewModel\SalesRepsViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="ViewModel\ViewModelCommand.cs" />
     <Compile Include="View\CustomersView.xaml.cs">
@@ -450,6 +451,9 @@
     </Compile>
     <Compile Include="View\ReturnsView.xaml.cs">
       <DependentUpon>ReturnsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SalesRepsView.xaml.cs">
+      <DependentUpon>SalesRepsView.xaml</DependentUpon>
     </Compile>
     <Page Include="CustomControls\BindablePasswordBox.xaml">
       <SubType>Designer</SubType>
@@ -548,6 +552,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ReturnsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SalesRepsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

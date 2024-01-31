@@ -23,7 +23,7 @@ namespace KAP_InventoryManager.View
     /// </summary>
     public partial class CustomersView : UserControl
     {
-        private CustomersViewModel viewModel;
+        private readonly CustomersViewModel viewModel;
 
         public CustomersView()
         {
