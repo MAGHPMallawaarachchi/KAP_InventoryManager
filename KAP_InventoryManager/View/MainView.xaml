@@ -31,6 +31,9 @@
         <DataTemplate DataType="{x:Type viewModel:CustomersViewModel}">
             <locals:CustomersView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:InvoicesViewModel}">
+            <locals:InvoicesView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModel:SalesRepsViewModel}">
             <locals:SalesRepsView/>
         </DataTemplate>
