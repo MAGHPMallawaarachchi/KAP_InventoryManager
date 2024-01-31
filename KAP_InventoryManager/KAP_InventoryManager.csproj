@@ -397,6 +397,7 @@
     <Compile Include="Model\SupplierModel.cs" />
     <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\ItemRepository.cs" />
+    <Compile Include="ViewModel\AddInvoiceViewModel.cs" />
     <Compile Include="ViewModel\CustomersViewModel.cs" />
     <Compile Include="ViewModel\HomeViewModel.cs" />
     <Compile Include="ViewModel\InventoryPanelViewModels\DetailsViewModel.cs" />
@@ -416,6 +417,9 @@
     <Compile Include="ViewModel\SalesRepsViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="ViewModel\ViewModelCommand.cs" />
+    <Compile Include="View\AddInvoiceView.xaml.cs">
+      <DependentUpon>AddInvoiceView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\CustomersView.xaml.cs">
       <DependentUpon>CustomersView.xaml</DependentUpon>
     </Compile>
@@ -504,6 +508,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Styles\TextStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\AddInvoiceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
