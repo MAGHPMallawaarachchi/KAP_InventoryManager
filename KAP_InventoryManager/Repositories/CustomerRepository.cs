@@ -68,6 +68,32 @@ namespace KAP_InventoryManager.Repositories
             return customers;
         }
 
+        public List<string> SearchCustomer(string SearchText)
+        {
+            List<string> customers = new List<string>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SearchCustomer", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@SearchText", SearchText);
+
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string customerId = reader["CustomerID"].ToString();
+                        customers.Add(customerId);
+                    }
+                }
+            }
+
+            return customers;
+        }
+
+
         public CustomerModel GetByCustomerID(string customerID)
         {
             CustomerModel customer = null;

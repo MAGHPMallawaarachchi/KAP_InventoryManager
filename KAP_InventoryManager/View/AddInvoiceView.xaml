@@ -7,7 +7,7 @@
         xmlns:locals="clr-namespace:KAP_InventoryManager.View"
         xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel"
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-        xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
+        xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         mc:Ignorable="d"
         Title="Kamal Auto Parts"        
         WindowState="Maximized"        
@@ -116,7 +116,8 @@
             <Border Background="{StaticResource Color2}"
                     CornerRadius="8"
                     Padding="20"
-                    Margin="20,0,0,0">
+                    Margin="20,0,0,0"
+                    MinWidth="500">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
@@ -131,8 +132,18 @@
 
                         <TextBlock Text="Customer"
                                    Style="{StaticResource card-header}"/>
-                        <customcontrols:SearchBar Grid.Column="1"
-                                                  HorizontalAlignment="Right"/>
+
+                        <ComboBox Grid.Column="1"
+                                  Padding="6,0,6,0"
+                                  ItemsSource="{Binding Suggestions}"
+                                  SelectedItem="{Binding SelectedCustomerId, UpdateSourceTrigger=PropertyChanged}"
+                                  IsEditable="True"
+                                  StaysOpenOnEdit="True">
+                            <ComboBox.Text>
+                                <Binding Path="SearchText" UpdateSourceTrigger="PropertyChanged" />
+                            </ComboBox.Text>
+                        </ComboBox>
+
                     </Grid>
                     
                     <Grid Margin="0,20,0,0"
@@ -153,7 +164,7 @@
                                    Style="{StaticResource regular-text}"/>
                         <TextBlock Text=":" Grid.Column="1"
                                    Style="{StaticResource regular-text}"/>
-                        <TextBlock Text="SUMITH MOTORS KALUTARA" 
+                        <TextBlock Text="{Binding SelectedCustomer.Name}" 
                                    Grid.Column="2"
                                    Style="{StaticResource regular-text}"/>
 
@@ -161,7 +172,7 @@
                                    Style="{StaticResource regular-text}"/>
                         <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
                                    Style="{StaticResource regular-text}"/>
-                        <TextBlock Text="NO. 54, HEENATIYANGALA ROAD, NAGODA, KALUTARA" 
+                        <TextBlock Text="{Binding SelectedCustomer.Address}" 
                                    Grid.Column="2" Grid.Row="1"
                                    Style="{StaticResource regular-text}"/>
 
@@ -169,7 +180,7 @@
                                    Style="{StaticResource regular-text}"/>
                         <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
                                    Style="{StaticResource regular-text}"/>
-                        <TextBlock Text="KALUTARA" 
+                        <TextBlock Text="{Binding SelectedCustomer.City}" 
                                    Grid.Column="2" Grid.Row="2"
                                    Style="{StaticResource regular-text}"/>
                         
@@ -177,7 +188,7 @@
                                    Style="{StaticResource regular-text}"/>
                         <TextBlock Text=":" Grid.Column="1" Grid.Row="3"
                                    Style="{StaticResource regular-text}"/>
-                        <TextBlock Text="077-7172817" 
+                        <TextBlock Text="{Binding SelectedCustomer.ContactNo}" 
                                    Grid.Column="2" Grid.Row="3"
                                    Style="{StaticResource regular-text}"/>
 

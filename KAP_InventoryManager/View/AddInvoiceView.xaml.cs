@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KAP_InventoryManager.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,11 @@ namespace KAP_InventoryManager.View
     /// </summary>
     public partial class AddInvoiceView : Window
     {
+
         public AddInvoiceView()
         {
             InitializeComponent();
+            DataContext = new AddInvoiceViewModel();
         }
     }
 }
