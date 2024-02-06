@@ -1,4 +1,5 @@
-﻿using KAP_InventoryManager.CustomControls;
+﻿using GalaSoft.MvvmLight.Command;
+using KAP_InventoryManager.CustomControls;
 using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
 using MySql.Data.MySqlClient;
@@ -15,28 +16,57 @@ namespace KAP_InventoryManager.ViewModel
 {
     public class AddInvoiceViewModel : ViewModelBase
     {
-        private string _searchText;
+        private string _customerSearchText;
+        private string _partNoSearchText;
+
         private string _selectedCustomerId;
         private CustomerModel _selectedCustomer;
-        private int _discount;
+
+        private string _selectedPartNo;
+        private ItemModel _selectedItem;
+
+        private decimal _discount;
+        private decimal _customerDiscount;
         private string _selectedRepId;
         private string _selectedPaymentType;
+        private decimal _amount;
+        private int _quantity;
+
         private string _currentTime;
         private string _currentDate;
+
+        private int _counter;
+
+
         private readonly ICustomerRepository CustomerRepository;
         private readonly ISalesRepRepository SalesRepRepository;
+        private readonly IItemRepository ItemRepository;
 
-        public ObservableCollection<string> Suggestions { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> Customers { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<string> PartNumbers { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> SalesReps { get; set; } = new ObservableCollection<string>();
+        public ObservableCollection<InvoiceItemModel> InvoiceItems { get; set; } = new ObservableCollection<InvoiceItemModel>();
 
-        public string SearchText
+        public ICommand AddInvoiceItemCommand { get; }
+
+        public string CustomerSearchText
         {
-            get { return _searchText; }
+            get { return _customerSearchText; }
             set
             {
-                _searchText = value;
-                OnPropertyChanged(nameof(SearchText));
-                PopulateSuggestionList();
+                _customerSearchText = value;
+                OnPropertyChanged(nameof(CustomerSearchText));
+                PopulateCustomers();
+            }
+        }
+        public string PartNoSearchText
+        {
+            get { return _partNoSearchText; }
+            set
+            {
+                _partNoSearchText = value;
+                OnPropertyChanged(nameof(PartNoSearchText));
+                PopulatePartNumbers();
             }
         }
 
@@ -47,17 +77,18 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _selectedCustomerId = value;
                 OnPropertyChanged(nameof(SelectedCustomerId));
-                PopulateDetails();
+                PopulateCustomerDetails();
             }
         }
 
-        public string SelectedPaymentType
+        public string SelectedPartNo
         {
-            get => _selectedPaymentType;
+            get => _selectedPartNo;
             set
             {
-                _selectedPaymentType = value;
-                OnPropertyChanged(nameof(SelectedPaymentType));
+                _selectedPartNo = value;
+                OnPropertyChanged(nameof(SelectedPartNo));
+                PopulateItemDetails();
             }
         }
 
@@ -71,13 +102,43 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        public int Discount
+        public ItemModel SelectedItem
+        {
+            get => _selectedItem;
+            set
+            {
+                _selectedItem = value;
+                OnPropertyChanged(nameof(SelectedItem));
+            }
+        }
+
+        public string SelectedPaymentType
+        {
+            get => _selectedPaymentType;
+            set
+            {
+                _selectedPaymentType = value;
+                OnPropertyChanged(nameof(SelectedPaymentType));
+            }
+        }
+
+        public decimal Discount
         {
             get => _discount;
             set
             {
                 _discount = value;
                 OnPropertyChanged(nameof(Discount));
+                CalculateAmount();
+            }
+        }
+        public decimal CustomerDiscount
+        {
+            get => _customerDiscount;
+            set
+            {
+                _customerDiscount = value;
+                OnPropertyChanged(nameof(CustomerDiscount));
             }
         }
 
@@ -88,6 +149,27 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _selectedRepId = value;
                 OnPropertyChanged(nameof(SelectedRepId));
+            }
+        }
+
+        public decimal Amount
+        {
+            get => _amount;
+            set
+            {
+                _amount = value;
+                OnPropertyChanged(nameof(Amount));
+            }
+        }
+
+        public int Quantity
+        {
+            get => _quantity;
+            set
+            {
+                _quantity = value;
+                OnPropertyChanged(nameof(Quantity));
+                CalculateAmount();
             }
         }
 
@@ -111,34 +193,53 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public int Counter
+        {
+            get => _counter;
+            set
+            {
+                _counter = value;
+                OnPropertyChanged(nameof(Counter));
+            }
+        }
+
         public AddInvoiceViewModel() 
         {
             CustomerRepository = new CustomerRepository();
             SalesRepRepository = new SalesRepRepository();
-            
+            ItemRepository = new ItemRepository();
+
+            AddInvoiceItemCommand = new ViewModelCommand(ExecuteAddInvoiceItemCommand);
+
             DateTime currentDateTime = DateTime.Now;
 
             CurrentDate = currentDateTime.ToString("yyyy-MM-dd");
             CurrentTime = currentDateTime.ToString("t");
 
             PopulateSalesReps();
+            Counter = 1;
         }
 
-        private void PopulateSuggestionList()
+        private void ExecuteAddInvoiceItemCommand(object obj)
+        {
+            AddInvoiceItem();
+        }
+
+        private void PopulateCustomers()
         {
             try
             {
-                Suggestions.Clear();
+                Customers.Clear();
 
-                if(SearchText != null || SearchText != "")
+                if(CustomerSearchText != null || CustomerSearchText != "")
                 {
-                    var results = CustomerRepository.SearchCustomer(SearchText);
+                    var results = CustomerRepository.SearchCustomer(CustomerSearchText);
 
                     if (results != null)
                     {
                         foreach (var suggestion in results)
                         {
-                            Suggestions.Add(suggestion);
+                            Customers.Add(suggestion);
                         }
                     }
                 }
@@ -149,6 +250,30 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        private void PopulatePartNumbers()
+        {
+            try
+            {
+                PartNumbers.Clear();
+
+                if (PartNoSearchText != null || PartNoSearchText != "")
+                {
+                    var results = ItemRepository.SearchPartNo(PartNoSearchText);
+
+                    if (results != null)
+                    {
+                        foreach (var suggestion in results)
+                        {
+                            PartNumbers.Add(suggestion);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to fetch suggestions. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         private void PopulateSalesReps()
         {
@@ -168,7 +293,7 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private void PopulateDetails()
+        private void PopulateCustomerDetails()
         {
             try
             {
@@ -179,11 +304,11 @@ namespace KAP_InventoryManager.ViewModel
 
                     if(SelectedPaymentType == "CASH")
                     {
-                        Discount = 30;
+                        CustomerDiscount = 30;
                     }
                     else
                     {
-                        Discount = 25;
+                        CustomerDiscount = 25;
                     }
 
                     if (SelectedCustomer.RepID != null)
@@ -200,6 +325,55 @@ namespace KAP_InventoryManager.ViewModel
             {
                 MessageBox.Show($"Failed to fetch customer's details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void AddInvoiceItem()
+        {
+            var invoiceItem = new InvoiceItemModel
+            {
+                No = Counter,
+                PartNo = SelectedItem.PartNo,
+                BrandID = SelectedItem.BrandID,
+                Description = SelectedItem.Description,
+                Quantity = Quantity,
+                UnitPrice = SelectedItem.UnitPrice,
+                Discount = Discount,
+                Amount = Amount,
+            };
+
+            InvoiceItems.Add(invoiceItem);
+            Clear();
+        }
+
+        private void PopulateItemDetails()
+        {
+            try
+            {
+                SelectedItem = ItemRepository.GetByPartNo(SelectedPartNo);
+                Discount = CustomerDiscount;
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to fetch item's details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CalculateAmount()
+        {
+            if(SelectedItem != null)
+            {
+                Amount = SelectedItem.UnitPrice * Quantity * (100 - Discount) / 100;
+            }
+        }
+
+        private void Clear()
+        {
+            Counter++;
+            SelectedItem = null;
+            SelectedPartNo = null;
+            Quantity = 0;
+            Discount = CustomerDiscount;
+            Amount = 0;
         }
     }
 }

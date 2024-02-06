@@ -20,11 +20,13 @@ namespace KAP_InventoryManager.View
     /// </summary>
     public partial class AddInvoiceView : Window
     {
+        private readonly AddInvoiceViewModel viewModel;
 
         public AddInvoiceView()
         {
             InitializeComponent();
-            DataContext = new AddInvoiceViewModel();
+            viewModel = new AddInvoiceViewModel();
+            DataContext = viewModel;
         }
     }
 }

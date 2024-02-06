@@ -127,6 +127,31 @@ namespace KAP_InventoryManager.Repositories
             return item;
         }
 
+        public List<string> SearchPartNo(string SearchText)
+        {
+            List<string> partNumbers = new List<string>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SearchPartNo", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@SearchText", SearchText);
+
+                connection.Open();
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string partNo = reader["PartNo"].ToString();
+                        partNumbers.Add(partNo);
+                    }
+                }
+            }
+
+            return partNumbers;
+        }
+
         public async Task<int> GetItemCount()
         {
             int itemCount = 0;

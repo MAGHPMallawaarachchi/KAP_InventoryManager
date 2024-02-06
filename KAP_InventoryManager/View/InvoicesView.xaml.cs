@@ -29,7 +29,7 @@ namespace KAP_InventoryManager.View
         private void AddInvoiceButton_Click(object sender, RoutedEventArgs e)
         {
             var addInvoiceWindow = new AddInvoiceView();
-            addInvoiceWindow.ShowDialog();
+            addInvoiceWindow.Show();
         }
     }
 }
