@@ -36,6 +36,7 @@ namespace KAP_InventoryManager.ViewModel
         private string _currentDate;
 
         private int _counter;
+        private decimal _total;
 
 
         private readonly ICustomerRepository CustomerRepository;
@@ -203,6 +204,16 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public decimal Total
+        {
+            get { return _total; }
+            set
+            {
+                _total = value;
+                OnPropertyChanged(nameof(Total));
+            }
+        }
+
         public AddInvoiceViewModel() 
         {
             CustomerRepository = new CustomerRepository();
@@ -218,6 +229,7 @@ namespace KAP_InventoryManager.ViewModel
 
             PopulateSalesReps();
             Counter = 1;
+            Total = 0;
         }
 
         private void ExecuteAddInvoiceItemCommand(object obj)
@@ -342,6 +354,7 @@ namespace KAP_InventoryManager.ViewModel
             };
 
             InvoiceItems.Add(invoiceItem);
+            Total += Amount;
             Clear();
         }
 

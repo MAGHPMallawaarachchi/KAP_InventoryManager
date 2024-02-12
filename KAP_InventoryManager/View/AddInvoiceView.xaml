@@ -256,7 +256,7 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="2.5*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="No."
                                            Style="{StaticResource regular-text}"/>
@@ -278,7 +278,7 @@
                         <TextBlock Text="Dis%"
                                            Style="{StaticResource regular-text}"
                                            Grid.Column="6"/>
-                        <TextBlock Text="Amount"
+                        <TextBlock Text="Amount (Rs.)"
                                            Style="{StaticResource regular-text}"
                                            Grid.Column="7"/>
                     </Grid>
@@ -293,7 +293,7 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1.5*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
@@ -353,7 +353,8 @@
                          BorderBrush="Transparent"
                          HorizontalContentAlignment="Stretch"
                          Cursor="Hand"
-                         SelectionMode="Single">
+                         SelectionMode="Single"
+                         Margin="0,30,0,0">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -365,17 +366,17 @@
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="2.5*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="{Binding Counter}"                   
+                                <TextBlock Text="{Binding No}"                   
                                            Style="{StaticResource regular-text}"/>
 
                                 <Border Grid.Column="1"
                                         Background="{StaticResource Color3}"
                                         CornerRadius="3"
                                         Padding="8,2,8,2"
-                                        Margin="0,0,12,0"
+                                        Margin="0,0,20,0"
                                         Height="30">
                                     <TextBlock Text="{Binding PartNo}"
                                                 Style="{StaticResource button-text}"
@@ -419,16 +420,14 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="11*"/>
                             <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="2.5*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="Total"
                                    Style="{StaticResource regular-text}"
                                    Grid.Column="1"/>
                         <StackPanel Orientation="Horizontal"
                                     Grid.Column="2">
-                            <TextBlock Text="Rs. "
-                                       Style="{StaticResource regular-text}"/>
-                            <TextBlock Text="230,060.00"
+                            <TextBlock Text="{Binding Total}"
                                        Style="{StaticResource regular-text}"/>
                         </StackPanel>
                     </Grid>
