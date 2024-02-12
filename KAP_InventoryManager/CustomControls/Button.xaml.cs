@@ -29,6 +29,9 @@ namespace KAP_InventoryManager.CustomControls
         public static readonly DependencyProperty ButtonBackgroundColorProperty =
             DependencyProperty.Register("ButtonBackgroundColor", typeof(System.Windows.Media.Brush), typeof(Button));
 
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register("Command", typeof(ICommand), typeof(Button));
+
         public string ButtonText
         {
             get { return (string)GetValue(ButtonTextProperty); }
@@ -47,6 +50,12 @@ namespace KAP_InventoryManager.CustomControls
             set { SetValue(ButtonBackgroundColorProperty, value); }
         }
 
+        public ICommand Command
+        {
+            get { return (ICommand)GetValue(CommandProperty); }
+            set { SetValue(CommandProperty, value); }
+        }
+
         // Regular property for the click event handler
         public RoutedEventHandler ButtonClickHandler { get; set; }
 
@@ -60,6 +69,11 @@ namespace KAP_InventoryManager.CustomControls
         {
             // Invoke the dynamically assigned click event handler
             ButtonClickHandler?.Invoke(sender, e);
+
+            if (Command != null && Command.CanExecute(null))
+            {
+                Command.Execute(null);
+            }
         }
     }
 }

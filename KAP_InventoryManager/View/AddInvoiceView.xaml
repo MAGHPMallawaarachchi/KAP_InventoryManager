@@ -262,10 +262,12 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1.5*"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="0.4*"/>
+                        <ColumnDefinition Width="0.4*"/>
+                        <ColumnDefinition Width="0.4*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="{Binding Counter}"                   
+                    <TextBlock Text="{Binding Number}"                   
                                Style="{StaticResource regular-text}"/>
 
                     <ComboBox Grid.Column="1"
@@ -313,16 +315,27 @@
                                 Command="{Binding AddInvoiceItemCommand}"/>
                     </Border>
 
+                    <Button Style="{StaticResource IconButtonStyle}"
+                            Grid.Column="9"
+                            Visibility="{Binding isSelectedInvoiceItem}"
+                            Command="{Binding DeleteInvoiceItemCommand}">
+                        <fa:IconImage Icon="Trash"
+                                        Foreground="{StaticResource Color5}"
+                                        Height="20"/>
+                    </Button>
+
                 </Grid>
 
                     <ListBox ItemsSource="{Binding InvoiceItems}" 
+                             SelectedItem="{Binding SelectedInvoiceItem}"
                              Background="Transparent"
                              BorderThickness="0"
                              BorderBrush="Transparent"
                              HorizontalContentAlignment="Stretch"
                              Cursor="Hand"
                              SelectionMode="Single"
-                             Margin="0,30,0,0">
+                             Margin="0,30,0,0"
+                             IsHitTestVisible="True">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
@@ -334,7 +347,7 @@
                                         <ColumnDefinition Width="1*"/>
                                         <ColumnDefinition Width="1*"/>
                                         <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="2.5*"/>
+                                        <ColumnDefinition Width="2.7*"/>
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Text="{Binding No}"                   
@@ -388,7 +401,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="11*"/>
                             <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="2.5*"/>
+                            <ColumnDefinition Width="2.7*"/>
                         </Grid.ColumnDefinitions>
                             <TextBlock Text="Total"
                                    Style="{StaticResource regular-text}"
