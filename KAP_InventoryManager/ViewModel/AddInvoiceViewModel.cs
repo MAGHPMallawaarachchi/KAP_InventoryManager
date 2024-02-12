@@ -49,6 +49,7 @@ namespace KAP_InventoryManager.ViewModel
         public ObservableCollection<InvoiceItemModel> InvoiceItems { get; set; } = new ObservableCollection<InvoiceItemModel>();
 
         public ICommand AddInvoiceItemCommand { get; }
+        public ICommand ClearInvoiceCommand {  get; }
 
         public string CustomerSearchText
         {
@@ -221,6 +222,7 @@ namespace KAP_InventoryManager.ViewModel
             ItemRepository = new ItemRepository();
 
             AddInvoiceItemCommand = new ViewModelCommand(ExecuteAddInvoiceItemCommand);
+            ClearInvoiceCommand = new ViewModelCommand(ExecuteClearInvoiceCommand);
 
             DateTime currentDateTime = DateTime.Now;
 
@@ -230,6 +232,11 @@ namespace KAP_InventoryManager.ViewModel
             PopulateSalesReps();
             Counter = 1;
             Total = 0;
+        }
+
+        private void ExecuteClearInvoiceCommand(object obj)
+        {
+            ClearInvoice();
         }
 
         private void ExecuteAddInvoiceItemCommand(object obj)
@@ -387,6 +394,17 @@ namespace KAP_InventoryManager.ViewModel
             Quantity = 0;
             Discount = CustomerDiscount;
             Amount = 0;
+        }
+
+        private void ClearInvoice()
+        {
+            Clear();
+            SelectedCustomer = null;
+            SelectedCustomerId = null;
+            SelectedPaymentType = null;
+            CustomerDiscount = 0;
+            SelectedRepId = null;
+            InvoiceItems.Clear();
         }
     }
 }
