@@ -266,9 +266,27 @@ namespace KAP_InventoryManager.ViewModel
                 validate = false;
                 MessageBox.Show("Please enter the quantity", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            else if (IsItemExist() == true)
+            {
+                validate = false;
+                MessageBox.Show("Oops! You've Already Added This Item to the Invoice", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             else
                 validate = true;
             return validate;
+        }
+
+        private bool IsItemExist()
+        {
+            bool isItemExist = false;
+            foreach (var item in InvoiceItems)
+            {
+                if(item.PartNo == SelectedPartNo)
+                {
+                    isItemExist = true;
+                }
+            }
+            return isItemExist;
         }
 
         private void ExecuteClearInvoiceCommand(object obj)
@@ -443,6 +461,8 @@ namespace KAP_InventoryManager.ViewModel
             CustomerDiscount = 0;
             SelectedRepId = null;
             InvoiceItems.Clear();
+            Discount = 0;
+            Total = 0;
         }
     }
 }
