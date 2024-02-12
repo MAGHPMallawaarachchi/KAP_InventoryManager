@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 using KAP_InventoryManager.CustomControls;
 using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace KAP_InventoryManager.ViewModel
 {
@@ -38,6 +40,7 @@ namespace KAP_InventoryManager.ViewModel
         private int _counter;
         private decimal _total;
 
+        private string _errorMessage;
 
         private readonly ICustomerRepository CustomerRepository;
         private readonly ISalesRepRepository SalesRepRepository;
@@ -215,6 +218,17 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged(nameof(ErrorMessage));
+            }
+        }
+
+
         public AddInvoiceViewModel() 
         {
             CustomerRepository = new CustomerRepository();
@@ -234,6 +248,29 @@ namespace KAP_InventoryManager.ViewModel
             Total = 0;
         }
 
+        private bool CanExecuteAddInvoiceCommand()
+        {
+            bool validate;
+            if (SelectedCustomer == null || string.IsNullOrEmpty(SelectedCustomerId))
+            {
+                validate = false;
+                MessageBox.Show("Please select a customer", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if(string.IsNullOrEmpty(SelectedPartNo) || SelectedItem == null)
+            {
+                validate = false;
+                MessageBox.Show("Please select an item", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if (Quantity == 0)
+            {
+                validate = false;
+                MessageBox.Show("Please enter the quantity", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+                validate = true;
+            return validate;
+        }
+
         private void ExecuteClearInvoiceCommand(object obj)
         {
             ClearInvoice();
@@ -241,7 +278,8 @@ namespace KAP_InventoryManager.ViewModel
 
         private void ExecuteAddInvoiceItemCommand(object obj)
         {
-            AddInvoiceItem();
+            if(CanExecuteAddInvoiceCommand() == true)
+                AddInvoiceItem();
         }
 
         private void PopulateCustomers()
