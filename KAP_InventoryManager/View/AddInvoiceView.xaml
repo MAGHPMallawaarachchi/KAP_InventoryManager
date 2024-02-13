@@ -21,7 +21,11 @@
     <Window.DataContext>
         <viewModel:AddInvoiceViewModel/>
     </Window.DataContext>
-    
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -224,7 +228,7 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="2.5*"/>
+                            <ColumnDefinition Width="2.7*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="No."
                                            Style="{StaticResource regular-text}"/>
@@ -306,7 +310,8 @@
 
                     <Border Grid.Column="8"
                             CornerRadius="5"
-                            Background="{StaticResource Blue}">
+                            Background="{StaticResource Blue}"
+                            Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Button Background="Transparent"
                                 BorderThickness="0"
                                 Content="Add"
@@ -316,17 +321,35 @@
                     </Border>
 
                     <Button Style="{StaticResource IconButtonStyle}"
-                            Grid.Column="9"
-                            Visibility="{Binding isSelectedInvoiceItem}"
+                            Grid.Column="8"
+                            Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Command="{Binding DeleteInvoiceItemCommand}">
                         <fa:IconImage Icon="Trash"
                                         Foreground="{StaticResource Color5}"
                                         Height="20"/>
                     </Button>
+                    
+                    <Button Style="{StaticResource IconButtonStyle}"
+                            Grid.Column="9"
+                            Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Command="{Binding EditInvoiceItemCommand}">
+                        <fa:IconImage Icon="Pen"
+                                    Foreground="{StaticResource Color5}"
+                                    Height="20"/>
+                    </Button>
 
-                </Grid>
+                    <Button Style="{StaticResource IconButtonStyle}"
+                            Grid.Column="10"
+                            Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Command="{Binding CancelInvoiceItemCommand}">
+                        <fa:IconImage Icon="Cancel"
+                                Foreground="{StaticResource Color5}"
+                                Height="20"/>
+                    </Button>
 
-                    <ListBox ItemsSource="{Binding InvoiceItems}" 
+                    </Grid>
+
+                    <ListBox ItemsSource="{Binding InvoiceItems, Mode=TwoWay}" 
                              SelectedItem="{Binding SelectedInvoiceItem}"
                              Background="Transparent"
                              BorderThickness="0"
@@ -350,7 +373,7 @@
                                         <ColumnDefinition Width="2.7*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Text="{Binding No}"                   
+                                    <TextBlock Text="{Binding No, Mode=TwoWay}"                   
                                                Style="{StaticResource regular-text}"/>
 
                                     <Border Grid.Column="1"

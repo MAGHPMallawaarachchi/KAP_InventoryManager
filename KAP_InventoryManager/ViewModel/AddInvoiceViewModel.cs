@@ -42,8 +42,10 @@ namespace KAP_InventoryManager.ViewModel
         private decimal _total;
         private InvoiceItemModel _selectedInvoiceItem;
         private bool _isSelectedInvoiceItem;
+        private bool _isAddingNewItem;
 
         private string _errorMessage;
+        private ObservableCollection<InvoiceItemModel> _invoiceItems;
 
         private readonly ICustomerRepository CustomerRepository;
         private readonly ISalesRepRepository SalesRepRepository;
@@ -52,7 +54,16 @@ namespace KAP_InventoryManager.ViewModel
         public ObservableCollection<string> Customers { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> PartNumbers { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> SalesReps { get; set; } = new ObservableCollection<string>();
-        public ObservableCollection<InvoiceItemModel> InvoiceItems { get; set; } = new ObservableCollection<InvoiceItemModel>();
+
+        public ObservableCollection<InvoiceItemModel> InvoiceItems
+        {
+            get => _invoiceItems;
+            set
+            {
+                _invoiceItems = value;
+                OnPropertyChanged(nameof(InvoiceItems));
+            }
+        }
 
         public string CustomerSearchText
         {
@@ -264,12 +275,26 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _isSelectedInvoiceItem = value;
                 OnPropertyChanged(nameof(IsSelectedInvoiceItem));
+                IsAddingNewItem = !IsSelectedInvoiceItem;
+            }
+        }
+
+        public bool IsAddingNewItem
+        {
+            get => _isAddingNewItem;
+            set
+            {
+                _isAddingNewItem = value;
+                OnPropertyChanged(nameof(IsAddingNewItem));
             }
         }
 
         public ICommand AddInvoiceItemCommand { get; }
         public ICommand ClearInvoiceCommand { get; }
         public ICommand DeleteInvoiceItemCommand { get; }
+        public ICommand EditInvoiceItemCommand { get; }
+        public ICommand CancelInvoiceItemCommand { get; }
+
 
         public AddInvoiceViewModel() 
         {
@@ -280,6 +305,8 @@ namespace KAP_InventoryManager.ViewModel
             AddInvoiceItemCommand = new ViewModelCommand(ExecuteAddInvoiceItemCommand);
             ClearInvoiceCommand = new ViewModelCommand(ExecuteClearInvoiceCommand);
             DeleteInvoiceItemCommand = new ViewModelCommand(ExecuteDeleteInvoiceItemCommand);
+            EditInvoiceItemCommand = new ViewModelCommand(ExecuteEditInvoiceItemCommand);
+            CancelInvoiceItemCommand = new ViewModelCommand(ExecuteCancelInvoiceItemCommand);
 
             DateTime currentDateTime = DateTime.Now;
 
@@ -287,15 +314,46 @@ namespace KAP_InventoryManager.ViewModel
             CurrentTime = currentDateTime.ToString("t");
 
             PopulateSalesReps();
+            InvoiceItems = new ObservableCollection<InvoiceItemModel>();
             Number = Counter = 1;
             Total = 0;
             IsSelectedInvoiceItem = false;
+        }
+
+        private void ExecuteCancelInvoiceItemCommand(object obj)
+        {
+            SelectedInvoiceItem = null;
+            Clear();
+            IsSelectedInvoiceItem = false;
+            Number = Counter;
+        }
+
+        private void ExecuteEditInvoiceItemCommand(object obj)
+        {
+            foreach (var item in InvoiceItems)
+            {
+                if (item.PartNo == SelectedPartNo)
+                {
+                    item.Quantity = Quantity;
+                    item.Discount = Discount;
+                    Total -= item.Amount;
+                    item.Amount = Amount;
+                    Total += Amount;
+                }
+            }
+            InvoiceItems = new ObservableCollection<InvoiceItemModel>(InvoiceItems);
+
+            SelectedInvoiceItem = null;
+            Clear();
+            IsSelectedInvoiceItem = false;
+            Number = Counter;
         }
 
         private void ExecuteDeleteInvoiceItemCommand(object obj)
         {
             if(SelectedInvoiceItem != null)
             {
+                Total -= SelectedInvoiceItem.Amount;
                 InvoiceItems.Remove(SelectedInvoiceItem);
                 Counter--;
                 Number = Counter;
@@ -307,9 +365,11 @@ namespace KAP_InventoryManager.ViewModel
                 foreach (var item in InvoiceItems)
                 {
                     item.No = newNumber++;
+                    OnPropertyChanged(nameof(item.No));
                 }
 
                 OnPropertyChanged(nameof(InvoiceItems));
+                InvoiceItems = new ObservableCollection<InvoiceItemModel>(InvoiceItems);
             }
             else
             {
@@ -533,8 +593,8 @@ namespace KAP_InventoryManager.ViewModel
             InvoiceItems.Clear();
             Discount = 0;
             Total = 0;
-            Counter = 0;
-            Number = 0;
+            Counter = 1;
+            Number = 1;
         }
     }
 }
