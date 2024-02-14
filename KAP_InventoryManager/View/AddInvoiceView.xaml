@@ -42,16 +42,11 @@
                     <TextBlock Text="INVOICE"
                                Style="{StaticResource numbers}"/>
                     
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="KAP-"
-                                   Style="{StaticResource card-header}"
-                                   FontWeight="Regular"/>
-                        <TextBlock Text="100001"
-                                   Style="{StaticResource card-header}"
-                                   FontWeight="Regular"/>
-                    </StackPanel>
+                    <TextBlock Text="{Binding InvoiceNo}"
+                               Style="{StaticResource card-header}"
+                               FontWeight="Regular"/>
 
-                    <Border BorderThickness="1.5" 
+                        <Border BorderThickness="1.5" 
                             BorderBrush="{StaticResource Color3}"
                             CornerRadius="8"
                             Margin="0,10,0,0"
@@ -114,8 +109,7 @@
                             <ComboBox Grid.Column="2" Grid.Row="3" Height="25" 
                                       Padding="6,0,6,0"
                                       Margin="0,4"
-                                      SelectedValue="{Binding SelectedRepId, UpdateSourceTrigger=PropertyChanged}"
-                                      SelectedValuePath="Content"
+                                      SelectedValue="{Binding SelectedRepId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                       ItemsSource="{Binding SalesReps}"/>
 
                         </Grid>
@@ -452,9 +446,20 @@
                            Margin="10,0,10,0"
                            Foreground="{StaticResource Color4}"/>
             </Button>
-            <customcontrols:Button ButtonText="Save Invoice"
-                                   ButtonBackgroundColor="{StaticResource Blue}"
-                                   ButtonIcon="CircleCheck"/>
+
+            <Button Style="{StaticResource CustomButtonStyle}"
+                    Background="{StaticResource Blue}"
+                    Command="{Binding SaveInvoiceCommand}">
+                <StackPanel Orientation="Horizontal"
+                            Margin="8">
+                    <fa:IconImage Icon="Download"
+                                  Height="13"
+                                  Margin="0,0,6,0"
+                                  Foreground="{StaticResource Color5}"/>
+                    <TextBlock Text="Save Invoice"
+                               Style="{StaticResource button-text}"/>
+                </StackPanel>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

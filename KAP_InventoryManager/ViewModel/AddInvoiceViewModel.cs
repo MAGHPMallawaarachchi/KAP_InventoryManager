@@ -18,6 +18,7 @@ namespace KAP_InventoryManager.ViewModel
 {
     public class AddInvoiceViewModel : ViewModelBase
     {
+        private string _invoiceNo;
         private string _customerSearchText;
         private string _partNoSearchText;
 
@@ -29,8 +30,10 @@ namespace KAP_InventoryManager.ViewModel
 
         private decimal _discount;
         private decimal _customerDiscount;
+
         private string _selectedRepId;
         private string _selectedPaymentType;
+
         private decimal _amount;
         private int _quantity;
 
@@ -50,6 +53,7 @@ namespace KAP_InventoryManager.ViewModel
         private readonly ICustomerRepository CustomerRepository;
         private readonly ISalesRepRepository SalesRepRepository;
         private readonly IItemRepository ItemRepository;
+        private readonly IInvoiceRepository InvoiceRepository;
 
         public ObservableCollection<string> Customers { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> PartNumbers { get; set; } = new ObservableCollection<string>();
@@ -62,6 +66,16 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _invoiceItems = value;
                 OnPropertyChanged(nameof(InvoiceItems));
+            }
+        }
+
+        public string InvoiceNo
+        {
+            get => _invoiceNo;
+            set
+            {
+                _invoiceNo = value;
+                OnPropertyChanged(nameof(InvoiceNo));
             }
         }
 
@@ -165,6 +179,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _selectedRepId = value;
                 OnPropertyChanged(nameof(SelectedRepId));
+                Console.WriteLine(SelectedRepId);
             }
         }
 
@@ -294,30 +309,38 @@ namespace KAP_InventoryManager.ViewModel
         public ICommand DeleteInvoiceItemCommand { get; }
         public ICommand EditInvoiceItemCommand { get; }
         public ICommand CancelInvoiceItemCommand { get; }
-
+        public ICommand SaveInvoiceCommand { get; }
 
         public AddInvoiceViewModel() 
         {
             CustomerRepository = new CustomerRepository();
             SalesRepRepository = new SalesRepRepository();
             ItemRepository = new ItemRepository();
+            InvoiceRepository = new InvoiceRepository();
+
+            InvoiceNo = InvoiceRepository.GetNextInvoiceNumber();
+            InvoiceItems = new ObservableCollection<InvoiceItemModel>();
 
             AddInvoiceItemCommand = new ViewModelCommand(ExecuteAddInvoiceItemCommand);
             ClearInvoiceCommand = new ViewModelCommand(ExecuteClearInvoiceCommand);
             DeleteInvoiceItemCommand = new ViewModelCommand(ExecuteDeleteInvoiceItemCommand);
             EditInvoiceItemCommand = new ViewModelCommand(ExecuteEditInvoiceItemCommand);
             CancelInvoiceItemCommand = new ViewModelCommand(ExecuteCancelInvoiceItemCommand);
+            SaveInvoiceCommand = new ViewModelCommand(ExecuteSaveInvoiceCommand);
 
             DateTime currentDateTime = DateTime.Now;
-
             CurrentDate = currentDateTime.ToString("yyyy-MM-dd");
             CurrentTime = currentDateTime.ToString("t");
 
             PopulateSalesReps();
-            InvoiceItems = new ObservableCollection<InvoiceItemModel>();
             Number = Counter = 1;
             Total = 0;
             IsSelectedInvoiceItem = false;
+        }
+
+        private void ExecuteSaveInvoiceCommand(object obj)
+        {
+            AddInvoice();
         }
 
         private void ExecuteCancelInvoiceItemCommand(object obj)
@@ -377,7 +400,7 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private bool CanExecuteAddInvoiceCommand()
+        private bool CanAddInvoiceItem()
         {
             bool validate;
             if (SelectedCustomer == null || string.IsNullOrEmpty(SelectedCustomerId))
@@ -390,15 +413,38 @@ namespace KAP_InventoryManager.ViewModel
                 validate = false;
                 MessageBox.Show("Please select an item", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            else if (IsItemExist() == true)
+            {
+                validate = false;
+                MessageBox.Show("Oops! You've Already Added This Item to the Invoice", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             else if (Quantity == 0)
             {
                 validate = false;
                 MessageBox.Show("Please enter the quantity", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (IsItemExist() == true)
+            else if(ItemRepository.CheckQty(SelectedPartNo, Quantity) == false)
             {
                 validate = false;
-                MessageBox.Show("Oops! You've Already Added This Item to the Invoice", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("This item is out of stock", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+                validate = true;
+            return validate;
+        }
+
+        private bool CanAddInvoice()
+        {
+            bool validate;
+            if (SelectedCustomer == null || string.IsNullOrEmpty(SelectedCustomerId))
+            {
+                validate = false;
+                MessageBox.Show("Please select a customer", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if (InvoiceItems == null || InvoiceItems.Count == 0)
+            {
+                validate = false;
+                MessageBox.Show("Please add at least one item to the invoice", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
                 validate = true;
@@ -425,7 +471,7 @@ namespace KAP_InventoryManager.ViewModel
 
         private void ExecuteAddInvoiceItemCommand(object obj)
         {
-            if(CanExecuteAddInvoiceCommand() == true)
+            if(CanAddInvoiceItem() == true)
                 AddInvoiceItem();
         }
 
@@ -595,6 +641,40 @@ namespace KAP_InventoryManager.ViewModel
             Total = 0;
             Counter = 1;
             Number = 1;
+            InvoiceNo = InvoiceRepository.GetNextInvoiceNumber();
+        }
+
+        private void AddInvoice()
+        {
+            try
+            {
+                if (CanAddInvoice() == true)
+                {
+                    var invoice = new InvoiceModel
+                    {
+                        InvoiceNo = InvoiceNo,
+                        Terms = SelectedPaymentType.ToUpper(),
+                        TotalAmount = Total,
+                        CustomerID = SelectedCustomerId,
+                        RepID = SelectedRepId == "None" ? null : SelectedRepId
+                    };
+
+                    InvoiceRepository.AddInvoice(invoice);
+
+                    foreach (var invoiceItem in InvoiceItems)
+                    {
+                        invoiceItem.InvoiceNo = InvoiceNo;
+                        InvoiceRepository.AddInvoiceItem(invoiceItem);
+                    }
+
+                    ClearInvoice();
+                    MessageBox.Show("Invoice saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to save the invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

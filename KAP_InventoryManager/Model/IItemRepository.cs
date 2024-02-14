@@ -19,6 +19,7 @@ namespace KAP_InventoryManager.Model
         Task<int> GetOutOfStockCount();
         int GetLowInStockCount();
         Task<int> GetCategoryCount();
+        bool CheckQty(string partNo, int qty);
         //...
     }
 }

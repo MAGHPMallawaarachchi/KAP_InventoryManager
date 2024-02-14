@@ -233,5 +233,22 @@ namespace KAP_InventoryManager.Repositories
             return categoryCount;
         }
 
+        public bool CheckQty(string partNo, int qty)
+        {
+            bool isAvailable;
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var command = new MySqlCommand("SELECT CheckQty(@PartNo, @Quantity)", connection))
+                {
+                    command.Parameters.AddWithValue("@PartNo", partNo);
+                    command.Parameters.AddWithValue("@Quantity", qty);
+
+                    isAvailable = Convert.ToBoolean(command.ExecuteScalar());
+                }
+            }
+            return isAvailable;
+        }
+
     }
 }
