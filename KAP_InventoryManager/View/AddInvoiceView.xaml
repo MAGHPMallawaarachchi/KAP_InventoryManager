@@ -284,7 +284,7 @@
                                Style="{StaticResource regular-text}"
                                Grid.Column="3"/>
 
-                    <TextBox Text="{Binding Quantity}"                   
+                    <TextBox Text="{Binding Quantity}"
                              Style="{StaticResource ModalTextBox}"
                              Grid.Column="4"
                              Margin="0,0,20,0"/>
@@ -293,7 +293,7 @@
                                Style="{StaticResource regular-text}"
                                Grid.Column="5"/>
 
-                    <TextBox Text="{Binding Discount}"                   
+                    <TextBox Text="{Binding Discount}"
                              Style="{StaticResource ModalTextBox}"
                              Grid.Column="6"
                              Margin="0,0,20,0"/>
@@ -302,17 +302,15 @@
                                Style="{StaticResource regular-text}"
                                Grid.Column="7"/>
 
-                    <Border Grid.Column="8"
-                            CornerRadius="5"
-                            Background="{StaticResource Blue}"
-                            Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Button Background="Transparent"
-                                BorderThickness="0"
-                                Content="Add"
-                                Foreground="{StaticResource Color5}"
-                                FontFamily="Inter"
-                                Command="{Binding AddInvoiceItemCommand}"/>
-                    </Border>
+
+                    <Button Background="{StaticResource Blue}"
+                            Style="{StaticResource CustomButtonStyle}"
+                            Command="{Binding AddInvoiceItemCommand}"
+                            Grid.Column="8"
+                            Visibility="{Binding IsAddingNewItem}">
+                        <TextBlock Style="{StaticResource button-text}"
+                                   Text="Add"/>
+                    </Button>
 
                     <Button Style="{StaticResource IconButtonStyle}"
                             Grid.Column="8"
