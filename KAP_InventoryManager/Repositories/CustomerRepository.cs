@@ -93,6 +93,39 @@ namespace KAP_InventoryManager.Repositories
             return customers;
         }
 
+        public async Task<IEnumerable<CustomerModel>> SearchCustomerListAsync(string customerId)
+        {
+            List<CustomerModel> customers = new List<CustomerModel>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SearchCustomerList", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@p_CustomerId", customerId);
+
+                connection.Open();
+                int counter = 0;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+
+                        CustomerModel customer = new CustomerModel()
+                        {
+                            Id = counter,
+                            CustomerID = reader["CustomerID"].ToString(),
+                        };
+
+                        customers.Add(customer);
+                    }
+                }
+            }
+
+            return customers;
+        }
+
 
         public CustomerModel GetByCustomerID(string customerID)
         {

@@ -17,12 +17,15 @@ namespace KAP_InventoryManager.ViewModel
     public class CustomersViewModel : ViewModelBase
     {
         private readonly ICustomerRepository CustomerRepository;
+        private readonly IInvoiceRepository InvoiceRepository;
 
         private IEnumerable<CustomerModel> _customers;
+        private IEnumerable<InvoiceModel> _invoices;
         private CustomerModel _selectedCustomer;
         private CustomerModel _currentCustomer;
         private double _debtPercentage;
         private double _debtRemainder;
+        private string _searchCustomerText;
 
         public ICommand UpdateChartCommand { get; }
 
@@ -37,6 +40,17 @@ namespace KAP_InventoryManager.ViewModel
                 SelectedCustomer = Customers.FirstOrDefault();
             }
         }
+
+        public IEnumerable<InvoiceModel> Invoices
+        {
+            get { return _invoices; }
+            set
+            {
+                _invoices = value;
+                OnPropertyChanged(nameof(Invoices));
+            }
+        }
+
         public CustomerModel SelectedCustomer
         {
             get { return _selectedCustomer; }
@@ -62,13 +76,6 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        public CustomersViewModel() 
-        {
-            CustomerRepository = new CustomerRepository();
-            PopulateListBoxAsync();
-
-            Messenger.Default.Register<string>(this, OnMessageReceived);
-        }
 
         public double DebtPercentage
         {
@@ -90,15 +97,50 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private async void PopulateListBoxAsync()
+        public string SearchCustomerText
+        {
+            get { return _searchCustomerText; }
+            set
+            {
+                _searchCustomerText = value;
+                OnPropertyChanged(nameof(SearchCustomerText));
+
+                PopulateCustomersAsync();
+            }
+        }
+
+        public CustomersViewModel() 
+        {
+            CustomerRepository = new CustomerRepository();
+            InvoiceRepository = new InvoiceRepository();
+            PopulateCustomersAsync();
+
+            Messenger.Default.Register<string>(this, OnMessageReceived);
+        }
+
+        private async void PopulateCustomersAsync()
         {
             try
             {
-                Customers = await CustomerRepository.GetAllAsync();
+                if (SearchCustomerText == null)
+                    Customers = await CustomerRepository.GetAllAsync();
+                else
+                    Customers = await CustomerRepository.SearchCustomerListAsync(SearchCustomerText);
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show($"Failed to fetch customers. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void PopulateInvoicesAsync()
+        {
+            try
+            {
+                Invoices = await InvoiceRepository.GetInvoiceByCustomerAsync(CurrentCustomer.CustomerID, 10, 1);
+            }catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to fetch invoices. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -108,6 +150,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 CurrentCustomer = CustomerRepository.GetByCustomerID(SelectedCustomer.CustomerID);               
                 CalculateDebtPercentage();
+                PopulateInvoicesAsync();
             }
             catch (MySqlException ex)
             {
@@ -133,7 +176,7 @@ namespace KAP_InventoryManager.ViewModel
         {
             if (message == "NewCustomerAdded")
             {
-                PopulateListBoxAsync();
+                PopulateCustomersAsync();
             }
         }
     }

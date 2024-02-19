@@ -12,5 +12,6 @@ namespace KAP_InventoryManager.Model
         Task<IEnumerable<CustomerModel>> GetAllAsync();
         CustomerModel GetByCustomerID(string customerID);
         List<string> SearchCustomer(string SearchText);
+        Task<IEnumerable<CustomerModel>> SearchCustomerListAsync(string customerId);
     }
 }
