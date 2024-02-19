@@ -85,14 +85,56 @@ namespace KAP_InventoryManager.Repositories
             List<InvoiceModel> invoices = new List<InvoiceModel>();
 
             using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SELECT * FROM Invoice WHERE CustomerID = @CustomerID ORDER BY Date DESC LIMIT @PageSize OFFSET @Offset", connection))
+            using (var command = new MySqlCommand("GetInvoiceByCustomer", connection))
             {
-                command.Parameters.Add("@CustomerID", MySqlDbType.VarChar).Value = customerId;
-                command.Parameters.Add("@PageSize", MySqlDbType.Int32).Value = pageSize;
-                command.Parameters.Add("@Offset", MySqlDbType.Int32).Value = (page-1)*pageSize;
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@p_PageSize", pageSize);
+                command.Parameters.AddWithValue("@p_Offset", (page - 1) * pageSize);
+                command.Parameters.AddWithValue("@p_CustomerID", customerId);
 
                 await connection.OpenAsync();
                 int counter = pageSize*(page - 1);
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+
+                        InvoiceModel invoice = new InvoiceModel()
+                        {
+                            Id = counter,
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            Terms = reader["Terms"].ToString(),
+                            DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
+                            DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
+                            TotalAmount = (Decimal)reader["TotalAmount"],
+                            Status = reader["status"].ToString()
+                        };
+
+                        invoices.Add(invoice);
+                    }
+                }
+            }
+            return invoices;
+        }
+
+        public async Task<IEnumerable<InvoiceModel>> SearchCustomerInvoiceListAsync(string invoiceNo, string customerId, int pageSize, int page)
+        {
+            List<InvoiceModel> invoices = new List<InvoiceModel>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SearchCustomerInvoiceList", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue("@p_InvoiceNo", invoiceNo);
+                command.Parameters.AddWithValue("@p_PageSize", pageSize);
+                command.Parameters.AddWithValue("@p_Offset", (page - 1) * pageSize);
+                command.Parameters.AddWithValue("@p_CustomerID", customerId);
+
+                await connection.OpenAsync();
+                int counter = pageSize * (page - 1);
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {

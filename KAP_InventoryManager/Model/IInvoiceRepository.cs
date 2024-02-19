@@ -12,5 +12,6 @@ namespace KAP_InventoryManager.Model
         void AddInvoiceItem(InvoiceItemModel invoiceItem);
         string GetNextInvoiceNumber();
         Task<IEnumerable<InvoiceModel>> GetInvoiceByCustomerAsync(string customerId, int pageSize, int page);
+        Task<IEnumerable<InvoiceModel>> SearchCustomerInvoiceListAsync(string invoiceNo, string customerId, int pageSize, int page);
     }
 }

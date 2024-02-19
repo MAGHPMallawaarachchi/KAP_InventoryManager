@@ -26,6 +26,7 @@ namespace KAP_InventoryManager.ViewModel
         private double _debtPercentage;
         private double _debtRemainder;
         private string _searchCustomerText;
+        private string _searchInvoiceText;
         private int _pageNumber;
         private bool _isFinalPage;
 
@@ -109,6 +110,18 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public string SearchInvoiceText
+        {
+            get { return _searchInvoiceText; }
+            set
+            {
+                _searchInvoiceText = value;
+                OnPropertyChanged(nameof(SearchInvoiceText));
+
+                PopulateInvoicesAsync();
+            }
+        }
+
         public int PageNumber
         {
             get { return _pageNumber; }
@@ -183,9 +196,18 @@ namespace KAP_InventoryManager.ViewModel
         {
             try
             {
-                Invoices = await InvoiceRepository.GetInvoiceByCustomerAsync(CurrentCustomer.CustomerID, 10, PageNumber);
-                if (Invoices.Count() < 10)
-                    IsFinalPage = true;
+                if(SearchInvoiceText == null)
+                {
+                    Invoices = await InvoiceRepository.GetInvoiceByCustomerAsync(CurrentCustomer.CustomerID, 10, PageNumber);
+                    if (Invoices.Count() < 10)
+                        IsFinalPage = true;
+                }
+                else
+                {
+                    Invoices = await InvoiceRepository.SearchCustomerInvoiceListAsync(SearchInvoiceText, CurrentCustomer.CustomerID, 10, PageNumber);
+                    if (Invoices.Count() < 10)
+                        IsFinalPage = true;
+                }
 
             }catch (MySqlException ex)
             {

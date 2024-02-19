@@ -52,7 +52,7 @@
 
                     <Border Background="{StaticResource Color3}"
                             CornerRadius="6">
-                        <Grid Margin="4"
+                        <Grid Margin="8,4"
                               Height="20">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="20"/>
@@ -65,7 +65,7 @@
                                      Background="{StaticResource Color3}"
                                      BorderThickness="0"
                                      Grid.Column="1"
-                                     Margin="8,0,8,0"
+                                     Margin="8,0,0,0"
                                      Foreground="{StaticResource Color4}"
                                      FontFamily="Inter"
                                      FontSize="14"/>
@@ -309,8 +309,30 @@
                                 <StackPanel Orientation="Horizontal"
                                             Grid.Column="1"
                                             HorizontalAlignment="Right">
-                                    <customcontrols:SearchBar/>
-                                
+                                    
+                                    <Border Background="{StaticResource Color3}"
+                                            CornerRadius="6"
+                                            Width="200">
+                                        <Grid Margin="8,4"
+                                              Height="20">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="20"/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <fa:IconImage Icon="Search"
+                                                          Foreground="{StaticResource Color4}"
+                                                          Height="16"/>
+                                            <TextBox Text="{Binding SearchInvoiceText, UpdateSourceTrigger=PropertyChanged}"
+                                                     Background="{StaticResource Color3}"
+                                                     BorderThickness="0"
+                                                     Grid.Column="1"
+                                                     Margin="8,0,0,0"
+                                                     Foreground="{StaticResource Color4}"
+                                                     FontFamily="Inter"
+                                                     FontSize="14"/>
+                                        </Grid>
+                                    </Border>
+
                                     <customcontrols:Button ButtonText="Filter"
                                                            ButtonBackgroundColor="{StaticResource Color3}"
                                                            ButtonIcon="Filter"
