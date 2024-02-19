@@ -26,8 +26,8 @@ namespace KAP_InventoryManager.ViewModel
         private double _debtPercentage;
         private double _debtRemainder;
         private string _searchCustomerText;
-
-        public ICommand UpdateChartCommand { get; }
+        private int _pageNumber;
+        private bool _isFinalPage;
 
         public IEnumerable<CustomerModel> Customers
         {
@@ -109,13 +109,59 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public int PageNumber
+        {
+            get { return _pageNumber; }
+            set
+            {
+                _pageNumber = value;
+                OnPropertyChanged(nameof(PageNumber));
+            }
+        }
+
+        public bool IsFinalPage
+        {
+            get { return _isFinalPage; }
+            set
+            {
+                _isFinalPage = value;
+                OnPropertyChanged(nameof(IsFinalPage));
+            }
+        }
+
+        public ICommand GoToNextPageCommand { get; }
+        public ICommand GoToPreviousPageCommand { get; }
+
         public CustomersViewModel() 
         {
             CustomerRepository = new CustomerRepository();
             InvoiceRepository = new InvoiceRepository();
+
+            GoToNextPageCommand = new ViewModelCommand(ExecuteGoToNextPageCommand);
+            GoToPreviousPageCommand = new ViewModelCommand(ExecuteGoToPreviousPageCommand);
+
+            PageNumber = 1;
             PopulateCustomersAsync();
 
             Messenger.Default.Register<string>(this, OnMessageReceived);
+        }
+
+        private void ExecuteGoToPreviousPageCommand(object obj)
+        {
+            if(PageNumber != 1)
+            {
+                PageNumber--;
+                PopulateInvoicesAsync();
+            }
+        }
+
+        private void ExecuteGoToNextPageCommand(object obj)
+        {
+            if(IsFinalPage == false)
+            {
+                PageNumber++;
+                PopulateInvoicesAsync();
+            }
         }
 
         private async void PopulateCustomersAsync()
@@ -137,7 +183,10 @@ namespace KAP_InventoryManager.ViewModel
         {
             try
             {
-                Invoices = await InvoiceRepository.GetInvoiceByCustomerAsync(CurrentCustomer.CustomerID, 10, 1);
+                Invoices = await InvoiceRepository.GetInvoiceByCustomerAsync(CurrentCustomer.CustomerID, 10, PageNumber);
+                if (Invoices.Count() < 10)
+                    IsFinalPage = true;
+
             }catch (MySqlException ex)
             {
                 MessageBox.Show($"Failed to fetch invoices. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

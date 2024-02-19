@@ -215,6 +215,7 @@
         <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=CommandParameter}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="8"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">

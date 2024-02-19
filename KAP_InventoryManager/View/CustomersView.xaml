@@ -79,9 +79,9 @@
                                 <ColumnDefinition Width="3*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="No."
-                                       Style="{StaticResource table-header}"/>
+                                       Style="{StaticResource regular-text}"/>
                             <TextBlock Text="Name"
-                                       Style="{StaticResource table-header}"
+                                       Style="{StaticResource regular-text}"
                                        Grid.Column="1"/>
                         </Grid>
                     </Border>
@@ -103,7 +103,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Text="{Binding Id}"                   
-                                               Style="{StaticResource table-header}"/>
+                                               Style="{StaticResource regular-text}"/>
 
                                     <Border Grid.Column="1"
                                             Background="{StaticResource Color3}"
@@ -287,132 +287,168 @@
 
                 <Border Background="{StaticResource Color2}" 
                         CornerRadius="8" 
-                        Grid.Row="1"
-                        Padding="20">
-                    <StackPanel>
-                        <Grid>
+                        Padding="20"
+                        Grid.Row="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="20"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="Transactions" 
+                                            Style="{StaticResource card-header}"
+                                            Margin="0,0,0,0"
+                                            VerticalAlignment="Center"/>
+
+                                <StackPanel Orientation="Horizontal"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Right">
+                                    <customcontrols:SearchBar/>
+                                
+                                    <customcontrols:Button ButtonText="Filter"
+                                                           ButtonBackgroundColor="{StaticResource Color3}"
+                                                           ButtonIcon="Filter"
+                                                           Margin="10,0,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                      
+                            <Border BorderBrush="{StaticResource Color3}" 
+                                    BorderThickness="0,0,0,1.5" 
+                                    Margin="0,20,0,6">
+                                <Grid  Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="No."
+                                               Style="{StaticResource regular-text}"/>
+                                    <TextBlock Text="Invoice No."
+                                               Style="{StaticResource regular-text}"
+                                               Grid.Column="1"/>
+                                    <TextBlock Text="Terms"
+                                               Style="{StaticResource regular-text}"
+                                               Grid.Column="2"/>
+                                    <TextBlock Text="Date"
+                                               Style="{StaticResource regular-text}"
+                                               Grid.Column="3"/>
+                                    <TextBlock Text="Due Date"
+                                               Style="{StaticResource regular-text}"
+                                               Grid.Column="4"/>
+                                    <TextBlock Text="Amount"
+                                               Style="{StaticResource regular-text}"
+                                               Grid.Column="5"/>
+                                    <TextBlock Text="Status"
+                                               Style="{StaticResource regular-text}"
+                                               Grid.Column="6"/>
+                                </Grid>
+                            </Border>
+
+                            <ListBox ItemsSource="{Binding Invoices}" 
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     BorderBrush="Transparent"
+                                     HorizontalContentAlignment="Stretch"
+                                     Cursor="Hand"
+                                     SelectionMode="Single"
+                                     VerticalContentAlignment="Stretch">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="{Binding Id}"                   
+                                                       Style="{StaticResource regular-text}"/>
+
+                                            <Border Grid.Column="1"
+                                                    Background="{StaticResource Color3}"
+                                                    CornerRadius="5"
+                                                    Padding="8,2,8,2"
+                                                    Margin="0,0,20,0"
+                                                    Height="30">
+                                                <TextBlock Text="{Binding InvoiceNo}"
+                                                        Style="{StaticResource button-text}"
+                                                        HorizontalAlignment="Center"/>
+                                            </Border>
+
+                                            <TextBlock Text="{Binding Terms}"                   
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="2"/>
+
+                                            <TextBlock Text="{Binding DateString}"                   
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="3"/>
+
+                                            <TextBlock Text="{Binding DueDateString}"                   
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="4"/>
+
+                                            <TextBlock Text="{Binding TotalAmount}"                   
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="5"/>
+
+                                            <StackPanel Grid.Column="6"
+                                                        Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Status}"                   
+                                                           Style="{StaticResource regular-text}"
+                                                           Margin="0,0,8,0"/>
+                                                <fa:IconImage Icon="CircleDot"
+                                                              Height="15"/>
+                                            </StackPanel>
+
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
+                        <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-
-                            <TextBlock Text="Transactions" 
-                                        Style="{StaticResource card-header}"
-                                        Margin="0,0,0,0"
-                                        VerticalAlignment="Center"/>
-
+                            <Button Style="{StaticResource DiscardButton}"
+                                    Content="Previous"
+                                    HorizontalAlignment="Left"
+                                    Height="20"
+                                    Width="60"
+                                    Command="{Binding GoToPreviousPageCommand}"/>
                             <StackPanel Orientation="Horizontal"
                                         Grid.Column="1"
-                                        HorizontalAlignment="Right">
-                                <customcontrols:SearchBar/>
-                                
-                                <customcontrols:Button ButtonText="Filter"
-                                                       ButtonBackgroundColor="{StaticResource Color3}"
-                                                       ButtonIcon="Filter"
-                                                       Margin="10,0,0,0"/>
+                                        HorizontalAlignment="Center">
+                                <TextBlock Style="{StaticResource regular-text}"
+                                           Text="Page"
+                                           Margin="0,0,6,0"/>
+                                <TextBlock Style="{StaticResource regular-text}"
+                                           Text="{Binding PageNumber}"/>
                             </StackPanel>
+                            <Button Style="{StaticResource DiscardButton}"
+                                    Content="Next"
+                                    HorizontalAlignment="Right"
+                                    Height="20"
+                                    Width="60"
+                                    Grid.Column="2"
+                                    Command="{Binding GoToNextPageCommand}"/>
                         </Grid>
-                      
-                        <Border BorderBrush="{StaticResource Color3}" 
-                                BorderThickness="0,0,0,1.5" 
-                                Margin="0,20,0,6">
-                            <Grid  Margin="0,0,0,6">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="No."
-                                           Style="{StaticResource table-header}"/>
-                                <TextBlock Text="Invoice No."
-                                           Style="{StaticResource table-header}"
-                                           Grid.Column="1"/>
-                                <TextBlock Text="Terms"
-                                           Style="{StaticResource table-header}"
-                                           Grid.Column="2"/>
-                                <TextBlock Text="Date"
-                                           Style="{StaticResource table-header}"
-                                           Grid.Column="3"/>
-                                <TextBlock Text="Due Date"
-                                           Style="{StaticResource table-header}"
-                                           Grid.Column="4"/>
-                                <TextBlock Text="Amount"
-                                           Style="{StaticResource table-header}"
-                                           Grid.Column="5"/>
-                                <TextBlock Text="Status"
-                                           Style="{StaticResource table-header}"
-                                           Grid.Column="6"/>
-                            </Grid>
-                        </Border>
-
-                        <ListBox ItemsSource="{Binding Invoices}" 
-                                 Background="Transparent"
-                                 BorderThickness="0"
-                                 BorderBrush="Transparent"
-                                 HorizontalContentAlignment="Stretch"
-                                 Cursor="Hand"
-                                 SelectionMode="Single">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <TextBlock Text="{Binding Id}"                   
-                                                   Style="{StaticResource regular-text}"/>
-
-                                        <Border Grid.Column="1"
-                                                Background="{StaticResource Color3}"
-                                                CornerRadius="5"
-                                                Padding="8,2,8,2"
-                                                Margin="0,0,20,0"
-                                                Height="30">
-                                            <TextBlock Text="{Binding InvoiceNo}"
-                                                    Style="{StaticResource button-text}"
-                                                    HorizontalAlignment="Center"/>
-                                        </Border>
-                                        
-                                        <TextBlock Text="{Binding Terms}"                   
-                                                   Style="{StaticResource regular-text}"
-                                                   Grid.Column="2"/>
-
-                                        <TextBlock Text="{Binding DateString}"                   
-                                                   Style="{StaticResource regular-text}"
-                                                   Grid.Column="3"/>
-
-                                        <TextBlock Text="{Binding DueDateString}"                   
-                                                   Style="{StaticResource regular-text}"
-                                                   Grid.Column="4"/>
-
-                                        <TextBlock Text="{Binding TotalAmount}"                   
-                                                   Style="{StaticResource regular-text}"
-                                                   Grid.Column="5"/>
-
-                                        <StackPanel Grid.Column="6"
-                                                    Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Status}"                   
-                                                       Style="{StaticResource regular-text}"
-                                                       Margin="0,0,8,0"/>
-                                            <fa:IconImage Icon="CircleDot"
-                                                          Height="15"/>
-                                        </StackPanel>
-
-                                    </Grid>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </StackPanel>                   
+                    </Grid>
                 </Border>               
             </Grid>
         </Grid>

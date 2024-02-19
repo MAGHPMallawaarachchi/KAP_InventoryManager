@@ -92,7 +92,7 @@ namespace KAP_InventoryManager.Repositories
                 command.Parameters.Add("@Offset", MySqlDbType.Int32).Value = (page-1)*pageSize;
 
                 await connection.OpenAsync();
-                int counter = 0;
+                int counter = pageSize*(page - 1);
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
