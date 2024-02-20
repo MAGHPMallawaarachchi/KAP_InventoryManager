@@ -20,23 +20,21 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
             get { return _item; }
             set
             {
-                if (_item != value)
-                {
-                    _item = value;
-                    OnPropertyChanged(nameof(Item));
-                }
+
+                _item = value;
+                OnPropertyChanged(nameof(Item));
             }
         }
 
         public DetailsViewModel()
         {
-            Messenger.Default.Register<ItemModel>(this, HandleItemMessage);
+            Messenger.Default.Register<ItemModel>(this, OnMessageReceived);
+            Messenger.Default.Send(new object(), "RequestSelectedItem");
         }
 
-        private void HandleItemMessage(ItemModel item)
+        private void OnMessageReceived(ItemModel item)
         {
             Item = item;
         }
     }
-
 }

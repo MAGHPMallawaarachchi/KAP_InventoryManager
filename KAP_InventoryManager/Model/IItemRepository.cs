@@ -12,8 +12,8 @@ namespace KAP_InventoryManager.Model
         void Add(ItemModel item);
         void Edit(ItemModel item);
         void Delete(string partNo);
-        IEnumerable<ItemModel> GetAll();
-        ItemModel GetByPartNo(string partNo);
+        Task<IEnumerable<ItemModel>> GetAllAsync();
+        Task<ItemModel> GetByPartNoAsync(string partNo);
         List<string> SearchPartNo(string SearchText);
         Task<int> GetItemCount();
         Task<int> GetOutOfStockCount();

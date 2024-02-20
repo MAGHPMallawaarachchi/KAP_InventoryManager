@@ -598,11 +598,11 @@ namespace KAP_InventoryManager.ViewModel
             Clear();
         }
 
-        private void PopulateItemDetails()
+        private async void PopulateItemDetails()
         {
             try
             {
-                SelectedItem = ItemRepository.GetByPartNo(SelectedPartNo);
+                SelectedItem = await ItemRepository.GetByPartNoAsync(SelectedPartNo);
                 Discount = CustomerDiscount;
             }
             catch (MySqlException ex)

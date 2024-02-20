@@ -23,7 +23,6 @@ namespace KAP_InventoryManager.ViewModel
         private ItemModel _selectedItem;
 
         public ObservableCollection<ViewModelBase> ViewModels { get; } = new ObservableCollection<ViewModelBase>();
-
         private ViewModelBase _selectedViewModel;
 
         public ViewModelBase SelectedViewModel
@@ -43,6 +42,8 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _items = value;
                 OnPropertyChanged(nameof(Items));
+
+                SelectedItem = Items.FirstOrDefault();
             }
         }
         public ItemModel SelectedItem
@@ -66,7 +67,6 @@ namespace KAP_InventoryManager.ViewModel
         {
             ItemRepository = new ItemRepository();
 
-            // Initialize and add your view models to the collection
             ViewModels.Add(new OverviewViewModel());
             ViewModels.Add(new DetailsViewModel());
             ViewModels.Add(new TransactionsViewModel());
@@ -75,17 +75,23 @@ namespace KAP_InventoryManager.ViewModel
             ShowDetailsViewCommand = new ViewModelCommand(ExecuteShowDetailsViewCommand);
             ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);
 
-            // Set the default selected view model
             SelectedViewModel = ViewModels.First();
+
+            Messenger.Default.Register<object>(this, "RequestSelectedItem", OnRequestSelectedItem);
 
             PopulateListBox();
         }
 
-        private void PopulateListBox()
+        private void OnRequestSelectedItem(object obj)
+        {
+            Messenger.Default.Send(SelectedItem);
+        }
+
+        private async void PopulateListBox()
         {
             try
             {            
-                Items = ItemRepository.GetAll();
+                Items = await ItemRepository.GetAllAsync();
             }
             catch (MySqlException ex)
             {

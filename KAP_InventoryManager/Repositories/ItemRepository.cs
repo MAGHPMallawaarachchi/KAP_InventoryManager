@@ -52,19 +52,19 @@ namespace KAP_InventoryManager.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<ItemModel> GetAll()
+        public async Task<IEnumerable<ItemModel>> GetAllAsync()
         {
             List<ItemModel> items = new List<ItemModel>();
 
             using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SELECT * FROM Item", connection))
+            using (var command = new MySqlCommand("SELECT * FROM Item ORDER BY BrandID DESC LIMIT 20", connection))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 int counter = 0;
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         counter++;
 
@@ -91,7 +91,7 @@ namespace KAP_InventoryManager.Repositories
             return items;
         }
 
-        public ItemModel GetByPartNo(string partNo)
+        public async Task<ItemModel> GetByPartNoAsync(string partNo)
         {
             ItemModel item = null;
 
@@ -100,11 +100,11 @@ namespace KAP_InventoryManager.Repositories
             {
                 command.Parameters.Add("@PartNo", MySqlDbType.VarChar).Value = partNo;
 
-                connection.Open();
+                await connection.OpenAsync();
 
-                using (var reader = command.ExecuteReader())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    if (reader.Read())
+                    if (await reader.ReadAsync())
                     {
                         item = new ItemModel()
                         {
