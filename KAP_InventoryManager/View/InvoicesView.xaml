@@ -61,7 +61,7 @@
                             <fa:IconImage Icon="Search"
                                           Foreground="{StaticResource Color4}"
                                           Height="16"/>
-                            <TextBox Text="{Binding SearchInvoiceText, UpdateSourceTrigger=PropertyChanged}"
+                            <TextBox Text="{Binding InvoiceSearchText, UpdateSourceTrigger=PropertyChanged}"
                                      Background="{StaticResource Color3}"
                                      BorderThickness="0"
                                      Grid.Column="1"
