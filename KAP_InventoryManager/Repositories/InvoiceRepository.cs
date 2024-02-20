@@ -291,5 +291,43 @@ namespace KAP_InventoryManager.Repositories
             }
             return invoiceItems;
         }
+
+        public async Task<IEnumerable<InvoiceItemModel>> GetInvoicesByPartNo(string partNo, int pageSize, int page)
+        {
+            List<InvoiceItemModel> invoiceItems = new List<InvoiceItemModel>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("GetInvoicesByPartNo", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@p_PartNo", partNo);
+                command.Parameters.AddWithValue("@p_PageSize", pageSize);
+                command.Parameters.AddWithValue("@p_Offset", (page - 1) * pageSize);
+
+                int counter = pageSize * (page - 1);
+                await connection.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+                        InvoiceItemModel invoiceItem = new InvoiceItemModel()
+                        {
+                            No = counter,
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            CustomerID = reader["CustomerID"].ToString(),
+                            Quantity = (int)reader["Quantity"],
+                            UnitPrice = (Decimal)reader["UnitPrice"],
+                            Discount = (Decimal)reader["Discount"],
+                            Amount = (Decimal)reader["Amount"],
+                        };
+
+                        invoiceItems.Add(invoiceItem);
+                    }
+                }
+            }
+            return invoiceItems;
+        }
     }
 }

@@ -19,5 +19,6 @@ namespace KAP_InventoryManager.Model
         public int Quantity { get; set; }
         public decimal Discount { get; set; }
         public decimal Amount { get; set; }
+        public string CustomerID { get; set; }
     }
 }

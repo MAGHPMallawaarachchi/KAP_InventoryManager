@@ -4,9 +4,169 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:KAP_InventoryManager.View.InventoryViewPanels"
+             xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel.InventoryPanelViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="565" d:DesignWidth="800"
+             d:DesignHeight="670" d:DesignWidth="940"
              Background="Transparent">
-    <Border x:Name="SearchBorder" BorderBrush="{StaticResource Color2}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Color2}">
+
+    <UserControl.DataContext>
+        <viewModel:TransactionsViewModel/>
+    </UserControl.DataContext>
+    
+    <Border x:Name="SearchBorder" 
+            BorderBrush="{StaticResource Color2}" 
+            BorderThickness="1" 
+            CornerRadius="8" 
+            Background="{StaticResource Color2}"
+            Padding="20">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+                <RowDefinition Height="20"/>
+            </Grid.RowDefinitions>
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Transactions"
+                           Style="{StaticResource card-header}"/>
+            </Grid>
+
+            <StackPanel Grid.Row="1">
+                <Border BorderBrush="{StaticResource Color3}" 
+                        BorderThickness="0,0,0,1.5" 
+                        Margin="0,20,0,6">
+                    <Grid  Margin="0,0,0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.5*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="No."
+                                   Style="{StaticResource regular-text}"/>
+                        <TextBlock Text="Invoice No"
+                                   Style="{StaticResource regular-text}"
+                                   Grid.Column="1"/>
+                        <TextBlock Text="Customer"
+                                   Style="{StaticResource regular-text}"
+                                   Grid.Column="2"/>
+                        <TextBlock Text="Quantity"
+                                   Style="{StaticResource regular-text}"
+                                   Grid.Column="3"/>
+                        <TextBlock Text="Unit Price"
+                                   Style="{StaticResource regular-text}"
+                                   Grid.Column="4"/>
+                        <TextBlock Text="Dis%"
+                                   Style="{StaticResource regular-text}"
+                                   Grid.Column="5"/>
+                        <TextBlock Text="Amount"
+                                   Style="{StaticResource regular-text}"
+                                   Grid.Column="6"/>
+                    </Grid>
+                </Border>
+
+
+                <ListBox ItemsSource="{Binding Transactions, Mode=TwoWay}" 
+                         Background="Transparent"
+                         BorderThickness="0"
+                         BorderBrush="Transparent"
+                         HorizontalContentAlignment="Stretch"
+                         Cursor="Hand"
+                         SelectionMode="Single"
+                         Margin="0,10,0,0"
+                         IsHitTestVisible="True">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.5*"/>
+                                    <ColumnDefinition Width="1.5*"/>
+                                    <ColumnDefinition Width="1.5*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding No, Mode=TwoWay}"       
+                                           Style="{StaticResource regular-text}"/>
+
+                                <Border Grid.Column="1"
+                                        Background="{StaticResource Color3}"
+                                        CornerRadius="6"
+                                        Padding="8,2,8,2"
+                                        Margin="0,0,20,0"
+                                        Height="30"
+                                        Width="150"
+                                        HorizontalAlignment="Left">
+                                    <TextBlock Text="{Binding InvoiceNo}"
+                                               Style="{StaticResource button-text}"
+                                               HorizontalAlignment="Center"/>
+                                </Border>
+
+                                <TextBlock Text="{Binding CustomerID}"                                               
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="2"/>
+
+                                <TextBlock Text="{Binding Quantity}"                
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="3"/>
+
+                                <TextBlock Text="{Binding UnitPrice}"                 
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="4"/>
+
+                                <TextBlock Text="{Binding Discount}"                
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="5"/>
+
+                                <TextBlock Text="{Binding Amount}"                   
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="6"/>
+
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Style="{StaticResource DiscardButton}"
+                        Content="Previous"
+                        HorizontalAlignment="Left"
+                        Height="20"
+                        Width="60"
+                        Command="{Binding GoToPreviousPageCommand}"/>
+                <StackPanel Orientation="Horizontal"
+                            Grid.Column="1"
+                            HorizontalAlignment="Center">
+                    <TextBlock Style="{StaticResource regular-text}"
+                                Text="Page"
+                                Margin="0,0,6,0"/>
+                    <TextBlock Style="{StaticResource regular-text}"
+                                Text="{Binding PageNumber}"/>
+                </StackPanel>
+                <Button Style="{StaticResource DiscardButton}"
+                        Content="Next"
+                        HorizontalAlignment="Right"
+                        Height="20"
+                        Width="60"
+                        Grid.Column="2"
+                        Command="{Binding GoToNextPageCommand}"/>
+            </Grid>
+        </Grid>
     </Border>
 </UserControl>
