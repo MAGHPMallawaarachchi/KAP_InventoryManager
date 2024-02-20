@@ -50,7 +50,27 @@
             <Border Background="{StaticResource Color2}" CornerRadius="8">
                 <StackPanel Orientation="Vertical" Margin="20,20,20,20">
 
-                    <customcontrols:SearchBar/>
+                    <Border Background="{StaticResource Color3}"
+                            CornerRadius="6">
+                        <Grid Margin="8,4"
+                              Height="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <fa:IconImage Icon="Search"
+                                          Foreground="{StaticResource Color4}"
+                                          Height="16"/>
+                            <TextBox Text="{Binding SearchInvoiceText, UpdateSourceTrigger=PropertyChanged}"
+                                     Background="{StaticResource Color3}"
+                                     BorderThickness="0"
+                                     Grid.Column="1"
+                                     Margin="8,0,0,0"
+                                     Foreground="{StaticResource Color4}"
+                                     FontFamily="Inter"
+                                     FontSize="14"/>
+                        </Grid>
+                    </Border>
 
                     <Border BorderBrush="{StaticResource Color3}" BorderThickness="0,0,0,1.5" Margin="0,20,0,6">
                         <Grid  Margin="0,0,0,6">
@@ -60,17 +80,17 @@
                                 <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="No."
-                                       Style="{StaticResource table-header}"/>
+                                       Style="{StaticResource regular-text}"/>
                             <TextBlock Text="Invoice No."
-                                       Style="{StaticResource table-header}"
+                                       Style="{StaticResource regular-text}"
                                        Grid.Column="1"/>
                             <TextBlock Text="Status"           
-                                       Style="{StaticResource table-header}"
+                                       Style="{StaticResource regular-text}"
                                        Grid.Column="2"/>
                         </Grid>
                     </Border>
 
-                    <!--<ListBox ItemsSource="{Binding Items}" 
+                    <ListBox ItemsSource="{Binding Invoices}" 
                              SelectedItem="{Binding SelectedInvoice, Mode=TwoWay}"
                              Background="Transparent"
                              BorderThickness="0"
@@ -88,14 +108,14 @@
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Text="{Binding Id}"                   
-                                               Style="{StaticResource table-header}"/>
+                                               Style="{StaticResource regular-text}"/>
 
                                     <Border Grid.Column="1"
                                             Background="{StaticResource Color3}"
                                             CornerRadius="3"
                                             Padding="8,2,8,2"
                                             Margin="0,0,12,0">
-                                        <TextBlock Text="{Binding PartNo}"
+                                        <TextBlock Text="{Binding InvoiceNo}"
                                                    Style="{StaticResource button-text}"
                                                    HorizontalAlignment="Center"/>
                                     </Border>
@@ -103,13 +123,13 @@
                                         <fa:IconImage Icon="DotCircle"
                                                       Height="14"
                                                       Margin="0,0,4,0"/>
-                                        <TextBlock Text="{Binding QtyInHand}"
-                                                   Style="{StaticResource table-header}"/>
+                                        <TextBlock Text="{Binding Status}"
+                                                   Style="{StaticResource regular-text}"/>
                                     </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
-                    </ListBox>-->
+                    </ListBox>
                 </StackPanel>
             </Border>
 
@@ -129,7 +149,7 @@
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="KAP-10001" 
+                                <TextBlock Text="{Binding CurrentInvoice.InvoiceNo}" 
                                            Style="{StaticResource card-header}"
                                            Margin="0,0,0,0"
                                            VerticalAlignment="Center"/>
@@ -141,7 +161,7 @@
                                         Height="25"
                                         VerticalAlignment="Center"
                                         Margin="20,0,0,0">
-                                    <TextBlock Text="Cash" 
+                                    <TextBlock Text="{Binding CurrentInvoice.Terms}" 
                                                Foreground="{StaticResource Blue}"
                                                FontFamily="Inter"
                                                FontWeight="SemiBold"
@@ -174,7 +194,7 @@
                                             CornerRadius="3"
                                             Padding="8,2,8,2"
                                             HorizontalAlignment="Left">
-                                        <TextBlock Text="SUMITH_KALUTARA"
+                                        <TextBlock Text="{Binding CurrentInvoice.CustomerID}"
                                                    Style="{StaticResource button-text}"
                                                    HorizontalAlignment="Center"/>
                                     </Border>
@@ -194,7 +214,7 @@
                                                    Style="{StaticResource regular-text}"/>
                                         <TextBlock Text=":" Grid.Column="1"
                                                    Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text="SUMITH MOTORS KALUTARA" 
+                                        <TextBlock Text="{Binding Customer.Name}" 
                                                    Grid.Column="2"
                                                    Style="{StaticResource regular-text}"/>
 
@@ -202,7 +222,7 @@
                                                    Style="{StaticResource regular-text}"/>
                                         <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
                                                    Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text="NO. 54, HEENATIYANGALA ROAD, NAGODA, KALUTARA" 
+                                        <TextBlock Text="{Binding Customer.Address}" 
                                                    Grid.Column="2" Grid.Row="1"
                                                    Style="{StaticResource regular-text}"/>
 
@@ -210,7 +230,7 @@
                                                    Style="{StaticResource regular-text}"/>
                                         <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
                                                    Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text="077-7172817" 
+                                        <TextBlock Text="{Binding Customer.ContactNo}" 
                                                    Grid.Column="2" Grid.Row="2"
                                                    Style="{StaticResource regular-text}"/>                                        
 
@@ -240,7 +260,7 @@
                                                Style="{StaticResource regular-text}"/>
                                     <TextBlock Text=":" Grid.Column="1"
                                                Style="{StaticResource regular-text}"/>
-                                    <TextBlock Text="31-01-2024 @ 23:15" 
+                                    <TextBlock Text="{Binding CurrentInvoice.DateString}" 
                                                Grid.Column="2"
                                                Style="{StaticResource regular-text}"/>
 
@@ -248,7 +268,7 @@
                                                Style="{StaticResource regular-text}"/>
                                     <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
                                                Style="{StaticResource regular-text}"/>
-                                    <TextBlock Text="07-02-2024" 
+                                    <TextBlock Text="{Binding CurrentInvoice.DueDateString}" 
                                                Grid.Column="2" Grid.Row="1"
                                                Style="{StaticResource regular-text}"/>
 
@@ -256,7 +276,7 @@
                                                Style="{StaticResource regular-text}"/>
                                     <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
                                                Style="{StaticResource regular-text}"/>
-                                    <TextBlock Text="Shashika Eranga" 
+                                    <TextBlock Text="{Binding CurrentInvoice.RepID}" 
                                                Grid.Column="2" Grid.Row="2"
                                                Style="{StaticResource regular-text}"/>
 
@@ -284,93 +304,122 @@
                                 Margin="0,20,0,6">
                             <Grid  Margin="0,0,0,6">
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.7*"/>
+                                    <ColumnDefinition Width="1.5*"/>
                                     <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="6*"/>
                                     <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="1.5*"/>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="2*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="No."
-                                           Style="{StaticResource table-header}"/>
+                                           Style="{StaticResource regular-text}"/>
                                 <TextBlock Text="Part No."
-                                           Style="{StaticResource table-header}"
+                                           Style="{StaticResource regular-text}"
                                            Grid.Column="1"/>
                                 <TextBlock Text="Brand"
-                                           Style="{StaticResource table-header}"
+                                           Style="{StaticResource regular-text}"
                                            Grid.Column="2"/>
                                 <TextBlock Text="Description"
-                                           Style="{StaticResource table-header}"
+                                           Style="{StaticResource regular-text}"
                                            Grid.Column="3"/>
                                 <TextBlock Text="Qty"
-                                           Style="{StaticResource table-header}"
+                                           Style="{StaticResource regular-text}"
                                            Grid.Column="4"/>
                                 <TextBlock Text="Unit Price"
-                                           Style="{StaticResource table-header}"
+                                           Style="{StaticResource regular-text}"
                                            Grid.Column="5"/>
                                 <TextBlock Text="Dis%"
-                                           Style="{StaticResource table-header}"
+                                           Style="{StaticResource regular-text}"
                                            Grid.Column="6"/>
                                 <TextBlock Text="Amount"
-                                           Style="{StaticResource table-header}"
+                                           Style="{StaticResource regular-text}"
                                            Grid.Column="7"/>
                             </Grid>
                         </Border>
 
-                        <!-- <ListBox ItemsSource="{Binding Customers}" 
-                                 SelectedItem="{Binding SelectedCustomer, Mode=TwoWay}"
+                        <ListBox ItemsSource="{Binding InvoiceItems, Mode=TwoWay}" 
                                  Background="Transparent"
                                  BorderThickness="0"
                                  BorderBrush="Transparent"
                                  HorizontalContentAlignment="Stretch"
                                  Cursor="Hand"
-                                 SelectionMode="Single">
+                                 SelectionMode="Single"
+                                 Margin="0,30,0,0"
+                                 IsHitTestVisible="True">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="0.7*"/>
+                                            <ColumnDefinition Width="1.5*"/>
                                             <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="3*"/>
+                                            <ColumnDefinition Width="6*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="1.5*"/>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{Binding Id}"                   
-                                                   Style="{StaticResource table-header}"/>
+                                        <TextBlock Text="{Binding No, Mode=TwoWay}"       
+                                                   Style="{StaticResource regular-text}"/>
 
                                         <Border Grid.Column="1"
                                                 Background="{StaticResource Color3}"
                                                 CornerRadius="3"
                                                 Padding="8,2,8,2"
-                                                Margin="0,0,12,0">
-                                            <TextBlock Text="{Binding CustomerId}"
+                                                Margin="0,0,20,0"
+                                                Height="30">
+                                            <TextBlock Text="{Binding PartNo}"
                                                        Style="{StaticResource button-text}"
                                                        HorizontalAlignment="Center"/>
                                         </Border>
+
+                                        <TextBlock Text="{Binding BrandID}"                                              
+                                                   Style="{StaticResource regular-text}"
+                                                   Grid.Column="2"/>
+
+                                        <TextBlock Text="{Binding Description}"              
+                                                   Style="{StaticResource regular-text}"
+                                                   Grid.Column="3"/>
+
+                                        <TextBlock Text="{Binding Quantity}"                 
+                                                   Style="{StaticResource regular-text}"
+                                                   Grid.Column="4"/>
+
+                                        <TextBlock Text="{Binding UnitPrice}"                
+                                                   Style="{StaticResource regular-text}"
+                                                   Grid.Column="5"/>
+
+                                        <TextBlock Text="{Binding Discount}"                 
+                                                   Style="{StaticResource regular-text}"
+                                                   Grid.Column="6"/>
+
+                                        <TextBlock Text="{Binding Amount}"                   
+                                                   Style="{StaticResource regular-text}"
+                                                   Grid.Column="7"/>
+
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
-                        </ListBox> -->
+                        </ListBox>
 
                         <Border BorderBrush="{StaticResource Color3}" 
                                 BorderThickness="0,0,0,1.5" 
                                 Margin="0,20,0,6">
                             <Grid  Margin="0,0,0,6">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="12*"/>
+                                    <ColumnDefinition Width="11.7*"/>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="2*"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Text="Total"
-                                           Style="{StaticResource table-header}"
+                                           Style="{StaticResource regular-text}"
                                            Grid.Column="1"/>
-                                <StackPanel Orientation="Horizontal"
-                                            Grid.Column="2"> 
-                                    <TextBlock Text="Rs. "
-                                               Style="{StaticResource table-header}"/>
-                                    <TextBlock Text="230,060.00"
-                                               Style="{StaticResource table-header}"/>
-                                </StackPanel>
+                                <TextBlock Text="{Binding CurrentInvoice.TotalAmount}"
+                                               Style="{StaticResource regular-text}"
+                                               Grid.Column="2"/>
                             </Grid>
                         </Border>
                         

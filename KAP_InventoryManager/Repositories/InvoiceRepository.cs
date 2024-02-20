@@ -109,7 +109,7 @@ namespace KAP_InventoryManager.Repositories
                             DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
                             DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
                             TotalAmount = (Decimal)reader["TotalAmount"],
-                            Status = reader["status"].ToString()
+                            Status = reader["Status"].ToString()
                         };
 
                         invoices.Add(invoice);
@@ -150,7 +150,7 @@ namespace KAP_InventoryManager.Repositories
                             DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
                             DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
                             TotalAmount = (Decimal)reader["TotalAmount"],
-                            Status = reader["status"].ToString()
+                            Status = reader["Status"].ToString()
                         };
 
                         invoices.Add(invoice);
@@ -158,6 +158,138 @@ namespace KAP_InventoryManager.Repositories
                 }
             }
             return invoices;
+        }
+
+        public async Task<IEnumerable<InvoiceModel>> GetAllInvoicesAsync()
+        {
+            List<InvoiceModel> invoices = new List<InvoiceModel>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SELECT InvoiceNo, Status FROM Invoice ORDER BY Date DESC LIMIT 20", connection))
+            {
+
+                await connection.OpenAsync();
+                int counter = 0;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+
+                        InvoiceModel invoice = new InvoiceModel()
+                        {
+                            Id = counter,
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            Status = reader["Status"].ToString()
+                        };
+
+                        invoices.Add(invoice);
+                    }
+                }
+            }
+            return invoices;
+        }
+
+        public async Task<IEnumerable<InvoiceModel>> SearchInvoiceListAsync(string invoiceNo)
+        {
+            List<InvoiceModel> invoices = new List<InvoiceModel>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SearchInvoiceList", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue("@p_InvoiceNo", invoiceNo);
+
+                await connection.OpenAsync();
+                int counter = 0;
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+
+                        InvoiceModel invoice = new InvoiceModel()
+                        {
+                            Id = counter,
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            Status = reader["Status"].ToString()
+                        };
+
+                        invoices.Add(invoice);
+                    }
+                }
+            }
+            return invoices;
+        }
+
+        public async Task<InvoiceModel> GetByInvoiceNo(string invoiceNo)
+        {
+            InvoiceModel invoice = null;
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("SELECT * FROM Invoice WHERE InvoiceNo = @InvoiceNo", connection))
+            {
+                command.Parameters.Add("@InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
+
+                await connection.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        invoice = new InvoiceModel()
+                        {
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            Terms = reader["Terms"] is DBNull ? null : reader["Terms"].ToString(),
+                            DateString = reader["Date"] is DBNull ? null : ((DateTime)reader["Date"]).ToString("dd-MM-yyyy @ HH.mm"),
+                            DueDateString = reader["DueDate"] is DBNull ? null : ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
+                            TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                            Status = reader["Status"] is DBNull ? null : reader["Status"].ToString(),
+                            CustomerID = reader["CustomerID"] is DBNull ? null : reader["CustomerID"].ToString(),
+                            RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
+                        };
+                    }
+                }
+            }
+            return invoice;
+        }
+
+        public async Task<IEnumerable<InvoiceItemModel>> GetInvoiceItems(string invoiceNo)
+        {
+            List<InvoiceItemModel> invoiceItems = new List<InvoiceItemModel>();
+
+            using (var connection = GetConnection())
+            using (var command = new MySqlCommand("GetInvoiceItems", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@p_InvoiceNo", invoiceNo);
+
+                await connection.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        InvoiceItemModel invoiceItem = new InvoiceItemModel()
+                        {
+                            No = (int)reader["No"],
+                            PartNo = reader["PartNo"].ToString(),
+                            BrandID = reader["BrandID"].ToString(),
+                            Description = reader["Description"].ToString(),
+                            Quantity = (int)reader["Quantity"],
+                            UnitPrice = (Decimal)reader["UnitPrice"],
+                            Discount = (Decimal)reader["Discount"],
+                            Amount = (Decimal)reader["Amount"],
+                        };
+
+                        invoiceItems.Add(invoiceItem);
+                    }
+                }
+            }
+            return invoiceItems;
         }
     }
 }
