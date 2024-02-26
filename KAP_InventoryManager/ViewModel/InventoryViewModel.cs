@@ -21,6 +21,8 @@ namespace KAP_InventoryManager.ViewModel
      
         private IEnumerable<ItemModel> _items;
         private ItemModel _selectedItem;
+        private ItemModel _currentItem;
+        private string _searchItemText;
 
         public ObservableCollection<ViewModelBase> ViewModels { get; } = new ObservableCollection<ViewModelBase>();
         private ViewModelBase _selectedViewModel;
@@ -46,6 +48,7 @@ namespace KAP_InventoryManager.ViewModel
                 SelectedItem = Items.FirstOrDefault();
             }
         }
+
         public ItemModel SelectedItem
         {
             get { return _selectedItem; }
@@ -54,7 +57,32 @@ namespace KAP_InventoryManager.ViewModel
                 _selectedItem = value;
                 OnPropertyChanged(nameof(SelectedItem));
 
-                Messenger.Default.Send(SelectedItem);
+                if(SelectedItem != null)
+                    PopulateDetails();
+            }
+        }
+
+        public ItemModel CurrentItem
+        {
+            get { return _currentItem; }
+            set
+            {
+                _currentItem = value;
+                OnPropertyChanged(nameof(CurrentItem));
+
+                Messenger.Default.Send(CurrentItem);
+            }
+        }
+
+        public string SearchItemText
+        {
+            get { return _searchItemText; }
+            set
+            {
+                _searchItemText = value;
+                OnPropertyChanged(nameof(SearchItemText));
+
+                PopulateItemsAsync();
             }
         }
 
@@ -69,29 +97,33 @@ namespace KAP_InventoryManager.ViewModel
 
             ViewModels.Add(new OverviewViewModel());
             ViewModels.Add(new DetailsViewModel());
-            ViewModels.Add(new TransactionsViewModel());
+/*            ViewModels.Add(new TransactionsViewModel());*/
 
             ShowOverviewViewCommand = new ViewModelCommand(ExecuteShowOverviewViewCommand);
             ShowDetailsViewCommand = new ViewModelCommand(ExecuteShowDetailsViewCommand);
-            ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);
+/*            ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);*/
 
             SelectedViewModel = ViewModels.First();
 
             Messenger.Default.Register<object>(this, "RequestSelectedItem", OnRequestSelectedItem);
 
-            PopulateListBox();
+            PopulateItemsAsync();
         }
 
         private void OnRequestSelectedItem(object obj)
         {
-            Messenger.Default.Send(SelectedItem);
+            
+            Messenger.Default.Send(CurrentItem);
         }
 
-        private async void PopulateListBox()
+        private async void PopulateItemsAsync()
         {
             try
             {            
-                Items = await ItemRepository.GetAllAsync();
+                if(SearchItemText == null)
+                    Items = await ItemRepository.GetAllAsync();
+                else
+                    Items = await ItemRepository.SearchItemListAsync(SearchItemText);
             }
             catch (MySqlException ex)
             {
@@ -99,20 +131,32 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private void ExecuteShowTransactionsViewCommand(object obj)
+/*        private void ExecuteShowTransactionsViewCommand(object obj)
         {
             SelectedViewModel = ViewModels.OfType<TransactionsViewModel>().FirstOrDefault();
         }
-
+*/
         private void ExecuteShowDetailsViewCommand(object obj)
         {
-            Messenger.Default.Send(SelectedItem);
+            Messenger.Default.Send(CurrentItem);
             SelectedViewModel = ViewModels.OfType<DetailsViewModel>().FirstOrDefault();
         }
 
         private void ExecuteShowOverviewViewCommand(object obj)
         {
             SelectedViewModel = ViewModels.OfType<OverviewViewModel>().FirstOrDefault();
+        }
+
+        private void PopulateDetails()
+        {
+            try 
+            { 
+                CurrentItem = ItemRepository.GetByPartNo(SelectedItem.PartNo); 
+            }
+            catch(MySqlException ex)
+            {
+                MessageBox.Show($"Failed to fetch item's details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

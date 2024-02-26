@@ -44,7 +44,7 @@ namespace KAP_InventoryManager.Repositories
             List<CustomerModel> customers = new List<CustomerModel>();
 
             using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SELECT CustomerID FROM Customer ORDER BY CustomerID DESC", connection))
+            using (var command = new MySqlCommand("SELECT CustomerID FROM Customer ORDER BY CustomerID DESC LIMIT 20", connection))
             {
                 await connection.OpenAsync();
                 int counter = 0;

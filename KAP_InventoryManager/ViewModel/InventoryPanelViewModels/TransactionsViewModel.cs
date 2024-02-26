@@ -109,6 +109,8 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
                 if (Item != null)
                 {
                     Transactions = await InvoiceRepository.GetInvoicesByPartNo(Item.PartNo, 15, PageNumber);
+                    if(Transactions.Count()<15)
+                        IsFinalPage = true;
                 }
             }
             catch (MySqlException ex)

@@ -45,7 +45,6 @@
            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Height="30">
-                <customcontrols:SearchBar Width="220"/>
                 <customcontrols:Button
                     ButtonText="Filter"
                     ButtonBackgroundColor="{StaticResource Color3}"
@@ -68,11 +67,30 @@
             </Grid.ColumnDefinitions>
             <Border Margin="0,25,0,0" Background="{StaticResource Color2}" CornerRadius="8">
                 <StackPanel Orientation="Vertical" Margin="20,20,20,20">
-                    
-                    <TextBlock Text="Items" 
-                               Style="{StaticResource card-header}"
-                               Margin="0,0,0,20"/>
-                    
+
+                    <Border Background="{StaticResource Color3}"
+                            CornerRadius="6"
+                            Margin="0,0,0,20">
+                        <Grid Margin="8,4"
+                              Height="20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <fa:IconImage Icon="Search"
+                                          Foreground="{StaticResource Color4}"
+                                          Height="16"/>
+                            <TextBox Text="{Binding SearchItemText, UpdateSourceTrigger=PropertyChanged}"
+                                     Background="{StaticResource Color3}"
+                                     BorderThickness="0"
+                                     Grid.Column="1"
+                                     Margin="8,0,0,0"
+                                     Foreground="{StaticResource Color4}"
+                                     FontFamily="Inter"
+                                     FontSize="14"/>
+                        </Grid>
+                    </Border>
+
                     <Border BorderBrush="{StaticResource Color3}" BorderThickness="0,0,0,1.5" Margin="0,0,0,6">
                         <Grid  Margin="0,0,0,6">
                             <Grid.ColumnDefinitions>

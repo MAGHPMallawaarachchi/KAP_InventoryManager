@@ -316,7 +316,6 @@ namespace KAP_InventoryManager.Repositories
                         {
                             No = counter,
                             InvoiceNo = reader["InvoiceNo"].ToString(),
-                            CustomerID = reader["CustomerID"].ToString(),
                             Quantity = (int)reader["Quantity"],
                             UnitPrice = (Decimal)reader["UnitPrice"],
                             Discount = (Decimal)reader["Discount"],
