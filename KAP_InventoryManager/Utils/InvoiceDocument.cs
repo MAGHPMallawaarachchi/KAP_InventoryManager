@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.Linq;
+using System.Windows;
 using KAP_InventoryManager.Model;
+using PdfiumViewer;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -293,6 +296,52 @@ namespace QuestPDF.ExampleInvoice
                     });
                 });
             }).GeneratePdf(filePath);
+
+/*            PrintPDF("LBP6030w/6018w", "A4", filePath, 2);*/
+        }
+
+        public bool PrintPDF(string printer, string paperName, string filename, int copies)
+        {
+            try
+            {
+                // Create the printer settings for our printer
+                var printerSettings = new PrinterSettings
+                {
+                    PrinterName = printer,
+                    Copies = (short)copies,
+                };
+
+                // Create our page settings for the paper size selected
+                var pageSettings = new PageSettings(printerSettings)
+                {
+                    Margins = new Margins(0, 0, 0, 0),
+                };
+                foreach (PaperSize paperSize in printerSettings.PaperSizes)
+                {
+                    if (paperSize.PaperName == paperName)
+                    {
+                        pageSettings.PaperSize = paperSize;
+                        break;
+                    }
+                }
+
+                // Now print the PDF document
+                using (var document = PdfDocument.Load(filename))
+                {
+                    using (var printDocument = document.CreatePrintDocument())
+                    {
+                        printDocument.PrinterSettings = printerSettings;
+                        printDocument.DefaultPageSettings = pageSettings;
+                        printDocument.PrintController = new StandardPrintController();
+                        printDocument.Print();
+                    }
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
