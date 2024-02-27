@@ -24,6 +24,8 @@ namespace KAP_InventoryManager.Repositories
 
                         command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoice.InvoiceNo;
                         command.Parameters.Add("@p_Terms", MySqlDbType.VarChar).Value = invoice.Terms;
+                        command.Parameters.Add("@p_Date", MySqlDbType.DateTime).Value = invoice.Date;
+                        command.Parameters.Add("@p_DueDate", MySqlDbType.DateTime).Value = invoice.DueDate;
                         command.Parameters.Add("@p_TotalAmount", MySqlDbType.Decimal).Value = invoice.TotalAmount;
                         command.Parameters.Add("@p_CustomerID", MySqlDbType.VarChar).Value = invoice.CustomerID;
                         command.Parameters.Add("@p_RepID", MySqlDbType.VarChar).Value = invoice.RepID;

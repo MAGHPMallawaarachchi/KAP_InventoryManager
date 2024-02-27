@@ -4,6 +4,7 @@ using KAP_InventoryManager.CustomControls;
 using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
 using MySql.Data.MySqlClient;
+using QuestPDF.ExampleInvoice;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -656,8 +657,18 @@ namespace KAP_InventoryManager.ViewModel
                         Terms = SelectedPaymentType.ToUpper(),
                         TotalAmount = Total,
                         CustomerID = SelectedCustomerId,
-                        RepID = SelectedRepId == "None" ? null : SelectedRepId
+                        RepID = SelectedRepId == "None" ? null : SelectedRepId,
+                        Date = DateTime.Now,
                     };
+
+                    if (invoice.Terms == "CASH")
+                    {
+                        invoice.DueDate = DateTime.Now.AddDays(7);
+                    }
+                    else
+                    {
+                        invoice.DueDate = DateTime.Now.AddDays(60);
+                    }
 
                     InvoiceRepository.AddInvoice(invoice);
 
@@ -666,6 +677,9 @@ namespace KAP_InventoryManager.ViewModel
                         invoiceItem.InvoiceNo = InvoiceNo;
                         InvoiceRepository.AddInvoiceItem(invoiceItem);
                     }
+
+                    InvoiceDocument invoiceDoc = new InvoiceDocument();
+                    invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems);
 
                     ClearInvoice();
                     MessageBox.Show("Invoice saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
