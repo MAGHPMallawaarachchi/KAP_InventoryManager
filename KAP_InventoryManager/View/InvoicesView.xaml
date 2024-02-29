@@ -173,13 +173,34 @@
                             <StackPanel Orientation="Horizontal"
                                         Grid.Column="1"
                                         HorizontalAlignment="Right">
-                                <customcontrols:Button ButtonText="Cancel"
-                                                       ButtonBackgroundColor="{StaticResource Red}"
-                                                       ButtonIcon="Cancel"
-                                                       Margin="0,0,12,0"/>
-                                <customcontrols:Button ButtonText="Confirm Payment"
-                                                       ButtonBackgroundColor="{StaticResource Blue}"
-                                                       ButtonIcon="CircleCheck"/>
+                                
+                                <Button Style="{StaticResource CustomButtonStyle}"
+                                        Background="{StaticResource Red}"
+                                        Command="{Binding CancelInvoiceCommand}"
+                                        Margin="0,0,8,0">
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="8">
+                                        <fa:IconImage Icon="Cancel"
+                                                      Height="13"
+                                                      Margin="0,0,6,0"
+                                                      Foreground="{StaticResource Color5}"/>
+                                        <TextBlock Text="Cancel"
+                                                   Style="{StaticResource button-text}"/>
+                                    </StackPanel>
+                                </Button>
+                                
+                                <Button Style="{StaticResource CustomButtonStyle}"
+                                        Background="{StaticResource Blue}">
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="8">
+                                        <fa:IconImage Icon="CircleCheck"
+                                                      Height="13"
+                                                      Margin="0,0,6,0"
+                                                      Foreground="{StaticResource Color5}"/>
+                                        <TextBlock Text="Confirm Payment"
+                                                   Style="{StaticResource button-text}"/>
+                                    </StackPanel>
+                                </Button>                                
                             </StackPanel>
                         </Grid>
 

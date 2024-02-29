@@ -330,5 +330,26 @@ namespace KAP_InventoryManager.Repositories
             }
             return invoiceItems;
         }
+
+        public async Task CancelInvoice(string invoiceNo)
+        {
+            using (var connection = GetConnection())
+            {
+                await connection.OpenAsync();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    using (var command = new MySqlCommand("CancelInvoice", connection, transaction))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
+
+                        await command.ExecuteNonQueryAsync();
+                    }
+
+                    transaction.Commit();
+                }
+            }
+        }
     }
 }

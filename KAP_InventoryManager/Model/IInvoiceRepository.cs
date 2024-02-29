@@ -18,5 +18,6 @@ namespace KAP_InventoryManager.Model
         Task<InvoiceModel> GetByInvoiceNo(string invoiceNo);
         Task<IEnumerable<InvoiceItemModel>> GetInvoiceItems(string invoiceNo);
         Task<IEnumerable<InvoiceItemModel>> GetInvoicesByPartNo(string partNo, int pageSize, int page);
+        Task CancelInvoice(string invoiceNo);
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace KAP_InventoryManager.ViewModel
 {
@@ -87,12 +88,41 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public ICommand CancelInvoiceCommand { get; }
+
         public InvoicesViewModel()
         {
+            CancelInvoiceCommand = new ViewModelCommand(ExecuteCancelInvoiceCommand);
+
             CustomerRepository = new CustomerRepository();
             InvoiceRepository = new InvoiceRepository();
 
             PopulateInvoicesAsync();
+        }
+
+        private async void ExecuteCancelInvoiceCommand(object obj)
+        {
+            try
+            {
+                if (CurrentInvoice != null)
+                {
+                    MessageBoxResult result = MessageBox.Show("Are you sure you want to cancel this invoice?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        await InvoiceRepository.CancelInvoice(CurrentInvoice.InvoiceNo);
+                        MessageBox.Show("Invoice cancelled successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show($"No invoice selected!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to cancel the invoice. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private async void PopulateInvoicesAsync()
