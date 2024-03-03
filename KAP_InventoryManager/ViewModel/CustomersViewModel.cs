@@ -186,9 +186,9 @@ namespace KAP_InventoryManager.ViewModel
                 else
                     Customers = await CustomerRepository.SearchCustomerListAsync(SearchCustomerText);
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch customers. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -209,9 +209,9 @@ namespace KAP_InventoryManager.ViewModel
                         IsFinalPage = true;
                 }
 
-            }catch (MySqlException ex)
+            }catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch invoices. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -223,9 +223,9 @@ namespace KAP_InventoryManager.ViewModel
                 CalculateDebtPercentage();
                 PopulateInvoicesAsync();
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch customer's details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

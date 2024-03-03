@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace KAP_InventoryManager.Repositories
 {
@@ -13,342 +14,427 @@ namespace KAP_InventoryManager.Repositories
     {
         public void AddInvoice(InvoiceModel invoice)
         {
-            using (var connection = GetConnection())
+            try
             {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var connection = GetConnection())
                 {
-                    using (var command = new MySqlCommand("AddInvoice", connection, transaction))
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        command.CommandType = CommandType.StoredProcedure;
+                        using (var command = new MySqlCommand("AddInvoice", connection, transaction))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
 
-                        command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoice.InvoiceNo;
-                        command.Parameters.Add("@p_Terms", MySqlDbType.VarChar).Value = invoice.Terms;
-                        command.Parameters.Add("@p_Date", MySqlDbType.DateTime).Value = invoice.Date;
-                        command.Parameters.Add("@p_DueDate", MySqlDbType.DateTime).Value = invoice.DueDate;
-                        command.Parameters.Add("@p_TotalAmount", MySqlDbType.Decimal).Value = invoice.TotalAmount;
-                        command.Parameters.Add("@p_CustomerID", MySqlDbType.VarChar).Value = invoice.CustomerID;
-                        command.Parameters.Add("@p_RepID", MySqlDbType.VarChar).Value = invoice.RepID;
+                            command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoice.InvoiceNo;
+                            command.Parameters.Add("@p_Terms", MySqlDbType.VarChar).Value = invoice.Terms;
+                            command.Parameters.Add("@p_Date", MySqlDbType.DateTime).Value = invoice.Date;
+                            command.Parameters.Add("@p_DueDate", MySqlDbType.DateTime).Value = invoice.DueDate;
+                            command.Parameters.Add("@p_TotalAmount", MySqlDbType.Decimal).Value = invoice.TotalAmount;
+                            command.Parameters.Add("@p_CustomerID", MySqlDbType.VarChar).Value = invoice.CustomerID;
+                            command.Parameters.Add("@p_RepID", MySqlDbType.VarChar).Value = invoice.RepID;
 
-                        command.ExecuteNonQuery();
+                            command.ExecuteNonQuery();
+                        }
+
+                        transaction.Commit();
                     }
-
-                    transaction.Commit();
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to add invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public void AddInvoiceItem(InvoiceItemModel invoiceItem)
         {
-            using (var connection = GetConnection())
+            try
             {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var connection = GetConnection())
                 {
-                    using (var command = new MySqlCommand("AddInvoiceItem", connection, transaction))
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        command.CommandType = CommandType.StoredProcedure;
+                        using (var command = new MySqlCommand("AddInvoiceItem", connection, transaction))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
 
-                        command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoiceItem.InvoiceNo;
-                        command.Parameters.Add("@p_PartNo", MySqlDbType.VarChar).Value = invoiceItem.PartNo;
-                        command.Parameters.Add("@p_No", MySqlDbType.Int32).Value = invoiceItem.No;
-                        command.Parameters.Add("@p_Quantity", MySqlDbType.Int32).Value = invoiceItem.Quantity;
-                        command.Parameters.Add("@p_Amount", MySqlDbType.Decimal).Value = invoiceItem.Amount;
-                        command.Parameters.Add("@p_Discount", MySqlDbType.Decimal).Value = invoiceItem.Discount;
+                            command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoiceItem.InvoiceNo;
+                            command.Parameters.Add("@p_PartNo", MySqlDbType.VarChar).Value = invoiceItem.PartNo;
+                            command.Parameters.Add("@p_No", MySqlDbType.Int32).Value = invoiceItem.No;
+                            command.Parameters.Add("@p_Quantity", MySqlDbType.Int32).Value = invoiceItem.Quantity;
+                            command.Parameters.Add("@p_Amount", MySqlDbType.Decimal).Value = invoiceItem.Amount;
+                            command.Parameters.Add("@p_Discount", MySqlDbType.Decimal).Value = invoiceItem.Discount;
 
-                        command.ExecuteNonQuery();
+                            command.ExecuteNonQuery();
+                        }
+
+                        transaction.Commit();
                     }
-
-                    transaction.Commit();
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to add invoice items. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public string GetNextInvoiceNumber()
         {
-            string nextInvoiceNo = string.Empty;
-            using (var connection = GetConnection())
+            try
             {
-                connection.Open();
-                using (var command = new MySqlCommand("SELECT GetNextInvoiceNo()", connection))
+                string nextInvoiceNo = string.Empty;
+                using (var connection = GetConnection())
                 {
-                    object result = command.ExecuteScalar();
-                    if (result != null)
+                    connection.Open();
+                    using (var command = new MySqlCommand("SELECT GetNextInvoiceNo()", connection))
                     {
-                        nextInvoiceNo = result.ToString();
+                        object result = command.ExecuteScalar();
+                        if (result != null)
+                        {
+                            nextInvoiceNo = result.ToString();
+                        }
                     }
                 }
+                return nextInvoiceNo;
             }
-            return nextInvoiceNo;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoice number. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return string.Empty;
+            }
         }
 
         public async Task<IEnumerable<InvoiceModel>> GetInvoiceByCustomerAsync(string customerId, int pageSize, int page)
         {
-            List<InvoiceModel> invoices = new List<InvoiceModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("GetInvoiceByCustomer", connection))
+            try
             {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@p_PageSize", pageSize);
-                command.Parameters.AddWithValue("@p_Offset", (page - 1) * pageSize);
-                command.Parameters.AddWithValue("@p_CustomerID", customerId);
+                List<InvoiceModel> invoices = new List<InvoiceModel>();
 
-                await connection.OpenAsync();
-                int counter = pageSize*(page - 1);
-
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("GetInvoiceByCustomer", connection))
                 {
-                    while (await reader.ReadAsync())
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@p_PageSize", pageSize);
+                    command.Parameters.AddWithValue("@p_Offset", (page - 1) * pageSize);
+                    command.Parameters.AddWithValue("@p_CustomerID", customerId);
+
+                    await connection.OpenAsync();
+                    int counter = pageSize*(page - 1);
+
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        counter++;
-
-                        InvoiceModel invoice = new InvoiceModel()
+                        while (await reader.ReadAsync())
                         {
-                            Id = counter,
-                            InvoiceNo = reader["InvoiceNo"].ToString(),
-                            Terms = reader["Terms"].ToString(),
-                            DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
-                            DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
-                            TotalAmount = (Decimal)reader["TotalAmount"],
-                            Status = reader["Status"].ToString()
-                        };
+                            counter++;
 
-                        invoices.Add(invoice);
+                            InvoiceModel invoice = new InvoiceModel()
+                            {
+                                Id = counter,
+                                InvoiceNo = reader["InvoiceNo"].ToString(),
+                                Terms = reader["Terms"].ToString(),
+                                DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
+                                DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
+                                TotalAmount = (Decimal)reader["TotalAmount"],
+                                Status = reader["Status"].ToString()
+                            };
+
+                            invoices.Add(invoice);
+                        }
                     }
                 }
+                return invoices;
             }
-            return invoices;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoices. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public async Task<IEnumerable<InvoiceModel>> SearchCustomerInvoiceListAsync(string invoiceNo, string customerId, int pageSize, int page)
         {
-            List<InvoiceModel> invoices = new List<InvoiceModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SearchCustomerInvoiceList", connection))
+            try
             {
-                command.CommandType = CommandType.StoredProcedure;
+                List<InvoiceModel> invoices = new List<InvoiceModel>();
 
-                command.Parameters.AddWithValue("@p_InvoiceNo", invoiceNo);
-                command.Parameters.AddWithValue("@p_PageSize", pageSize);
-                command.Parameters.AddWithValue("@p_Offset", (page - 1) * pageSize);
-                command.Parameters.AddWithValue("@p_CustomerID", customerId);
-
-                await connection.OpenAsync();
-                int counter = pageSize * (page - 1);
-
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SearchCustomerInvoiceList", connection))
                 {
-                    while (await reader.ReadAsync())
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@p_InvoiceNo", invoiceNo);
+                    command.Parameters.AddWithValue("@p_PageSize", pageSize);
+                    command.Parameters.AddWithValue("@p_Offset", (page - 1) * pageSize);
+                    command.Parameters.AddWithValue("@p_CustomerID", customerId);
+
+                    await connection.OpenAsync();
+                    int counter = pageSize * (page - 1);
+
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        counter++;
-
-                        InvoiceModel invoice = new InvoiceModel()
+                        while (await reader.ReadAsync())
                         {
-                            Id = counter,
-                            InvoiceNo = reader["InvoiceNo"].ToString(),
-                            Terms = reader["Terms"].ToString(),
-                            DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
-                            DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
-                            TotalAmount = (Decimal)reader["TotalAmount"],
-                            Status = reader["Status"].ToString()
-                        };
+                            counter++;
 
-                        invoices.Add(invoice);
+                            InvoiceModel invoice = new InvoiceModel()
+                            {
+                                Id = counter,
+                                InvoiceNo = reader["InvoiceNo"].ToString(),
+                                Terms = reader["Terms"].ToString(),
+                                DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
+                                DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
+                                TotalAmount = (Decimal)reader["TotalAmount"],
+                                Status = reader["Status"].ToString()
+                            };
+
+                            invoices.Add(invoice);
+                        }
                     }
                 }
+                return invoices;
             }
-            return invoices;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to search invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public async Task<IEnumerable<InvoiceModel>> GetAllInvoicesAsync()
         {
-            List<InvoiceModel> invoices = new List<InvoiceModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SELECT InvoiceNo, Status FROM Invoice ORDER BY Date DESC LIMIT 20", connection))
+            try
             {
+                List<InvoiceModel> invoices = new List<InvoiceModel>();
 
-                await connection.OpenAsync();
-                int counter = 0;
-
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT InvoiceNo, Status FROM Invoice ORDER BY Date DESC LIMIT 20", connection))
                 {
-                    while (await reader.ReadAsync())
+
+                    await connection.OpenAsync();
+                    int counter = 0;
+
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        counter++;
-
-                        InvoiceModel invoice = new InvoiceModel()
+                        while (await reader.ReadAsync())
                         {
-                            Id = counter,
-                            InvoiceNo = reader["InvoiceNo"].ToString(),
-                            Status = reader["Status"].ToString()
-                        };
+                            counter++;
 
-                        invoices.Add(invoice);
+                            InvoiceModel invoice = new InvoiceModel()
+                            {
+                                Id = counter,
+                                InvoiceNo = reader["InvoiceNo"].ToString(),
+                                Status = reader["Status"].ToString()
+                            };
+
+                            invoices.Add(invoice);
+                        }
                     }
                 }
+                return invoices;
             }
-            return invoices;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to all invoices. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public async Task<IEnumerable<InvoiceModel>> SearchInvoiceListAsync(string invoiceNo)
         {
-            List<InvoiceModel> invoices = new List<InvoiceModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SearchInvoiceList", connection))
+            try
             {
-                command.CommandType = CommandType.StoredProcedure;
+                List<InvoiceModel> invoices = new List<InvoiceModel>();
 
-                command.Parameters.AddWithValue("@p_InvoiceNo", invoiceNo);
-
-                await connection.OpenAsync();
-                int counter = 0;
-
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SearchInvoiceList", connection))
                 {
-                    while (await reader.ReadAsync())
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@p_InvoiceNo", invoiceNo);
+
+                    await connection.OpenAsync();
+                    int counter = 0;
+
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        counter++;
-
-                        InvoiceModel invoice = new InvoiceModel()
+                        while (await reader.ReadAsync())
                         {
-                            Id = counter,
-                            InvoiceNo = reader["InvoiceNo"].ToString(),
-                            Status = reader["Status"].ToString()
-                        };
+                            counter++;
 
-                        invoices.Add(invoice);
+                            InvoiceModel invoice = new InvoiceModel()
+                            {
+                                Id = counter,
+                                InvoiceNo = reader["InvoiceNo"].ToString(),
+                                Status = reader["Status"].ToString()
+                            };
+
+                            invoices.Add(invoice);
+                        }
                     }
                 }
+                return invoices;
             }
-            return invoices;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to search invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public async Task<InvoiceModel> GetByInvoiceNo(string invoiceNo)
         {
-            InvoiceModel invoice = null;
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SELECT * FROM Invoice WHERE InvoiceNo = @InvoiceNo", connection))
+            try
             {
-                command.Parameters.Add("@InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
+                InvoiceModel invoice = null;
 
-                await connection.OpenAsync();
-
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT * FROM Invoice WHERE InvoiceNo = @InvoiceNo", connection))
                 {
-                    if (await reader.ReadAsync())
+                    command.Parameters.Add("@InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
+
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        invoice = new InvoiceModel()
+                        if (await reader.ReadAsync())
                         {
-                            InvoiceNo = reader["InvoiceNo"].ToString(),
-                            Terms = reader["Terms"] is DBNull ? null : reader["Terms"].ToString(),
-                            DateString = reader["Date"] is DBNull ? null : ((DateTime)reader["Date"]).ToString("dd-MM-yyyy @ HH.mm"),
-                            DueDateString = reader["DueDate"] is DBNull ? null : ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
-                            TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
-                            Status = reader["Status"] is DBNull ? null : reader["Status"].ToString(),
-                            CustomerID = reader["CustomerID"] is DBNull ? null : reader["CustomerID"].ToString(),
-                            RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
-                        };
+                            invoice = new InvoiceModel()
+                            {
+                                InvoiceNo = reader["InvoiceNo"].ToString(),
+                                Terms = reader["Terms"] is DBNull ? null : reader["Terms"].ToString(),
+                                DateString = reader["Date"] is DBNull ? null : ((DateTime)reader["Date"]).ToString("dd-MM-yyyy @ HH.mm"),
+                                DueDateString = reader["DueDate"] is DBNull ? null : ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
+                                TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                                Status = reader["Status"] is DBNull ? null : reader["Status"].ToString(),
+                                CustomerID = reader["CustomerID"] is DBNull ? null : reader["CustomerID"].ToString(),
+                                RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
+                            };
+                        }
                     }
                 }
+                return invoice;
             }
-            return invoice;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public async Task<IEnumerable<InvoiceItemModel>> GetInvoiceItems(string invoiceNo)
         {
-            List<InvoiceItemModel> invoiceItems = new List<InvoiceItemModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("GetInvoiceItems", connection))
+            try
             {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@p_InvoiceNo", invoiceNo);
+                List<InvoiceItemModel> invoiceItems = new List<InvoiceItemModel>();
 
-                await connection.OpenAsync();
-
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("GetInvoiceItems", connection))
                 {
-                    while (await reader.ReadAsync())
-                    {
-                        InvoiceItemModel invoiceItem = new InvoiceItemModel()
-                        {
-                            No = (int)reader["No"],
-                            PartNo = reader["PartNo"].ToString(),
-                            BrandID = reader["BrandID"].ToString(),
-                            Description = reader["Description"].ToString(),
-                            Quantity = (int)reader["Quantity"],
-                            UnitPrice = (Decimal)reader["UnitPrice"],
-                            Discount = (Decimal)reader["Discount"],
-                            Amount = (Decimal)reader["Amount"],
-                        };
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@p_InvoiceNo", invoiceNo);
 
-                        invoiceItems.Add(invoiceItem);
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            InvoiceItemModel invoiceItem = new InvoiceItemModel()
+                            {
+                                No = (int)reader["No"],
+                                PartNo = reader["PartNo"].ToString(),
+                                BrandID = reader["BrandID"].ToString(),
+                                Description = reader["Description"].ToString(),
+                                Quantity = (int)reader["Quantity"],
+                                UnitPrice = (Decimal)reader["UnitPrice"],
+                                Discount = (Decimal)reader["Discount"],
+                                Amount = (Decimal)reader["Amount"],
+                            };
+
+                            invoiceItems.Add(invoiceItem);
+                        }
                     }
                 }
+                return invoiceItems;
             }
-            return invoiceItems;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoice items. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public async Task<IEnumerable<InvoiceItemModel>> GetInvoicesByPartNo(string partNo, int pageSize, int page)
         {
-            List<InvoiceItemModel> invoiceItems = new List<InvoiceItemModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("GetInvoicesByPartNo", connection))
+            try
             {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@p_PartNo", partNo);
-                command.Parameters.AddWithValue("@p_PageSize", pageSize);
-                command.Parameters.AddWithValue("@p_Offset", (page - 1) * pageSize);
+                List<InvoiceItemModel> invoiceItems = new List<InvoiceItemModel>();
 
-                int counter = pageSize * (page - 1);
-                await connection.OpenAsync();
-
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("GetInvoicesByPartNo", connection))
                 {
-                    while (await reader.ReadAsync())
-                    {
-                        counter++;
-                        InvoiceItemModel invoiceItem = new InvoiceItemModel()
-                        {
-                            No = counter,
-                            InvoiceNo = reader["InvoiceNo"].ToString(),
-                            Quantity = (int)reader["Quantity"],
-                            UnitPrice = (Decimal)reader["UnitPrice"],
-                            Discount = (Decimal)reader["Discount"],
-                            Amount = (Decimal)reader["Amount"],
-                        };
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@p_PartNo", partNo);
+                    command.Parameters.AddWithValue("@p_PageSize", pageSize);
+                    command.Parameters.AddWithValue("@p_Offset", (page - 1) * pageSize);
 
-                        invoiceItems.Add(invoiceItem);
+                    int counter = pageSize * (page - 1);
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            counter++;
+                            InvoiceItemModel invoiceItem = new InvoiceItemModel()
+                            {
+                                No = counter,
+                                InvoiceNo = reader["InvoiceNo"].ToString(),
+                                Quantity = (int)reader["Quantity"],
+                                UnitPrice = (Decimal)reader["UnitPrice"],
+                                Discount = (Decimal)reader["Discount"],
+                                Amount = (Decimal)reader["Amount"],
+                            };
+
+                            invoiceItems.Add(invoiceItem);
+                        }
                     }
                 }
+                return invoiceItems;
             }
-            return invoiceItems;
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoices. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public async Task CancelInvoice(string invoiceNo)
         {
-            using (var connection = GetConnection())
+            try
             {
-                await connection.OpenAsync();
-                using (var transaction = connection.BeginTransaction())
+                using (var connection = GetConnection())
                 {
-                    using (var command = new MySqlCommand("CancelInvoice", connection, transaction))
+                    await connection.OpenAsync();
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        command.CommandType = CommandType.StoredProcedure;
+                        using (var command = new MySqlCommand("CancelInvoice", connection, transaction))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
 
-                        command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
+                            command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
 
-                        await command.ExecuteNonQueryAsync();
+                            await command.ExecuteNonQueryAsync();
+                        }
+
+                        transaction.Commit();
                     }
-
-                    transaction.Commit();
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to cancel the invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

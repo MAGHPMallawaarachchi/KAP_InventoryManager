@@ -497,7 +497,7 @@ namespace KAP_InventoryManager.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch suggestions. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -522,7 +522,7 @@ namespace KAP_InventoryManager.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch suggestions. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -540,7 +540,7 @@ namespace KAP_InventoryManager.ViewModel
                 }
             }catch(Exception ex)
             {
-                MessageBox.Show($"Failed to fetch sales reps. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -572,9 +572,9 @@ namespace KAP_InventoryManager.ViewModel
                     }
                 }
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch customer's details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -606,9 +606,9 @@ namespace KAP_InventoryManager.ViewModel
                 SelectedItem = await ItemRepository.GetByPartNoAsync(SelectedPartNo);
                 Discount = CustomerDiscount;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch item's details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

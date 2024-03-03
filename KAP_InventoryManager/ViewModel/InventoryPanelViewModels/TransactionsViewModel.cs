@@ -113,9 +113,9 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
                         IsFinalPage = true;
                 }
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch transactions. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

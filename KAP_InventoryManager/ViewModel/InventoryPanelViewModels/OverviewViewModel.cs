@@ -57,16 +57,9 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 
         private async void PopulateInventorySummary()
         {
-            try
-            {
-                ItemCount = await ItemRepository.GetItemCount();
-                CategoryCount = await ItemRepository.GetCategoryCount();
-                OutOfStockCount = await ItemRepository.GetOutOfStockCount();
-            }
-            catch(MySqlException ex)
-            {
-                MessageBox.Show($"Failed to fetch item count. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            ItemCount = await ItemRepository.GetItemCount();
+            CategoryCount = await ItemRepository.GetCategoryCount();
+            OutOfStockCount = await ItemRepository.GetOutOfStockCount();
         }
     }
 }

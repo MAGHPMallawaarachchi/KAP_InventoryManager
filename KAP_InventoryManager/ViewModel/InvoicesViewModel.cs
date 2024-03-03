@@ -119,9 +119,9 @@ namespace KAP_InventoryManager.ViewModel
                     MessageBox.Show($"No invoice selected!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show($"Failed to cancel the invoice. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -134,9 +134,9 @@ namespace KAP_InventoryManager.ViewModel
                 else
                     Invoices = await InvoiceRepository.SearchInvoiceListAsync(InvoiceSearchText);
 
-            }catch (MySqlException ex)
+            }catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch invoices. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -154,9 +154,9 @@ namespace KAP_InventoryManager.ViewModel
                         InvoiceItems = await InvoiceRepository.GetInvoiceItems(CurrentInvoice.InvoiceNo);
                     }
                 }
-            }catch (MySqlException ex)
+            }catch (Exception ex)
             {
-                MessageBox.Show($"Failed to fetch invoice details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

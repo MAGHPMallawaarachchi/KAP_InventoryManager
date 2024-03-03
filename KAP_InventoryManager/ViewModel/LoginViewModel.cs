@@ -9,6 +9,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace KAP_InventoryManager.ViewModel
@@ -98,16 +99,22 @@ namespace KAP_InventoryManager.ViewModel
 
         private void ExecuteLoginCommand(object obj)
         {
-            var isValidUser = UserRepository.AuthenticateUser(new NetworkCredential(Username, Password));
-            if (isValidUser)
+            try
             {
-                Thread.CurrentPrincipal = new GenericPrincipal(
-                    new GenericIdentity(Username), null);
-                IsViewVisible = false;
-            }
-            else
+                var isValidUser = UserRepository.AuthenticateUser(new NetworkCredential(Username, Password));
+                if (isValidUser)
+                {
+                    Thread.CurrentPrincipal = new GenericPrincipal(
+                        new GenericIdentity(Username), null);
+                    IsViewVisible = false;
+                }
+                else
+                {
+                    ErrorMessage = "* Invalid username or password";
+                }
+            }catch(Exception ex)
             {
-                ErrorMessage = "* Invalid username or password";
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         private void ExecuteRecoverPassCommand(string username, string email)

@@ -62,7 +62,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to add the item. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to add the item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -109,7 +109,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get all items. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get all items. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -150,7 +150,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to search the item. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to search the item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -194,7 +194,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get the item. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get the item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -238,7 +238,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get the item. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get the item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -271,7 +271,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get search the part number. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get search the part number. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -304,7 +304,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get the item count. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get the item count. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return 0;
             }
         }
@@ -338,7 +338,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get the out of stock count. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get the out of stock count. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return 0;
             }
         }
@@ -376,7 +376,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get the item category count. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get the item category count. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return 0;
             }
         }
@@ -401,7 +401,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to check the qunatity. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to check the qunatity. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }
@@ -431,7 +431,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get brand. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get brand. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -458,7 +458,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get the supplier. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get the supplier. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
@@ -488,7 +488,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get the categories. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get the categories. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
