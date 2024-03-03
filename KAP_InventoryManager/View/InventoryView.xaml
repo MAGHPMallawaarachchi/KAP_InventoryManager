@@ -70,7 +70,7 @@
 
                     <Border Background="{StaticResource Color3}"
                             CornerRadius="6"
-                            Margin="0,0,0,20">
+                            Margin="0,0,0,10">
                         <Grid Margin="8,4"
                               Height="20">
                             <Grid.ColumnDefinitions>
@@ -132,7 +132,7 @@
                                     <Border Grid.Column="1"
                                             Background="{StaticResource Color3}"
                                             CornerRadius="3"
-                                            Padding="8,2,8,2"
+                                            Padding="7,2,7,2"
                                             Margin="0,0,12,0">
                                         <TextBlock Text="{Binding PartNo}"
                                                    Style="{StaticResource button-text}"
