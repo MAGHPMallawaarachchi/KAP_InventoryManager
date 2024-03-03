@@ -37,14 +37,30 @@ namespace KAP_InventoryManager.Repositories
                             command.Parameters.Add("@p_BuyingPrice", MySqlDbType.Decimal).Value = item.BuyingPrice;
                             command.Parameters.Add("@p_UnitPrice", MySqlDbType.Decimal).Value = item.UnitPrice;
 
+                            var p_ItemCount = new MySqlParameter("@p_ItemCount", MySqlDbType.Int32);
+                            p_ItemCount.Direction = ParameterDirection.Output;
+                            command.Parameters.Add(p_ItemCount);
+
                             command.ExecuteNonQuery();
+
+                            // Get the value of the output parameter
+                            int itemCount = Convert.ToInt32(p_ItemCount.Value);
+
+                            if (itemCount == 0)
+                            {
+                                MessageBox.Show("Item added successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Item already exists.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
                         }
 
                         transaction.Commit();
                     }        
                 }
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to add the item. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -91,7 +107,7 @@ namespace KAP_InventoryManager.Repositories
                 }
                 return items;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get all items. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
@@ -132,7 +148,7 @@ namespace KAP_InventoryManager.Repositories
                 }
                 return items;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to search the item. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
@@ -176,7 +192,7 @@ namespace KAP_InventoryManager.Repositories
 
                 return item;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the item. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
@@ -220,7 +236,7 @@ namespace KAP_InventoryManager.Repositories
 
                 return item;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the item. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
@@ -253,7 +269,7 @@ namespace KAP_InventoryManager.Repositories
 
                 return partNumbers;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get search the part number. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
@@ -286,7 +302,7 @@ namespace KAP_InventoryManager.Repositories
 
                 return itemCount;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the item count. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return 0;
@@ -320,7 +336,7 @@ namespace KAP_InventoryManager.Repositories
 
                 return itemCount;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the out of stock count. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return 0;
@@ -358,7 +374,7 @@ namespace KAP_InventoryManager.Repositories
 
                 return categoryCount;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the item category count. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return 0;
@@ -383,7 +399,7 @@ namespace KAP_InventoryManager.Repositories
                 }
                 return isAvailable;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to check the qunatity. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
@@ -413,7 +429,7 @@ namespace KAP_InventoryManager.Repositories
                 }
                 return brands;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get brand. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
@@ -440,7 +456,7 @@ namespace KAP_InventoryManager.Repositories
                 }
                 return supplier;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the supplier. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
@@ -470,7 +486,7 @@ namespace KAP_InventoryManager.Repositories
                 }
                 return categories;
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the categories. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace KAP_InventoryManager.ViewModel.ModalViewModels
 {
@@ -202,7 +203,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
             ItemRepository.Add(newItem);
             ClearTextBoxes();
-            MessageBox.Show("Item added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            Messenger.Default.Send("NewItemAdded");
         }
 
         private void GetBrands()

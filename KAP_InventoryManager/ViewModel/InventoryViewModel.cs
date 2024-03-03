@@ -106,6 +106,7 @@ namespace KAP_InventoryManager.ViewModel
             SelectedViewModel = ViewModels.First();
 
             Messenger.Default.Register<object>(this, "RequestSelectedItem", OnRequestSelectedItem);
+            Messenger.Default.Register<string>(this, OnMessageReceived);
 
             PopulateItemsAsync();
         }
@@ -149,13 +150,14 @@ namespace KAP_InventoryManager.ViewModel
 
         private void PopulateDetails()
         {
-            try 
-            { 
-                CurrentItem = ItemRepository.GetByPartNo(SelectedItem.PartNo); 
-            }
-            catch(MySqlException ex)
+            CurrentItem = ItemRepository.GetByPartNo(SelectedItem.PartNo); 
+        }
+
+        private void OnMessageReceived(string message)
+        {
+            if (message == "NewCustomerAdded")
             {
-                MessageBox.Show($"Failed to fetch item's details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                PopulateItemsAsync();
             }
         }
     }
