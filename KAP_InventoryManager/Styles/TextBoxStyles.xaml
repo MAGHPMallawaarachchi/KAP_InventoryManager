@@ -8,12 +8,12 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="Regular"/>
         
-        <Setter Property="Height" Value="32"/>
         <Setter Property="Background" Value="{StaticResource Color3}"/>
         <Setter Property="Foreground" Value="{StaticResource Color4}"/>
         <Setter Property="CaretBrush" Value="{StaticResource Color4}"/>
         <Setter Property="BorderBrush" Value="{StaticResource Color3}"/>
 
+        <Setter Property="Height" Value="32"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="6,0,6,0"/>
         <Setter Property="BorderThickness" Value="1"/>
@@ -50,10 +50,11 @@
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontWeight" Value="Regular"/>
 
-        <Setter Property="Height" Value="32"/>
         <Setter Property="Background" Value="{StaticResource Color3}"/>
+        <Setter Property="Foreground" Value="{StaticResource Color4}"/>
         <Setter Property="BorderBrush" Value="{StaticResource Color3}"/>
 
+        <Setter Property="Height" Value="32"/>
         <Setter Property="Padding" Value="6,0,6,0"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -69,6 +70,7 @@
                         <Grid>
                             <TextBox x:Name="PART_TextBox"
                                      BorderThickness="0"
+                                     CaretBrush="{StaticResource Color4}"
                                      Padding="6,0,6,0"
                                      Background="Transparent"
                                      Foreground="{StaticResource Color4}"
@@ -78,7 +80,11 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsFocused" Value="True">
-                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Blue}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource Blue}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource Blue}"/>
+                            <Setter Property="Cursor" Value="IBeam"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

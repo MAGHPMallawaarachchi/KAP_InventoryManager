@@ -22,6 +22,9 @@ namespace KAP_InventoryManager.Model
         int GetLowInStockCount();
         Task<int> GetCategoryCount();
         bool CheckQty(string partNo, int qty);
+        List<string> GetBrands();
+        string GetSupplierByBrand(string brand);
+        List<string> GetCategories(string brandId);
         //...
     }
 }

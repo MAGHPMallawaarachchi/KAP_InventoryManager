@@ -14,6 +14,7 @@ namespace KAP_InventoryManager.Model
         public string Description { get; set; }
         public string BrandID { get; set; }
         public string Category { get; set; }
+        public string VehicleBrand { get; set; }
         public string SupplierID { get; set; }
         public int TotalQty { get; set; }
         public int QtyInHand { get; set; }

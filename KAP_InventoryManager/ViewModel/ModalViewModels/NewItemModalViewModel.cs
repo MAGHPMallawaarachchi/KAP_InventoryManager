@@ -18,9 +18,13 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private string _description;
         private string _brandId;
         private string _category;
+        private string _vehicleBrand;
         private string _supplierId;
         private decimal _buyingPrice;
         private decimal _unitPrice;
+        private List<string> _brands = new List<string> { "None"};
+        private List<string> _categories;
+        private List<string> _vehicleBrands;
 
         private readonly IItemRepository ItemRepository;
 
@@ -61,6 +65,9 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 _brandId = value;
                 OnPropertyChanged(nameof(BrandID));
+
+                GetSupplierByBrand();
+                GetCategories();
             }
         }
 
@@ -71,6 +78,16 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 _category = value;
                 OnPropertyChanged(nameof(Category));
+            }
+        }
+
+        public string VehicleBrand
+        {
+            get { return _vehicleBrand; }
+            set
+            {
+                _vehicleBrand = value;
+                OnPropertyChanged(nameof(VehicleBrand));
             }
         }
 
@@ -104,6 +121,36 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        public List<string> Brands
+        {
+            get { return _brands; }
+            set
+            {
+                _brands = value;
+                OnPropertyChanged(nameof(Brands));
+            }
+        }
+
+        public List<string> Categories
+        {
+            get { return _categories; }
+            set
+            {
+                _categories = value;
+                OnPropertyChanged(nameof(Categories));
+            }
+        }
+
+        public List<string> VehicleBrands
+        {
+            get { return _vehicleBrands; }
+            set
+            {
+                _vehicleBrands = value;
+                OnPropertyChanged(nameof(VehicleBrands));
+            }
+        }
+
         public ICommand AddItemCommand { get; }
         public ICommand DiscardCommand { get; }
 
@@ -112,6 +159,9 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             ItemRepository = new ItemRepository();
             AddItemCommand = new ViewModelCommand(ExecuteAddItemCommand, CanExecuteAddItemCommand);
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
+
+            GetBrands();
+            VehicleBrands = new List<string> { "TOYOTA", "NISSAN", "SUZUKI", "MITSUBISHI"};
         }
 
         private void ExecuteDiscardCommand(object obj)
@@ -123,7 +173,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             bool validate;
 
-            if (string.IsNullOrEmpty(PartNo) || string.IsNullOrEmpty(OEMNo) || string.IsNullOrEmpty(Description) || string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(Category) || string.IsNullOrEmpty(SupplierID) || BuyingPrice == 0 || UnitPrice == 0)
+            if (string.IsNullOrEmpty(PartNo) || string.IsNullOrEmpty(OEMNo) || string.IsNullOrEmpty(Description) || BrandID == "None" || string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(Category) || string.IsNullOrEmpty(SupplierID) || BuyingPrice == 0 || UnitPrice == 0)
             {
                 validate = false;
             }
@@ -137,29 +187,44 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private void ExecuteAddItemCommand(object obj)
         {
-            try
+            ItemModel newItem = new ItemModel
             {
-                ItemModel newItem = new ItemModel
-                {
-                    PartNo = PartNo,
-                    OEMNo = OEMNo,
-                    Description = Description,
-                    BrandID = BrandID,
-                    Category = Category,
-                    SupplierID = SupplierID,
-                    BuyingPrice = BuyingPrice,
-                    UnitPrice = UnitPrice,
-                };
+                PartNo = PartNo,
+                OEMNo = OEMNo,
+                Description = Description,
+                BrandID = BrandID,
+                Category = Category,
+                VehicleBrand = VehicleBrand,
+                SupplierID = SupplierID,
+                BuyingPrice = BuyingPrice,
+                UnitPrice = UnitPrice,
+            };
 
-                ItemRepository.Add(newItem);
-                ClearTextBoxes();
-                MessageBox.Show("Item added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            ItemRepository.Add(newItem);
+            ClearTextBoxes();
+            MessageBox.Show("Item added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
 
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show($"Failed to add item. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+        private void GetBrands()
+        {
+            Brands = ItemRepository.GetBrands();
+            Brands.Insert(0, "None");
+        }
+
+        private void GetSupplierByBrand()
+        {
+            if(BrandID != null || BrandID != "None")
+                SupplierID = ItemRepository.GetSupplierByBrand(BrandID);
+            else
+                SupplierID = null;
+        }
+
+        private void GetCategories()
+        {
+            if(BrandID == null || BrandID != "None")
+                Categories = ItemRepository.GetCategories(BrandID);
+            else 
+                Categories = null;
         }
 
         private void ClearTextBoxes()
@@ -167,8 +232,9 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             PartNo = string.Empty;
             OEMNo = string.Empty;
             Description = string.Empty;
-            BrandID = string.Empty;
+            BrandID = Brands.FirstOrDefault();
             Category = string.Empty;
+            VehicleBrand = string.Empty;
             SupplierID = string.Empty;
             BuyingPrice = 0;
             UnitPrice = 0;
