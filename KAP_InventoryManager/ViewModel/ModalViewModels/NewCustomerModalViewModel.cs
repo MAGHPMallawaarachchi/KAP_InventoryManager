@@ -185,7 +185,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
             CustomerRepository.Add(newCustomer);
             ClearTextBoxes();
-            MessageBox.Show("Customer added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             Messenger.Default.Send("NewCustomerAdded");
         }
 

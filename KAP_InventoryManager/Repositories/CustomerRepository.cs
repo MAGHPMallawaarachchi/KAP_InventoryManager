@@ -35,7 +35,23 @@ namespace KAP_InventoryManager.Repositories
                             command.Parameters.Add("@p_DebtLimit", MySqlDbType.Decimal).Value = customer.DebtLimit;
                             command.Parameters.Add("@p_RepID", MySqlDbType.VarChar).Value = customer.RepID;
 
+                            var p_CustomerCount = new MySqlParameter("@p_CustomerCount", MySqlDbType.Int32);
+                            p_CustomerCount.Direction = ParameterDirection.Output;
+                            command.Parameters.Add(p_CustomerCount);
+
                             command.ExecuteNonQuery();
+
+                            // Get the value of the output parameter
+                            int customerCount = Convert.ToInt32(p_CustomerCount.Value);
+
+                            if (customerCount == 0)
+                            {
+                                MessageBox.Show("Customer added successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Customer already exists.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
                         }
                         transaction.Commit();
                     }
