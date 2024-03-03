@@ -24,8 +24,11 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private string _paymentType;
         private decimal _debtLimit;
         private string _repID;
+        private List<string> _reps;
+
 
         private readonly ICustomerRepository CustomerRepository;
+        private readonly ISalesRepRepository SalesRepRepository;
 
         public string CustomerID
         {
@@ -117,14 +120,27 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        public List<string> Reps
+        {
+            get { return _reps; }
+            set
+            {
+                _reps = value;
+                OnPropertyChanged(nameof(_reps));
+            }
+        }
+
         public ICommand AddCustomerCommand { get; }
         public ICommand DiscardCommand { get; }
 
         public NewCustomerModalViewModel()
         {
             CustomerRepository = new CustomerRepository();
+            SalesRepRepository = new SalesRepRepository();
             AddCustomerCommand = new ViewModelCommand(ExecuteAddCustomerCommand, CanExecuteAddCustomerCommand);
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
+
+            GetReps();
         }
 
         private void ExecuteDiscardCommand(object obj)
@@ -154,31 +170,28 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private void ExecuteAddCustomerCommand(object obj)
         {
-            try
+            CustomerModel newCustomer = new CustomerModel
             {
-                CustomerModel newCustomer = new CustomerModel
-                {
-                    CustomerID = CustomerID,
-                    Name = Name,
-                    Address = Address,
-                    City = City,
-                    ContactNo = ContactNo,
-                    Email = Email,
-                    PaymentType = PaymentType,
-                    DebtLimit = DebtLimit,
-                    RepID = RepID,
-                };
+                CustomerID = CustomerID,
+                Name = Name,
+                Address = Address,
+                City = City,
+                ContactNo = ContactNo,
+                Email = Email,
+                PaymentType = PaymentType,
+                DebtLimit = DebtLimit,
+                RepID = RepID,
+            };
 
-                CustomerRepository.Add(newCustomer);
-                ClearTextBoxes();
-                MessageBox.Show("Customer added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                Messenger.Default.Send("NewCustomerAdded");
+            CustomerRepository.Add(newCustomer);
+            ClearTextBoxes();
+            MessageBox.Show("Customer added successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            Messenger.Default.Send("NewCustomerAdded");
+        }
 
-            }
-            catch (MySqlException ex)
-            {
-                MessageBox.Show($"Failed to add customer. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+        private void GetReps()
+        {
+            Reps = SalesRepRepository.GetAllRepIds();
         }
 
         private void ClearTextBoxes()

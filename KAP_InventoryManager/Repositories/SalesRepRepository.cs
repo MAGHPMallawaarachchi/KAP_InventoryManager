@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace KAP_InventoryManager.Repositories
 {
@@ -14,27 +15,35 @@ namespace KAP_InventoryManager.Repositories
     {
         public List<string> GetAllRepIds()
         {
-            List<string> salesReps = new List<string>
+            try
             {
-                "None"
-            };
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SELECT RepID FROM SalesRep", connection))
-            {
-                connection.Open();
-
-                using (var reader = command.ExecuteReader())
+                List<string> salesReps = new List<string>
                 {
-                    while (reader.Read())
+                    "None"
+                };
+
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT RepID FROM SalesRep", connection))
+                {
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
                     {
-                        string repId = reader["RepID"].ToString();
-                        salesReps.Add(repId);
+                        while (reader.Read())
+                        {
+                            string repId = reader["RepID"].ToString();
+                            salesReps.Add(repId);
+                        }
                     }
                 }
-            }
 
-            return salesReps;
+                return salesReps;
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to get sales reps. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
     }
 }

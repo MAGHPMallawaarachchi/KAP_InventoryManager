@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace KAP_InventoryManager.Repositories
 {
@@ -13,152 +14,191 @@ namespace KAP_InventoryManager.Repositories
     {
         public void Add(CustomerModel customer)
         {
-            using (var connection = GetConnection())
+            try
             {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using (var connection = GetConnection())
                 {
-                    using (var command = new MySqlCommand("AddCustomer", connection, transaction))
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        command.CommandType = CommandType.StoredProcedure;
+                        using (var command = new MySqlCommand("AddCustomer", connection, transaction))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
 
-                        command.Parameters.Add("@p_CustomerID", MySqlDbType.VarChar).Value = customer.CustomerID;
-                        command.Parameters.Add("@p_Name", MySqlDbType.VarChar).Value = customer.Name;
-                        command.Parameters.Add("@p_Address", MySqlDbType.VarChar).Value = customer.Address;
-                        command.Parameters.Add("@p_Email", MySqlDbType.VarChar).Value = customer.Email;
-                        command.Parameters.Add("@p_City", MySqlDbType.VarChar).Value = customer.City;
-                        command.Parameters.Add("@p_ContactNo", MySqlDbType.VarChar).Value = customer.ContactNo;
-                        command.Parameters.Add("@p_PaymentType", MySqlDbType.VarChar).Value = customer.PaymentType;
-                        command.Parameters.Add("@p_DebtLimit", MySqlDbType.Decimal).Value = customer.DebtLimit;
-                        command.Parameters.Add("@p_RepID", MySqlDbType.VarChar).Value = customer.RepID;
+                            command.Parameters.Add("@p_CustomerID", MySqlDbType.VarChar).Value = customer.CustomerID;
+                            command.Parameters.Add("@p_Name", MySqlDbType.VarChar).Value = customer.Name;
+                            command.Parameters.Add("@p_Address", MySqlDbType.VarChar).Value = customer.Address;
+                            command.Parameters.Add("@p_Email", MySqlDbType.VarChar).Value = customer.Email;
+                            command.Parameters.Add("@p_City", MySqlDbType.VarChar).Value = customer.City;
+                            command.Parameters.Add("@p_ContactNo", MySqlDbType.VarChar).Value = customer.ContactNo;
+                            command.Parameters.Add("@p_PaymentType", MySqlDbType.VarChar).Value = customer.PaymentType;
+                            command.Parameters.Add("@p_DebtLimit", MySqlDbType.Decimal).Value = customer.DebtLimit;
+                            command.Parameters.Add("@p_RepID", MySqlDbType.VarChar).Value = customer.RepID;
 
-                        command.ExecuteNonQuery();
+                            command.ExecuteNonQuery();
+                        }
+                        transaction.Commit();
                     }
-                    transaction.Commit();
                 }
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to add customer. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public async Task<IEnumerable<CustomerModel>> GetAllAsync()
         {
-            List<CustomerModel> customers = new List<CustomerModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SELECT CustomerID FROM Customer ORDER BY CustomerID DESC LIMIT 20", connection))
+            try
             {
-                await connection.OpenAsync();
-                int counter = 0;
+                List<CustomerModel> customers = new List<CustomerModel>();
 
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT CustomerID FROM Customer ORDER BY CustomerID DESC LIMIT 20", connection))
                 {
-                    while (await reader.ReadAsync())
+                    await connection.OpenAsync();
+                    int counter = 0;
+
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        counter++;
-
-                        CustomerModel customer = new CustomerModel()
+                        while (await reader.ReadAsync())
                         {
-                            Id = counter,
-                            CustomerID = reader["CustomerID"].ToString(),
-                        };
+                            counter++;
 
-                        customers.Add(customer);
+                            CustomerModel customer = new CustomerModel()
+                            {
+                                Id = counter,
+                                CustomerID = reader["CustomerID"].ToString(),
+                            };
+
+                            customers.Add(customer);
+                        }
                     }
                 }
+                return customers;
             }
-            return customers;
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to get customers. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public List<string> SearchCustomer(string SearchText)
         {
-            List<string> customers = new List<string>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SearchCustomer", connection))
+            try
             {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@SearchText", SearchText);
+                List<string> customers = new List<string>();
 
-                connection.Open();
-
-                using (var reader = command.ExecuteReader())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SearchCustomer", connection))
                 {
-                    while (reader.Read())
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@SearchText", SearchText);
+
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
                     {
-                        string customerId = reader["CustomerID"].ToString();
-                        customers.Add(customerId);
+                        while (reader.Read())
+                        {
+                            string customerId = reader["CustomerID"].ToString();
+                            customers.Add(customerId);
+                        }
                     }
                 }
-            }
 
-            return customers;
+                return customers;
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to search customer. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
         public async Task<IEnumerable<CustomerModel>> SearchCustomerListAsync(string customerId)
         {
-            List<CustomerModel> customers = new List<CustomerModel>();
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SearchCustomerList", connection))
+            try
             {
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@p_CustomerId", customerId);
+                List<CustomerModel> customers = new List<CustomerModel>();
 
-                connection.Open();
-                int counter = 0;
-
-                using (var reader = await command.ExecuteReaderAsync())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SearchCustomerList", connection))
                 {
-                    while (await reader.ReadAsync())
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@p_CustomerId", customerId);
+
+                    connection.Open();
+                    int counter = 0;
+
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        counter++;
-
-                        CustomerModel customer = new CustomerModel()
+                        while (await reader.ReadAsync())
                         {
-                            Id = counter,
-                            CustomerID = reader["CustomerID"].ToString(),
-                        };
+                            counter++;
 
-                        customers.Add(customer);
+                            CustomerModel customer = new CustomerModel()
+                            {
+                                Id = counter,
+                                CustomerID = reader["CustomerID"].ToString(),
+                            };
+
+                            customers.Add(customer);
+                        }
                     }
                 }
-            }
 
-            return customers;
+                return customers;
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to search customer. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
 
         public CustomerModel GetByCustomerID(string customerID)
         {
-            CustomerModel customer = null;
-
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SELECT * FROM Customer WHERE CustomerID = @CustomerID", connection))
+            try
             {
-                command.Parameters.Add("@CustomerID", MySqlDbType.VarChar).Value = customerID;
+                CustomerModel customer = null;
 
-                connection.Open();
-
-                using (var reader = command.ExecuteReader())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT * FROM Customer WHERE CustomerID = @CustomerID", connection))
                 {
-                    if (reader.Read())
+                    command.Parameters.Add("@CustomerID", MySqlDbType.VarChar).Value = customerID;
+
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
                     {
-                        customer = new CustomerModel()
+                        if (reader.Read())
                         {
-                            CustomerID = reader["CustomerID"].ToString(),
-                            Name = reader["Name"] is DBNull ? null : reader["Name"].ToString(),
-                            Address = reader["Address"] is DBNull ? null : reader["Address"].ToString(),
-                            City = reader["City"] is DBNull ? null : reader["City"].ToString(),
-                            ContactNo = reader["ContactNo"] is DBNull ? null : reader["ContactNo"].ToString(),
-                            Email = reader["Email"] is DBNull ? null : reader["Email"].ToString(),
-                            PaymentType = reader["PaymentType"] is DBNull ? null : reader["PaymentType"].ToString(),
-                            DebtLimit = reader["DebtLimit"] is DBNull ? 99 : Convert.ToDecimal(reader["DebtLimit"]),
-                            TotalDebt = reader["TotalDebt"] is DBNull ? 1 : Convert.ToDecimal(reader["TotalDebt"]),
-                            RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
-                        };
+                            customer = new CustomerModel()
+                            {
+                                CustomerID = reader["CustomerID"].ToString(),
+                                Name = reader["Name"] is DBNull ? null : reader["Name"].ToString(),
+                                Address = reader["Address"] is DBNull ? null : reader["Address"].ToString(),
+                                City = reader["City"] is DBNull ? null : reader["City"].ToString(),
+                                ContactNo = reader["ContactNo"] is DBNull ? null : reader["ContactNo"].ToString(),
+                                Email = reader["Email"] is DBNull ? null : reader["Email"].ToString(),
+                                PaymentType = reader["PaymentType"] is DBNull ? null : reader["PaymentType"].ToString(),
+                                DebtLimit = reader["DebtLimit"] is DBNull ? 99 : Convert.ToDecimal(reader["DebtLimit"]),
+                                TotalDebt = reader["TotalDebt"] is DBNull ? 1 : Convert.ToDecimal(reader["TotalDebt"]),
+                                RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
+                            };
+                        }
                     }
                 }
+                return customer;
             }
-            return customer;
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to get customer. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
     }
 }
