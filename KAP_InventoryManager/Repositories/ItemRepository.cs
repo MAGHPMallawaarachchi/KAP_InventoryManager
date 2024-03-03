@@ -37,8 +37,10 @@ namespace KAP_InventoryManager.Repositories
                             command.Parameters.Add("@p_BuyingPrice", MySqlDbType.Decimal).Value = item.BuyingPrice;
                             command.Parameters.Add("@p_UnitPrice", MySqlDbType.Decimal).Value = item.UnitPrice;
 
-                            var p_ItemCount = new MySqlParameter("@p_ItemCount", MySqlDbType.Int32);
-                            p_ItemCount.Direction = ParameterDirection.Output;
+                            var p_ItemCount = new MySqlParameter("@p_ItemCount", MySqlDbType.Int32)
+                            {
+                                Direction = ParameterDirection.Output
+                            };
                             command.Parameters.Add(p_ItemCount);
 
                             command.ExecuteNonQuery();
