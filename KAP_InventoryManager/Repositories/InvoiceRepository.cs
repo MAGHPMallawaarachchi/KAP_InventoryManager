@@ -437,5 +437,109 @@ namespace KAP_InventoryManager.Repositories
                 MessageBox.Show($"Failed to cancel the invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        public List<string> SearchInvoiceNumber(string SearchText)
+        {
+            try
+            {
+                List<string> invoiceNumbers = new List<string>();
+
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SearchInvoiceNumber", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@SearchText", SearchText);
+
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string invoiceNo = reader["InvoiceNo"].ToString();
+                            invoiceNumbers.Add(invoiceNo);
+                        }
+                    }
+                }
+
+                return invoiceNumbers;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to search invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        public async Task<List<string>> GetPartNumbersByInvoice(string invoiceNo)
+        {
+            try
+            {
+                List<string> partNumbers = new List<string>();
+
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT PartNo FROM InvoiceItem WHERE InvoiceNo = @InvoiceNo ORDER BY No ASC", connection))
+                {
+                    command.Parameters.AddWithValue("@InvoiceNo", invoiceNo);
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            string partNo = reader["PartNo"].ToString();
+                            partNumbers.Add(partNo);
+                        }
+                    }
+                }
+                return partNumbers;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get part numbers. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        public async Task<InvoiceItemModel> GetInvoiceItem(string invoiceNo, string partNo)
+        {
+            try
+            {
+                InvoiceItemModel invoiceItem = null;
+
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("GetInvoiceItem", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
+                    command.Parameters.Add("@PartNo", MySqlDbType.VarChar).Value = partNo;
+
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            invoiceItem = new InvoiceItemModel()
+                            {
+                                PartNo = reader["PartNo"].ToString(),
+                                BrandID = reader["BrandID"] is DBNull ? null : reader["BrandID"].ToString(),
+                                BuyingPrice = reader["BuyingPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["BuyingPrice"]),
+                                UnitPrice = reader["UnitPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["UnitPrice"]),
+                                Amount = reader["Amount"] is DBNull ? 0 : Convert.ToDecimal(reader["Amount"]),
+                                Discount = reader["Discount"] is DBNull ? 0 : Convert.ToDecimal(reader["Discount"]),
+                                Quantity = reader["Quantity"] is DBNull ? 0 : Convert.ToInt32(reader["Quantity"])
+                            };
+                        }
+                    }
+                }
+                return invoiceItem;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoice item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
     }
 }
