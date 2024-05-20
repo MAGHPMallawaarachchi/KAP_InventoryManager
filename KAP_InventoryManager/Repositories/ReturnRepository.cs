@@ -104,5 +104,165 @@ namespace KAP_InventoryManager.Repositories
                 return string.Empty;
             }
         }
+
+        public async Task<IEnumerable<ReturnModel>> GetAllReturnsAsync()
+        {
+            try
+            {
+                List<ReturnModel> returns = new List<ReturnModel>();
+
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT ReturnNo FROM `Return` ORDER BY Date DESC LIMIT 20", connection))
+                {
+
+                    await connection.OpenAsync();
+                    int counter = 0;
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            counter++;
+
+                            ReturnModel returning = new ReturnModel()
+                            {
+                                Id = counter,
+                                ReturnNo = reader["ReturnNo"].ToString(),
+                            };
+
+                            returns.Add(returning);
+                        }
+                    }
+                }
+                return returns;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get all returns. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<ReturnModel>> SearchReturnListAsync(string returnNo)
+        {
+            try
+            {
+                List<ReturnModel> returns = new List<ReturnModel>();
+
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SearchReturnList", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@p_ReturnNo", returnNo);
+
+                    await connection.OpenAsync();
+                    int counter = 0;
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            counter++;
+
+                            ReturnModel invoice = new ReturnModel()
+                            {
+                                Id = counter,
+                                ReturnNo = reader["ReturnNo"].ToString(),
+                            };
+
+                            returns.Add(invoice);
+                        }
+                    }
+                }
+                return returns;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to search return. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        public async Task<ReturnModel> GetByReturnNo(string returnNo)
+        {
+            try
+            {
+                ReturnModel returnModel = null;
+
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT * FROM `Return` WHERE ReturnNo = @ReturnNo", connection))
+                {
+                    command.Parameters.Add("@ReturnNo", MySqlDbType.VarChar).Value = returnNo;
+
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            returnModel = new ReturnModel()
+                            {
+                                ReturnNo = reader["ReturnNo"].ToString(),
+                                InvoiceNo = reader["InvoiceNo"].ToString(),
+                                CustomerID = reader["CustomerID"] is DBNull ? null : reader["CustomerID"].ToString(),
+                                RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
+                                DateString = reader["Date"] is DBNull ? null : ((DateTime)reader["Date"]).ToString("dd-MM-yyyy @ HH.mm"),
+                                TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                            };
+                        }
+                    }
+                }
+                return returnModel;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<ReturnItemModel>> GetReturnItems(string returnNo)
+        {
+            try
+            {
+                List<ReturnItemModel> returnItems = new List<ReturnItemModel>();
+
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("GetReturnItems", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@p_ReturnNo", returnNo);
+
+                    await connection.OpenAsync();
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            ReturnItemModel returnItem = new ReturnItemModel()
+                            {
+                                No = (int)reader["No"],
+                                PartNo = reader["PartNo"].ToString(),
+                                Description = reader["Description"].ToString(),
+                                Quantity = (int)reader["Quantity"],
+                                DamagedQty = (int)reader["DamagedQty"],
+                                UnitPrice = (Decimal)reader["UnitPrice"],
+                                Discount = (Decimal)reader["Discount"],
+                                Amount = (Decimal)reader["Amount"],
+                            };
+
+                            returnItems.Add(returnItem);
+                        }
+                    }
+                }
+                return returnItems;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get return items. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
     }
 }

@@ -51,6 +51,7 @@ namespace KAP_InventoryManager.ViewModel
         public ICommand ShowInventoryViewCommand { get; }
         public ICommand ShowCustomersViewCommand {  get; }
         public ICommand ShowInvoicesViewCommand { get; }
+        public ICommand ShowReturnsViewCommand { get; }
         public ICommand ShowSalesRepsViewCommand { get; }
 
         public MainViewModel()
@@ -76,6 +77,7 @@ namespace KAP_InventoryManager.ViewModel
             ShowInventoryViewCommand = new ViewModelCommand(ExecuteShowInventoryViewCommand);
             ShowCustomersViewCommand = new ViewModelCommand(ExecuteShowCustomersViewCommand);
             ShowInvoicesViewCommand = new ViewModelCommand(ExecuteShowInvoicesViewCommand);
+            ShowReturnsViewCommand = new ViewModelCommand(ExecuteShowReturnsViewCommand);
             ShowSalesRepsViewCommand = new ViewModelCommand(ExecuteShowSalesRepsViewCommand);
 
             //default view
@@ -104,6 +106,11 @@ namespace KAP_InventoryManager.ViewModel
         private void ExecuteShowInvoicesViewCommand(object obj)
         {
             CurrentChildView = new InvoicesViewModel();
+        }
+
+        private void ExecuteShowReturnsViewCommand(object obj)
+        {
+            CurrentChildView = new ReturnsViewModel();
         }
 
         private void LoadCurrentUserData()

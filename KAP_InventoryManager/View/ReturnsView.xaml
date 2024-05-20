@@ -8,7 +8,6 @@
              xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel"
              xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="725" d:DesignWidth="1200">
 
@@ -179,6 +178,52 @@
                                             CornerRadius="3"
                                             Padding="8,2,8,2"
                                             HorizontalAlignment="Left">
+                                        <TextBlock Text="{Binding CurrentReturn.InvoiceNo}"
+                                                   Style="{StaticResource button-text}"
+                                                   HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <Grid Height="90" Margin="0,15,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Text="Date &amp; time"
+                                                   Style="{StaticResource regular-text}"/>
+                                        <TextBlock Text=":" Grid.Column="1"
+                                                   Style="{StaticResource regular-text}"/>
+                                        <TextBlock Text="{Binding CurrentReturn.Date}" 
+                                                   Grid.Column="2"
+                                                   Style="{StaticResource regular-text}"/>
+
+                                        <TextBlock Text="Sales Rep" Grid.Row="1"
+                                                   Style="{StaticResource regular-text}"/>
+                                        <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
+                                                   Style="{StaticResource regular-text}"/>
+                                        <TextBlock Text="{Binding CurrentReturn.RepID}" 
+                                                   Grid.Column="2" Grid.Row="1"
+                                                   Style="{StaticResource regular-text}"/>
+
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            
+                            <Border BorderThickness="1.5" 
+                                    BorderBrush="{StaticResource Color3}"
+                                    CornerRadius="8"
+                                    Margin="20,0,0,0">
+                                <StackPanel Orientation="Vertical" Margin="20">
+                                    <Border Grid.Column="1"
+                                            Background="{StaticResource Color3}"
+                                            CornerRadius="3"
+                                            Padding="8,2,8,2"
+                                            HorizontalAlignment="Left">
                                         <TextBlock Text="{Binding CurrentReturn.CustomerID}"
                                                    Style="{StaticResource button-text}"
                                                    HorizontalAlignment="Center"/>
@@ -223,52 +268,6 @@
                                 </StackPanel>
                             </Border>
 
-                            <Border BorderThickness="1.5" 
-                                    BorderBrush="{StaticResource Color3}"
-                                    CornerRadius="8"
-                                    Margin="20,0,0,0">
-                                <StackPanel Orientation="Vertical" Margin="20">
-                                    <Border Grid.Column="1"
-                                            Background="{StaticResource Color3}"
-                                            CornerRadius="3"
-                                            Padding="8,2,8,2"
-                                            HorizontalAlignment="Left">
-                                        <TextBlock Text="{Binding CurrentReturn.InvoiceNo}"
-                                                   Style="{StaticResource button-text}"
-                                                   HorizontalAlignment="Center"/>
-                                    </Border>
-                                    <Grid Height="90" Margin="0,15,0,0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="100"/>
-                                            <ColumnDefinition Width="20"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Text="Date &amp; time"
-                                                   Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text=":" Grid.Column="1"
-                                                   Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text="{Binding CurrentReturn.Date}" 
-                                                   Grid.Column="2"
-                                                   Style="{StaticResource regular-text}"/>
-
-                                        <TextBlock Text="Sales Rep" Grid.Row="1"
-                                                   Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
-                                                   Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text="{Binding CurrentReturn.RepID}" 
-                                                   Grid.Column="2" Grid.Row="1"
-                                                   Style="{StaticResource regular-text}"/>
-
-                                    </Grid>
-                                </StackPanel>
-                            </Border>
-
 
                         </StackPanel>
                     </StackPanel>
@@ -303,7 +302,7 @@
                                 <TextBlock Text="Part No."
                                            Style="{StaticResource regular-text}"
                                            Grid.Column="1"/>
-                                <TextBlock Text="Brand"
+                                <TextBlock Text="Description"
                                            Style="{StaticResource regular-text}"
                                            Grid.Column="2"/>
                                 <TextBlock Text="Qty"
@@ -361,7 +360,7 @@
                                                        HorizontalAlignment="Center"/>
                                         </Border>
 
-                                        <TextBlock Text="{Binding BrandID}"                                              
+                                        <TextBlock Text="{Binding Description}"
                                                    Style="{StaticResource regular-text}"
                                                    Grid.Column="2"/>
 
@@ -369,7 +368,7 @@
                                                    Style="{StaticResource regular-text}"
                                                    Grid.Column="3"/>
 
-                                        <TextBlock Text="{Binding DamagedQuantity}"                 
+                                        <TextBlock Text="{Binding DamagedQty}"                 
                                                    Style="{StaticResource regular-text}"
                                                    Grid.Column="4"/>
 

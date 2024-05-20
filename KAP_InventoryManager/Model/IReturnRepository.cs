@@ -11,5 +11,9 @@ namespace KAP_InventoryManager.Model
         void AddReturn(ReturnModel vReturn);
         void AddReturnItem(ReturnItemModel returnItem, string invoiceNo);
         string GetNextReturnNumber();
+        Task<IEnumerable<ReturnModel>> GetAllReturnsAsync();
+        Task<IEnumerable<ReturnModel>> SearchReturnListAsync(string returnNo);
+        Task<ReturnModel> GetByReturnNo(string returnNo);
+        Task<IEnumerable<ReturnItemModel>> GetReturnItems(string returnNo);
     }
 }

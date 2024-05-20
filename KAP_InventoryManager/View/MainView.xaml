@@ -34,6 +34,9 @@
         <DataTemplate DataType="{x:Type viewModel:InvoicesViewModel}">
             <locals:InvoicesView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:ReturnsViewModel}">
+            <locals:ReturnsView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModel:SalesRepsViewModel}">
             <locals:SalesRepsView/>
         </DataTemplate>
@@ -153,7 +156,7 @@
                                 <RadioButton Style="{StaticResource menuButton}" 
                                              Margin="0,0,0,12"
                                              Cursor="Hand"
-                                             Command="{Binding ShowInvoicesViewCommand}">
+                                             Command="{Binding ShowReturnsViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
                                         <fa:IconImage 
                                             Icon="ArrowsTurnToDots" 

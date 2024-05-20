@@ -1,19 +1,10 @@
-﻿using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Messaging;
-using KAP_InventoryManager.CustomControls;
-using KAP_InventoryManager.Model;
+﻿using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
-using MySql.Data.MySqlClient;
 using QuestPDF.ExampleInvoice;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 
 namespace KAP_InventoryManager.ViewModel
 {
