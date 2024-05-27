@@ -27,8 +27,8 @@ namespace KAP_InventoryManager.View
 
         private void AddReturnButton_Click(object sender, RoutedEventArgs e)
         {
-/*            var addInvoiceWindow = new AddInvoiceView();
-            addInvoiceWindow.Show();*/
+            var addReturnWindow = new AddReturnView();
+            addReturnWindow.Show();
         }
     }
 }

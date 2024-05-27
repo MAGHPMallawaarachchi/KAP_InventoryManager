@@ -146,7 +146,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 if( SelectedInvoice != null)
                 {
-                    CurrentInvoice = await InvoiceRepository.GetByInvoiceNo(SelectedInvoice.InvoiceNo);
+                    CurrentInvoice = await InvoiceRepository.GetByInvoiceNoAsync(SelectedInvoice.InvoiceNo);
 
                     if (CurrentInvoice != null)
                     {

@@ -282,7 +282,7 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public async Task<InvoiceModel> GetByInvoiceNo(string invoiceNo)
+        public async Task<InvoiceModel> GetByInvoiceNoAsync(string invoiceNo)
         {
             try
             {
@@ -298,6 +298,46 @@ namespace KAP_InventoryManager.Repositories
                     using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
+                        {
+                            invoice = new InvoiceModel()
+                            {
+                                InvoiceNo = reader["InvoiceNo"].ToString(),
+                                Terms = reader["Terms"] is DBNull ? null : reader["Terms"].ToString(),
+                                DateString = reader["Date"] is DBNull ? null : ((DateTime)reader["Date"]).ToString("dd-MM-yyyy @ HH.mm"),
+                                DueDateString = reader["DueDate"] is DBNull ? null : ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
+                                TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                                Status = reader["Status"] is DBNull ? null : reader["Status"].ToString(),
+                                CustomerID = reader["CustomerID"] is DBNull ? null : reader["CustomerID"].ToString(),
+                                RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
+                            };
+                        }
+                    }
+                }
+                return invoice;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        public InvoiceModel GetByInvoiceNo(string invoiceNo)
+        {
+            try
+            {
+                InvoiceModel invoice = null;
+
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT * FROM Invoice WHERE InvoiceNo = @InvoiceNo", connection))
+                {
+                    command.Parameters.Add("@InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
+
+                    connection.Open();
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
                         {
                             invoice = new InvoiceModel()
                             {
@@ -471,27 +511,32 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public async Task<List<string>> GetPartNumbersByInvoice(string invoiceNo)
+        public List<string> GetPartNumbersByInvoice(string invoiceNo)
         {
             try
             {
                 List<string> partNumbers = new List<string>();
 
                 using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT PartNo FROM InvoiceItem WHERE InvoiceNo = @InvoiceNo ORDER BY No ASC", connection))
                 {
-                    command.Parameters.AddWithValue("@InvoiceNo", invoiceNo);
-                    await connection.OpenAsync();
+                    connection.Open();
 
-                    using (var reader = await command.ExecuteReaderAsync())
+                    using (var command = new MySqlCommand("GetPartNumbersByInvoice", connection))
                     {
-                        while (await reader.ReadAsync())
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("p_InvoiceNo", invoiceNo);
+
+                        using (var reader = command.ExecuteReader())
                         {
-                            string partNo = reader["PartNo"].ToString();
-                            partNumbers.Add(partNo);
+                            while (reader.Read())
+                            {
+                                string partNo = reader["PartNo"].ToString();
+                                partNumbers.Add(partNo);
+                            }
                         }
                     }
                 }
+
                 return partNumbers;
             }
             catch (Exception ex)
@@ -511,8 +556,8 @@ namespace KAP_InventoryManager.Repositories
                 using (var command = new MySqlCommand("GetInvoiceItem", connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add("@InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
-                    command.Parameters.Add("@PartNo", MySqlDbType.VarChar).Value = partNo;
+                    command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
+                    command.Parameters.Add("@p_PartNo", MySqlDbType.VarChar).Value = partNo;
 
                     await connection.OpenAsync();
 
@@ -541,5 +586,6 @@ namespace KAP_InventoryManager.Repositories
                 return null;
             }
         }
+
     }
 }

@@ -8,7 +8,7 @@ namespace KAP_InventoryManager.Model
 {
     internal interface IReturnRepository
     {
-        void AddReturn(ReturnModel vReturn);
+        bool AddReturn(ReturnModel vReturn);
         void AddReturnItem(ReturnItemModel returnItem, string invoiceNo);
         string GetNextReturnNumber();
         Task<IEnumerable<ReturnModel>> GetAllReturnsAsync();

@@ -12,7 +12,7 @@ namespace KAP_InventoryManager.Repositories
 {
     internal class ReturnRepository : RepositoryBase, IReturnRepository
     {
-        public void AddReturn(ReturnModel vReturn)
+        public bool AddReturn(ReturnModel vReturn)
         {
             try
             {
@@ -36,12 +36,14 @@ namespace KAP_InventoryManager.Repositories
                         }
 
                         transaction.Commit();
+                        return true;
                     }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to add return. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
         }
 

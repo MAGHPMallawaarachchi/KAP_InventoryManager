@@ -68,10 +68,16 @@
                                        Style="{StaticResource regular-text}"/>
                             <TextBlock Text=":" Grid.Column="1"
                                        Style="{StaticResource regular-text}"/>
-                            <TextBlock Text="{Binding Date}" 
-                                       Style="{StaticResource regular-text}"
-                                       Margin="0,4"
-                                       Grid.Column="2"/>
+                            <StackPanel Orientation="Horizontal"
+                                        Grid.Column="2"
+                                        Margin="0,4">
+                                <TextBlock Text="{Binding CurrentDate}" 
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text=" @" 
+                                           Style="{StaticResource regular-text}"/>
+                                <TextBlock Text="{Binding CurrentTime}" 
+                                           Style="{StaticResource regular-text}"/>
+                            </StackPanel>
 
                             <TextBlock Text="Invoice" Grid.Row="1"
                                        Style="{StaticResource regular-text}"/>
@@ -81,8 +87,8 @@
                                       Margin="0,6"
                                       Padding="6,0,6,0"
                                       IsEditable="True"
-                                      SelectedItem="{Binding InvoiceNo}"
-                                      ItemsSource="{Binding InvoiceNumbers}"
+                                      SelectedItem="{Binding SelectedInvoiceNo}"
+                                      ItemsSource="{Binding Invoices}"
                                       Text="{Binding InvoiceSearchText}"
                                       StaysOpenOnEdit="True">
                             </ComboBox>
@@ -234,17 +240,15 @@
                         <ComboBox Grid.Column="1"
                                   Margin="0,0,20,0"
                                   Padding="6,0,6,0"
-                                  IsEditable="True"
-                                  SelectedItem="{Binding PartNo}"
-                                  ItemsSource="{Binding PartNumbers}"
-                                  StaysOpenOnEdit="True">
+                                  SelectedValue="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  ItemsSource="{Binding PartNumbers}">
                         </ComboBox>
 
-                        <TextBlock Text="{Binding InvoiceItem.BrandID}"                   
+                        <TextBlock Text="{Binding SelectedInvoiceItem.BrandID}"                   
                                Style="{StaticResource regular-text}"
                                Grid.Column="2"/>
 
-                        <TextBox Text="{Binding Quantity}"
+                        <TextBox Text="{Binding Qty}"
                                  Style="{StaticResource ModalTextBox}"
                                  Grid.Column="3"
                                  Margin="0,0,20,0"/>
@@ -254,11 +258,11 @@
                                  Grid.Column="4"
                                  Margin="0,0,20,0"/>
 
-                        <TextBlock Text="{Binding InvoiceItem.UnitPrice}"                   
+                        <TextBlock Text="{Binding SelectedInvoiceItem.UnitPrice}"                   
                                Style="{StaticResource regular-text}"
                                Grid.Column="5"/>
 
-                        <TextBlock Text="{Binding InvoiceItem.Discount}"                   
+                        <TextBlock Text="{Binding SelectedInvoiceItem.Discount}"                   
                                Style="{StaticResource regular-text}"
                                Grid.Column="6"/>
 
