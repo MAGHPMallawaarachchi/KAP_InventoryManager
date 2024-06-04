@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -18,8 +19,10 @@ namespace KAP_InventoryManager.ViewModel
     public class InventoryViewModel : ViewModelBase
     {
         private readonly IItemRepository ItemRepository;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private CancellationTokenSource _cancellationTokenSource;
      
-        private IEnumerable<ItemModel> _items;
+        private ObservableCollection<ItemModel> _items;
         private ItemModel _selectedItem;
         private ItemModel _currentItem;
         private string _searchItemText;
@@ -37,15 +40,13 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        public IEnumerable<ItemModel> Items
+        public ObservableCollection<ItemModel> Items
         {
             get { return _items; }
             set
             {
                 _items = value;
                 OnPropertyChanged(nameof(Items));
-
-                SelectedItem = Items.FirstOrDefault();
             }
         }
 
@@ -108,6 +109,7 @@ namespace KAP_InventoryManager.ViewModel
             Messenger.Default.Register<object>(this, "RequestSelectedItem", OnRequestSelectedItem);
             Messenger.Default.Register<string>(this, OnMessageReceived);
 
+            Items = new ObservableCollection<ItemModel>();
             PopulateItemsAsync();
         }
 
@@ -119,24 +121,51 @@ namespace KAP_InventoryManager.ViewModel
 
         private async void PopulateItemsAsync()
         {
+            await _semaphore.WaitAsync();
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+
             try
-            {            
-                if(SearchItemText == null)
-                    Items = await ItemRepository.GetAllAsync();
-                else
-                    Items = await ItemRepository.SearchItemListAsync(SearchItemText);
+            {
+                Items.Clear();
+
+                List<ItemModel> items = (List<ItemModel>)(string.IsNullOrEmpty(SearchItemText)
+                    ? await ItemRepository.GetAllAsync()
+                    : await ItemRepository.SearchItemListAsync(SearchItemText));
+
+                foreach (var item in items)
+                {
+                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                        break;
+
+                    Items.Add(item);
+                    await Task.Delay(50, _cancellationTokenSource.Token);
+                }
+
+                if (Items.Any())
+                {
+                    SelectedItem = Items.First();
+                }
             }
             catch (MySqlException ex)
             {
                 MessageBox.Show($"Failed to fetch items. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            catch (TaskCanceledException)
+            {
+                // Task was canceled, ignore the exception
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
-/*        private void ExecuteShowTransactionsViewCommand(object obj)
-        {
-            SelectedViewModel = ViewModels.OfType<TransactionsViewModel>().FirstOrDefault();
-        }
-*/
+        /*        private void ExecuteShowTransactionsViewCommand(object obj)
+                {
+                    SelectedViewModel = ViewModels.OfType<TransactionsViewModel>().FirstOrDefault();
+                }
+        */
         private void ExecuteShowDetailsViewCommand(object obj)
         {
             Messenger.Default.Send(CurrentItem);

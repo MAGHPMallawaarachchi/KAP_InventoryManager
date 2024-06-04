@@ -12,7 +12,7 @@ namespace KAP_InventoryManager.Model
         void Add(ItemModel item);
         void Edit(ItemModel item);
         void Delete(string partNo);
-        Task<IEnumerable<ItemModel>> GetAllAsync();
+        Task<List<ItemModel>> GetAllAsync();
         Task<IEnumerable<ItemModel>> SearchItemListAsync(string partNo);
         Task<ItemModel> GetByPartNoAsync(string partNo);
         ItemModel GetByPartNo(string partNo);

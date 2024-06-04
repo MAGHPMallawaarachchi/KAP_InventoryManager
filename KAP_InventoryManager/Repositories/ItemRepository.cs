@@ -78,12 +78,12 @@ namespace KAP_InventoryManager.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<ItemModel>> GetAllAsync()
+        public async Task<List<ItemModel>> GetAllAsync()
         {
+            var items = new List<ItemModel>();
+
             try
             {
-                List<ItemModel> items = new List<ItemModel>();
-
                 using (var connection = GetConnection())
                 using (var command = new MySqlCommand("SELECT PartNo, QtyInHand FROM Item ORDER BY BrandID DESC LIMIT 20", connection))
                 {
@@ -100,20 +100,20 @@ namespace KAP_InventoryManager.Repositories
                             {
                                 Id = counter,
                                 PartNo = reader["PartNo"].ToString(),
-                                QtyInHand = (Int32)reader["QtyInHand"],
+                                QtyInHand = (int)reader["QtyInHand"],
                             };
 
                             items.Add(item);
                         }
                     }
                 }
-                return items;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get all items. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
             }
+
+            return items;
         }
 
         public async Task<IEnumerable<ItemModel>> SearchItemListAsync(string partNo)
