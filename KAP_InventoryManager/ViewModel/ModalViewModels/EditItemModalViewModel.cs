@@ -189,10 +189,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 BuyingPrice = Item.BuyingPrice;
                 UnitPrice = Item.UnitPrice;
                 VehicleBrand = Item.VehicleBrand;
-
-                Console.WriteLine($"Loaded VehicleBrands: {string.Join(", ", VehicleBrands)}");
-                Console.WriteLine($"Setting VehicleBrand to: {Item.VehicleBrand}");
-
             }
         }
 
@@ -224,7 +220,12 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             };
 
             ItemRepository.Edit(editedItem);
+
+            //close the dialog view
             Messenger.Default.Send(new NotificationMessage("CloseDialog"));
+
+            //send the edited item back to the details view
+            Messenger.Default.Send(Item.PartNo, "ItemUpdated");
         }
 
         private async Task LoadBrandsAsync()
