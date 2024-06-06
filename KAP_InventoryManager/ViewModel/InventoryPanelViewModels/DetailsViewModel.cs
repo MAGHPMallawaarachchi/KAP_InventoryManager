@@ -40,7 +40,8 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 
         private void OnMessageReceived(ItemModel item)
         {
-            Item = item;
+            if (Item == null || Item.PartNo != item.PartNo)
+                Item = item;
         }
 
         private void OnRequestSelectedItem(object obj)
