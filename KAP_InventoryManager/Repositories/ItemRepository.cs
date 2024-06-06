@@ -545,5 +545,120 @@ namespace KAP_InventoryManager.Repositories
                 return null;
             }
         }
+
+        public async Task<decimal> CalculateCurrentMonthRevenueByItem(string partNo)
+        {
+            decimal currentMonthRevenue = 0;
+
+            try
+            {
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT CalculateCurrentMonthRevenueByItem(@p_PartNo)", connection))
+                {
+                    command.Parameters.AddWithValue("@p_PartNo", partNo);
+                    await connection.OpenAsync();
+
+                    // Execute scalar query to get the function result
+                    var result = await command.ExecuteScalarAsync();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        currentMonthRevenue = Convert.ToDecimal(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate current month revenue. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return currentMonthRevenue;
+        }
+
+        public async Task<decimal> CalculateLastMonthRevenueByItem(string partNo)
+        {
+            decimal lastMonthRevenue = 0;
+
+            try
+            {
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT CalculateLastMonthRevenueByItem(@p_PartNo)", connection))
+                {
+                    command.Parameters.AddWithValue("@p_PartNo", partNo);
+                    await connection.OpenAsync();
+
+                    // Execute scalar query to get the function result
+                    var result = await command.ExecuteScalarAsync();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        lastMonthRevenue = Convert.ToDecimal(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate last month revenue. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return lastMonthRevenue;
+        }
+
+
+        public async Task<decimal> CalculateTodayRevenueByItem(string partNo)
+        {
+            decimal todayRevenue = 0;
+
+            try
+            {
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT CalculateTodayRevenueByItem(@p_PartNo)", connection))
+                {
+                    command.Parameters.AddWithValue("@p_PartNo", partNo);
+                    await connection.OpenAsync();
+
+                    // Execute scalar query to get the function result
+                    var result = await command.ExecuteScalarAsync();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        todayRevenue = Convert.ToDecimal(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate today's revenue. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return todayRevenue;
+        }
+
+
+        public async Task<decimal> CalculatePercentageChange(decimal currentMonthRevenue, decimal lastMonthRevenue)
+        {
+            decimal percentageChange = 0;
+
+            try
+            {
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT CalculatePercentageChange(@p_CurrentMonthRevenue, @p_LastMonthRevenue)", connection))
+                {
+                    command.Parameters.AddWithValue("@p_CurrentMonthRevenue", currentMonthRevenue);
+                    command.Parameters.AddWithValue("@p_LastMonthRevenue", lastMonthRevenue);
+                    await connection.OpenAsync();
+
+                    // Execute scalar query to get the function result
+                    var result = await command.ExecuteScalarAsync();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        percentageChange = Convert.ToDecimal(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate percentage change. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return percentageChange;
+        }
     }
 }

@@ -239,7 +239,7 @@
                       Margin="0,0,0,8"/>
 
                             <Grid Margin="0,0,0,4">
-                                <TextBlock Text="Rs 320,000.00" 
+                                <TextBlock Text="{Binding CurrentMonthRevenue}" 
                                Style="{StaticResource numbers}"/>
                                 <StackPanel Orientation="Horizontal" 
                                 HorizontalAlignment="Right"
@@ -250,7 +250,7 @@
                             Foreground="{StaticResource Green}"
                             VerticalAlignment="Bottom"
                             Margin="0,0,2,2.5"/>
-                                    <TextBlock Text="10.3%"
+                                    <TextBlock Text="{Binding PercentageChange}"
                                    FontFamily="Inter"
                                    FontSize="12"
                                    Foreground="{StaticResource Green}"
@@ -258,13 +258,13 @@
                                    VerticalAlignment="Bottom"/>
                                 </StackPanel>
                             </Grid>
-                            <TextBlock Text="Compared to Rs 290,000 last month"
+                            <TextBlock Text="{Binding LastMonthRevenue}"
                            Style="{StaticResource light-text}"
                            Margin="0,0,0,8"/>
                             <Grid>
                                 <TextBlock Text="Today's Revenue"
                                Style="{StaticResource regular-text}"/>
-                                <TextBlock Text="Rs 10,000.00"
+                                <TextBlock Text="{Binding TodayRevenue}"
                                Style="{StaticResource regular-text}"
                                HorizontalAlignment="Right"/>
                             </Grid>

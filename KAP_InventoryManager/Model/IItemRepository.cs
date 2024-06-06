@@ -25,6 +25,10 @@ namespace KAP_InventoryManager.Model
         List<string> GetBrands();
         string GetSupplierByBrand(string brand);
         List<string> GetCategories(string brandId);
+        Task<decimal> CalculateCurrentMonthRevenueByItem(string partNo);
+        Task<decimal> CalculateLastMonthRevenueByItem(string partNo);
+        Task<decimal> CalculateTodayRevenueByItem(string partNo);
+        Task<decimal> CalculatePercentageChange(decimal currentMonthRevenue, decimal lastMonthRevenue);
         //...
     }
 }
