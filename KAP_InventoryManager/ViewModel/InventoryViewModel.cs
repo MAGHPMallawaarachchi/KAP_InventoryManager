@@ -161,11 +161,7 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        /*        private void ExecuteShowTransactionsViewCommand(object obj)
-                {
-                    SelectedViewModel = ViewModels.OfType<TransactionsViewModel>().FirstOrDefault();
-                }
-        */
+ 
         private void ExecuteShowDetailsViewCommand(object obj)
         {
             Messenger.Default.Send(CurrentItem);

@@ -73,9 +73,58 @@ namespace KAP_InventoryManager.Repositories
             throw new NotImplementedException();
         }
 
-        public void Edit(ItemModel itemModel)
+        public void Edit(ItemModel item)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var connection = GetConnection())
+                {
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        using (var command = new MySqlCommand("EditItem", connection, transaction))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
+
+                            command.Parameters.Add("@p_PartNo", MySqlDbType.VarChar).Value = item.PartNo;
+                            command.Parameters.Add("@p_OEMNo", MySqlDbType.VarChar).Value = item.OEMNo;
+                            command.Parameters.Add("@p_Description", MySqlDbType.VarChar).Value = item.Description;
+                            command.Parameters.Add("@p_BrandID", MySqlDbType.VarChar).Value = item.BrandID;
+                            command.Parameters.Add("@p_Category", MySqlDbType.VarChar).Value = item.Category;
+                            command.Parameters.Add("@p_VehicleBrand", MySqlDbType.VarChar).Value = item.VehicleBrand;
+                            command.Parameters.Add("@p_SupplierID", MySqlDbType.VarChar).Value = item.SupplierID;
+                            command.Parameters.Add("@p_BuyingPrice", MySqlDbType.Decimal).Value = item.BuyingPrice;
+                            command.Parameters.Add("@p_UnitPrice", MySqlDbType.Decimal).Value = item.UnitPrice;
+
+                            var p_AffectedRows = new MySqlParameter("@p_AffectedRows", MySqlDbType.Int32)
+                            {
+                                Direction = ParameterDirection.Output
+                            };
+                            command.Parameters.Add(p_AffectedRows);
+
+                            command.ExecuteNonQuery();
+
+                            // Get the value of the output parameter
+                            int affectedRows = Convert.ToInt32(p_AffectedRows.Value);
+
+                            if (affectedRows > 0)
+                            {
+                                MessageBox.Show("Item updated successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Item does not exist or no changes were made.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to edit the item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public async Task<List<ItemModel>> GetAllAsync()
@@ -187,6 +236,7 @@ namespace KAP_InventoryManager.Repositories
                                 QtySold = reader["QtySold"] is DBNull ? 0 : Convert.ToInt32(reader["QtySold"]),
                                 BuyingPrice = reader["BuyingPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["BuyingPrice"]),
                                 UnitPrice = reader["UnitPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["UnitPrice"]),
+                                VehicleBrand = reader["VehicleBrand"] is DBNull ? null : reader["VehicleBrand"].ToString()
                             };
                         }
                     }
@@ -224,6 +274,7 @@ namespace KAP_InventoryManager.Repositories
                                 OEMNo = reader["OEMNo"] is DBNull ? null : reader["OEMNo"].ToString(),
                                 Description = reader["Description"] is DBNull ? null : reader["Description"].ToString(),
                                 BrandID = reader["BrandID"] is DBNull ? null : reader["BrandID"].ToString(),
+                                VehicleBrand = reader["VehicleBrand"] is DBNull ? null : reader["VehicleBrand"].ToString(),
                                 Category = reader["Category"] is DBNull ? null : reader["Category"].ToString(),
                                 SupplierID = reader["SupplierID"] is DBNull ? null : reader["SupplierID"].ToString(),
                                 TotalQty = reader["TotalQty"] is DBNull ? 0 : Convert.ToInt32(reader["TotalQty"]),

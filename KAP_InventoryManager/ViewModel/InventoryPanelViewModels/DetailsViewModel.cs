@@ -30,11 +30,17 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
         {
             Messenger.Default.Register<ItemModel>(this, OnMessageReceived);
             Messenger.Default.Send(new object(), "RequestSelectedItem");
+            Messenger.Default.Register<object>(this, "RequestSelectedItem", OnRequestSelectedItem);
         }
 
         private void OnMessageReceived(ItemModel item)
         {
             Item = item;
+        }
+
+        private void OnRequestSelectedItem(object obj)
+        {
+            Messenger.Default.Send(Item);
         }
     }
 }

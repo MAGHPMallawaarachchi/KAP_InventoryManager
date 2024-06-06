@@ -1,4 +1,5 @@
 ﻿using KAP_InventoryManager.Model;
+using KAP_InventoryManager.View.Modals;
 using KAP_InventoryManager.ViewModel.InventoryPanelViewModels;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,12 @@ namespace KAP_InventoryManager.View.InventoryViewPanels
         public DetailsView()
         {
             InitializeComponent();
+        }
+
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            var editItemModalWindow = new EditItemModalView();
+            editItemModalWindow.ShowDialog();
         }
     }
 }

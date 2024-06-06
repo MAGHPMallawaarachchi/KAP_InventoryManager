@@ -284,7 +284,8 @@
                 <customcontrols:Button
                     ButtonText="Edit"
                     ButtonBackgroundColor="{StaticResource Color3}"
-                    ButtonIcon="PenToSquare"/>
+                    ButtonIcon="PenToSquare"
+                    ButtonClickHandler="EditButton_Click"/>
             </StackPanel>
         </Grid>
     </Border>
