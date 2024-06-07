@@ -248,37 +248,58 @@
                             <Grid Margin="0,0,0,4">
                                 <TextBlock Text="{Binding CurrentMonthRevenue}" 
                                            Style="{StaticResource numbers}"/>
+                                
                                 <StackPanel Orientation="Horizontal" 
                                             HorizontalAlignment="Right"
                                             Margin="0,0,0,2">
-                                    <fa:IconImage Icon="ArrowUp"
-                                                  Height="10"
-                                                  Foreground="{StaticResource Green}"
-                                                  VerticalAlignment="Bottom"
-                                                  Margin="0,0,2,2.5"
-                                                  Visibility="{Binding IsCurrentMonthRevenueHigh, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                     
-                                    <fa:IconImage Icon="ArrowDown"
-                                                  Height="10"
-                                                  Foreground="{StaticResource Red}"
+                                    <fa:IconImage Height="10"
                                                   VerticalAlignment="Bottom"
-                                                  Margin="0,0,2,2.5"
-                                                  Visibility="{Binding IsLastMonthRevenueHigh, Converter={StaticResource BooleanToVisibilityConverter}}"/>                                    
-                                    <TextBlock Text="{Binding PercentageChange}"
-                                               FontFamily="Inter"
-                                               FontSize="12"
-                                               Foreground="{StaticResource Green}"
-                                               FontWeight="Medium"
-                                               VerticalAlignment="Bottom"
-                                               Visibility="{Binding IsCurrentMonthRevenueHigh, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                  Margin="0,0,2,2.5">
+                                        <fa:IconImage.Style>
+                                            <Style TargetType="fa:IconImage">
+                                                <Setter Property="Icon" Value="ArrowUp" />
+                                                <Setter Property="Foreground" Value="{StaticResource Green}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCurrentMonthRevenueHigh}" Value="True">
+                                                        <Setter Property="Icon" Value="ArrowUp" />
+                                                        <Setter Property="Foreground" Value="{StaticResource Green}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsCurrentMonthRevenueHigh}" Value="False">
+                                                        <Setter Property="Icon" Value="ArrowDown" />
+                                                        <Setter Property="Foreground" Value="{StaticResource Red}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </fa:IconImage.Style>
+                                    </fa:IconImage>
 
                                     <TextBlock Text="{Binding PercentageChange}"
                                                FontFamily="Inter"
                                                FontSize="12"
-                                               Foreground="{StaticResource Red}"
                                                FontWeight="Medium"
-                                               VerticalAlignment="Bottom"
-                                               Visibility="{Binding IsLastMonthRevenueHigh, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                               VerticalAlignment="Bottom">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource Green}" />
+                                                
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCurrentMonthRevenueHigh}" 
+                                                                 Value="True">
+                                                        <Setter Property="Foreground" 
+                                                                Value="{StaticResource Green}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsLastMonthRevenueHigh}" 
+                                                                 Value="True">
+                                                        <Setter Property="Foreground" 
+                                                                Value="{StaticResource Red}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
                                     
                                 </StackPanel>
                             </Grid>
