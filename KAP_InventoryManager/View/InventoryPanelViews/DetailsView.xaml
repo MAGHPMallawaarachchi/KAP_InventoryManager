@@ -14,7 +14,11 @@
     <UserControl.DataContext>
         <viewModel:DetailsViewModel/>
     </UserControl.DataContext>
-    
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
     <Border x:Name="SearchBorder" BorderBrush="{StaticResource Color2}" BorderThickness="1" CornerRadius="8" Background="{StaticResource Color2}">
         <Grid Margin="20">
             <Grid.RowDefinitions>
@@ -221,41 +225,61 @@
                             </Grid>
                         </StackPanel>
                     </Border>
-                    <Border Grid.Row="1" Background="{StaticResource Color3}" CornerRadius="8" Margin="0,0,0,20">
+                    <Border Grid.Row="1" 
+                            Background="{StaticResource Color3}" 
+                            CornerRadius="8"
+                            Margin="0,0,0,20">
                         <StackPanel Orientation="Vertical" Margin="20">
                             <Grid Margin="0,0,0,4">
                                 <TextBlock Text="Revenue" 
-                               Style="{StaticResource card-header}"/>
+                                           Style="{StaticResource card-header}"/>
                                 <TextBlock Text="This Month" 
-                               Style="{StaticResource regular-text}" 
-                               HorizontalAlignment="Right"/>
+                                           Style="{StaticResource regular-text}" 
+                                           HorizontalAlignment="Right"/>
                             </Grid>
 
                             <Line X1="0" Y1="0" 
-                      X2="1" Y2="0" 
-                      Stretch="Fill" 
-                      Stroke="#4F5051" 
-                      StrokeThickness="1" 
-                      Margin="0,0,0,8"/>
+                                  X2="1" Y2="0" 
+                                  Stretch="Fill" 
+                                  Stroke="#4F5051" 
+                                  StrokeThickness="1" 
+                                  Margin="0,0,0,8"/>
 
                             <Grid Margin="0,0,0,4">
                                 <TextBlock Text="{Binding CurrentMonthRevenue}" 
-                               Style="{StaticResource numbers}"/>
+                                           Style="{StaticResource numbers}"/>
                                 <StackPanel Orientation="Horizontal" 
-                                HorizontalAlignment="Right"
-                                Margin="0,0,0,2">
-                                    <fa:IconImage
-                            Icon="ArrowUp"
-                            Height="10"
-                            Foreground="{StaticResource Green}"
-                            VerticalAlignment="Bottom"
-                            Margin="0,0,2,2.5"/>
+                                            HorizontalAlignment="Right"
+                                            Margin="0,0,0,2">
+                                    <fa:IconImage Icon="ArrowUp"
+                                                  Height="10"
+                                                  Foreground="{StaticResource Green}"
+                                                  VerticalAlignment="Bottom"
+                                                  Margin="0,0,2,2.5"
+                                                  Visibility="{Binding IsCurrentMonthRevenueHigh, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    
+                                    <fa:IconImage Icon="ArrowDown"
+                                                  Height="10"
+                                                  Foreground="{StaticResource Red}"
+                                                  VerticalAlignment="Bottom"
+                                                  Margin="0,0,2,2.5"
+                                                  Visibility="{Binding IsLastMonthRevenueHigh, Converter={StaticResource BooleanToVisibilityConverter}}"/>                                    
                                     <TextBlock Text="{Binding PercentageChange}"
-                                   FontFamily="Inter"
-                                   FontSize="12"
-                                   Foreground="{StaticResource Green}"
-                                   FontWeight="Medium"
-                                   VerticalAlignment="Bottom"/>
+                                               FontFamily="Inter"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Green}"
+                                               FontWeight="Medium"
+                                               VerticalAlignment="Bottom"
+                                               Visibility="{Binding IsCurrentMonthRevenueHigh, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                    <TextBlock Text="{Binding PercentageChange}"
+                                               FontFamily="Inter"
+                                               FontSize="12"
+                                               Foreground="{StaticResource Red}"
+                                               FontWeight="Medium"
+                                               VerticalAlignment="Bottom"
+                                               Visibility="{Binding IsLastMonthRevenueHigh, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    
                                 </StackPanel>
                             </Grid>
                             <TextBlock Text="{Binding LastMonthRevenue}"

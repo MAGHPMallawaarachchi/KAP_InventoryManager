@@ -19,8 +19,9 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
         private string _currentMonthRevenue;
         private string _lastMonthRevenue;
         private string _todayRevenue;
-        private decimal _percentageChange;
+        private string _percentageChange;
         private bool _isCurrentMonthRevenueHigh;
+        private bool _isLastMonthRevenueHigh;
 
         public ItemModel Item
         {
@@ -62,7 +63,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
             }
         }
 
-        public decimal PercentageChange
+        public string PercentageChange
         {
             get => _percentageChange;
             set
@@ -82,9 +83,22 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
             }
         }
 
+        public bool IsLastMonthRevenueHigh
+        {
+            get => _isLastMonthRevenueHigh;
+            set
+            {
+                _isLastMonthRevenueHigh = value;
+                OnPropertyChanged(nameof(IsLastMonthRevenueHigh));
+            }
+        }
+
         public DetailsViewModel()
         {
             ItemRepository = new ItemRepository();
+
+            IsCurrentMonthRevenueHigh = false;
+            IsLastMonthRevenueHigh = false;
 
             Messenger.Default.Register<ItemModel>(this, OnMessageReceived);
             Messenger.Default.Send(new object(), "RequestSelectedItem");
@@ -119,16 +133,24 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
                 var currentMonthRevenue = await ItemRepository.CalculateCurrentMonthRevenueByItem(Item.PartNo);
                 var lastMonthRevenue = await ItemRepository.CalculateLastMonthRevenueByItem(Item.PartNo);
                 var todayRevenue = await ItemRepository.CalculateTodayRevenueByItem(Item.PartNo);
+                var percentageChange = await ItemRepository.CalculatePercentageChange(currentMonthRevenue, lastMonthRevenue);
 
                 CurrentMonthRevenue = $"Rs. {currentMonthRevenue:N2}";
                 LastMonthRevenue = $"Compared to Rs. {lastMonthRevenue:N2} last month";
                 TodayRevenue = $"Rs. {todayRevenue:N2}";
-                PercentageChange = await ItemRepository.CalculatePercentageChange(currentMonthRevenue, lastMonthRevenue);
+                PercentageChange = $"{percentageChange}%";
 
                 if (currentMonthRevenue > lastMonthRevenue)
+                {
                     IsCurrentMonthRevenueHigh = true;
+                    IsLastMonthRevenueHigh = false;
+                }
                 else
+                {
                     IsCurrentMonthRevenueHigh = false;
+                    IsLastMonthRevenueHigh = true;
+                }
+
             }
         }
     }
