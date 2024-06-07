@@ -21,7 +21,6 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
         private string _todayRevenue;
         private string _percentageChange;
         private bool _isCurrentMonthRevenueHigh;
-        private bool _isLastMonthRevenueHigh;
 
         public ItemModel Item
         {
@@ -82,23 +81,11 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
                 OnPropertyChanged(nameof(IsCurrentMonthRevenueHigh));
             }
         }
-
-        public bool IsLastMonthRevenueHigh
-        {
-            get => _isLastMonthRevenueHigh;
-            set
-            {
-                _isLastMonthRevenueHigh = value;
-                OnPropertyChanged(nameof(IsLastMonthRevenueHigh));
-            }
-        }
-
         public DetailsViewModel()
         {
             ItemRepository = new ItemRepository();
 
             IsCurrentMonthRevenueHigh = false;
-            IsLastMonthRevenueHigh = false;
 
             Messenger.Default.Register<ItemModel>(this, OnMessageReceived);
             Messenger.Default.Send(new object(), "RequestSelectedItem");
@@ -141,15 +128,9 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
                 PercentageChange = $"{percentageChange}%";
 
                 if (currentMonthRevenue > lastMonthRevenue)
-                {
                     IsCurrentMonthRevenueHigh = true;
-                    IsLastMonthRevenueHigh = false;
-                }
                 else
-                {
                     IsCurrentMonthRevenueHigh = false;
-                    IsLastMonthRevenueHigh = true;
-                }
 
             }
         }

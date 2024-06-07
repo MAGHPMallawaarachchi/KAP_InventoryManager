@@ -289,8 +289,8 @@
                                                         <Setter Property="Foreground" 
                                                                 Value="{StaticResource Green}" />
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsLastMonthRevenueHigh}" 
-                                                                 Value="True">
+                                                    <DataTrigger Binding="{Binding IsCurrentMonthRevenueHigh}" 
+                                                                 Value="False">
                                                         <Setter Property="Foreground" 
                                                                 Value="{StaticResource Red}" />
                                                     </DataTrigger>
