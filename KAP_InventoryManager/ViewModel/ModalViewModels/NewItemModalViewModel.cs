@@ -201,29 +201,29 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 UnitPrice = UnitPrice,
             };
 
-            ItemRepository.Add(newItem);
+            ItemRepository.AddAsync(newItem);
             ClearTextBoxes();
             Messenger.Default.Send("NewItemAdded");
         }
 
-        private void GetBrands()
+        private async void GetBrands()
         {
-            Brands = ItemRepository.GetBrands();
+            Brands = await ItemRepository.GetBrandsAsync();
             Brands.Insert(0, "None");
         }
 
-        private void GetSupplierByBrand()
+        private async void GetSupplierByBrand()
         {
             if(BrandID != null || BrandID != "None")
-                SupplierID = ItemRepository.GetSupplierByBrand(BrandID);
+                SupplierID = await ItemRepository.GetSupplierByBrandAsync(BrandID);
             else
                 SupplierID = null;
         }
 
-        private void GetCategories()
+        private async void GetCategories()
         {
             if(BrandID == null || BrandID != "None")
-                Categories = ItemRepository.GetCategories(BrandID);
+                Categories = await ItemRepository.GetCategoriesAsync(BrandID);
             else 
                 Categories = null;
         }

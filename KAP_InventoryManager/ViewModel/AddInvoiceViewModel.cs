@@ -492,7 +492,7 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private void PopulatePartNumbers()
+        private async void PopulatePartNumbers()
         {
             try
             {
@@ -500,7 +500,7 @@ namespace KAP_InventoryManager.ViewModel
 
                 if (PartNoSearchText != null || PartNoSearchText != "")
                 {
-                    var results = ItemRepository.SearchPartNo(PartNoSearchText);
+                    var results = await ItemRepository.SearchPartNoAsync(PartNoSearchText);
 
                     if (results != null)
                     {

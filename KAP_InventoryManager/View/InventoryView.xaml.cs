@@ -1,4 +1,5 @@
 ﻿using KAP_InventoryManager.Model;
+using KAP_InventoryManager.Repositories;
 using KAP_InventoryManager.View.Modals;
 using KAP_InventoryManager.ViewModel;
 using System;

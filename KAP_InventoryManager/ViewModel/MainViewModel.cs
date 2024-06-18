@@ -17,14 +17,11 @@ namespace KAP_InventoryManager.ViewModel
         private UserAccountModel _currentUserAccount;
         private ViewModelBase _currentChildView;
 
-        private readonly IUserRepository userRepository;
+        private readonly IUserRepository _userRepository;
 
         public UserAccountModel CurrentUserAccount
         {
-            get
-            {
-                return _currentUserAccount;
-            }
+            get => _currentUserAccount;
 
             set
             {
@@ -35,10 +32,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public ViewModelBase CurrentChildView
         {
-            get
-            {
-                return _currentChildView;
-            }
+            get => _currentChildView;
 
             set
             {
@@ -67,7 +61,7 @@ namespace KAP_InventoryManager.ViewModel
             else
             {
                 // Runtime initialization
-                userRepository = new UserRepository();
+                _userRepository = new UserRepository();
                 _currentUserAccount = new UserAccountModel();
                 LoadCurrentUserData();
             }
@@ -113,18 +107,26 @@ namespace KAP_InventoryManager.ViewModel
             CurrentChildView = new ReturnsViewModel();
         }
 
-        private void LoadCurrentUserData()
+        private async void LoadCurrentUserData()
         {
-            var user = userRepository.GetByUsername(Thread.CurrentPrincipal.Identity.Name);
-            if (user != null)
+            try
             {
-                CurrentUserAccount.Username = user.UserName;
-                CurrentUserAccount.DisplayName = $"Hello {user.Name}!";
+                var user = await Task.Run(() => _userRepository.GetByUsername(Thread.CurrentPrincipal.Identity.Name));
+                if (user != null)
+                {
+                    CurrentUserAccount.Username = user.UserName;
+                    CurrentUserAccount.DisplayName = $"Hello {user.Name}!";
+                }
+                else
+                {
+                    CurrentUserAccount.DisplayName = "Invalid User";
+                    // Hide child view if user is invalid
+                    CurrentChildView = null;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                CurrentUserAccount.DisplayName = "Invalid User";
-                //Hide child view
+                MessageBox.Show($"Failed to load current user data. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -18,7 +18,7 @@ namespace KAP_InventoryManager.ViewModel
 {
     public class InventoryViewModel : ViewModelBase
     {
-        private readonly IItemRepository ItemRepository;
+        private readonly IItemRepository _itemRepository;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cancellationTokenSource;
      
@@ -42,7 +42,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public ObservableCollection<ItemModel> Items
         {
-            get { return _items; }
+            get => _items;
             set
             {
                 _items = value;
@@ -52,7 +52,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public ItemModel SelectedItem
         {
-            get { return _selectedItem; }
+            get => _selectedItem; 
             set
             {
                 _selectedItem = value;
@@ -65,7 +65,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public ItemModel CurrentItem
         {
-            get { return _currentItem; }
+            get => _currentItem;
             set
             {
                 _currentItem = value;
@@ -77,7 +77,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public string SearchItemText
         {
-            get { return _searchItemText; }
+            get => _searchItemText;
             set
             {
                 _searchItemText = value;
@@ -94,15 +94,15 @@ namespace KAP_InventoryManager.ViewModel
 
         public InventoryViewModel()
         {
-            ItemRepository = new ItemRepository();
+            _itemRepository = new ItemRepository();
 
             ViewModels.Add(new OverviewViewModel());
             ViewModels.Add(new DetailsViewModel());
-/*            ViewModels.Add(new TransactionsViewModel());*/
+            //ViewModels.Add(new TransactionsViewModel());
 
             ShowOverviewViewCommand = new ViewModelCommand(ExecuteShowOverviewViewCommand);
             ShowDetailsViewCommand = new ViewModelCommand(ExecuteShowDetailsViewCommand);
-/*            ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);*/
+            //ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);
 
             SelectedViewModel = ViewModels.First();
 
@@ -114,8 +114,7 @@ namespace KAP_InventoryManager.ViewModel
         }
 
         private void OnRequestSelectedItem(object obj)
-        {
-            
+        {           
             Messenger.Default.Send(CurrentItem);
         }
 
@@ -130,13 +129,27 @@ namespace KAP_InventoryManager.ViewModel
                 Items.Clear();
 
                 List<ItemModel> items = (List<ItemModel>)(string.IsNullOrEmpty(SearchItemText)
-                    ? await ItemRepository.GetAllAsync()
-                    : await ItemRepository.SearchItemListAsync(SearchItemText));
+                    ? await _itemRepository.GetAllAsync()
+                    : await _itemRepository.SearchItemListAsync(SearchItemText));
 
                 foreach (var item in items)
                 {
                     if (_cancellationTokenSource.Token.IsCancellationRequested)
                         break;
+
+                    // Determine stock status based on QtyInHand
+                    if (item.QtyInHand <= 0)
+                    {
+                        item.StockStatus = "Out of Stock";
+                    }
+                    else if (item.QtyInHand < 20)
+                    {
+                        item.StockStatus = "Low in Stock";
+                    }
+                    else
+                    {
+                        item.StockStatus = "Adequate in Stock";
+                    }
 
                     Items.Add(item);
                     await Task.Delay(50, _cancellationTokenSource.Token);
@@ -173,9 +186,16 @@ namespace KAP_InventoryManager.ViewModel
             SelectedViewModel = ViewModels.OfType<OverviewViewModel>().FirstOrDefault();
         }
 
-        private void PopulateDetails()
+        private async void PopulateDetails()
         {
-            CurrentItem = ItemRepository.GetByPartNo(SelectedItem.PartNo); 
+            try
+            {
+                CurrentItem = await _itemRepository.GetByPartNoAsync(SelectedItem.PartNo);
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"Failed to fetch item details. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void OnMessageReceived(string message)

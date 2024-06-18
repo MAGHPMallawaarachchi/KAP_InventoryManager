@@ -3,10 +3,6 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -14,52 +10,35 @@ namespace KAP_InventoryManager.Repositories
 {
     internal class ItemRepository : RepositoryBase, IItemRepository
     {
-        public void Add(ItemModel item)
+        public async Task AddAsync(ItemModel item)
         {
             try
             {
-                using (var connection = GetConnection())
+                var parameters = new MySqlParameter[]
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        using (var command = new MySqlCommand("AddItem", connection, transaction))
-                        {
-                            command.CommandType = CommandType.StoredProcedure;
+                    new MySqlParameter("@p_PartNo", item.PartNo),
+                    new MySqlParameter("@p_OEMNo", item.OEMNo),
+                    new MySqlParameter("@p_Description", item.Description),
+                    new MySqlParameter("@p_BrandID", item.BrandID),
+                    new MySqlParameter("@p_Category", item.Category),
+                    new MySqlParameter("@p_VehicleBrand", item.VehicleBrand),
+                    new MySqlParameter("@p_SupplierID", item.SupplierID),
+                    new MySqlParameter("@p_BuyingPrice", item.BuyingPrice),
+                    new MySqlParameter("@p_UnitPrice", item.UnitPrice),
+                    new MySqlParameter("@p_ItemCount", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
+                };
 
-                            command.Parameters.Add("@p_PartNo", MySqlDbType.VarChar).Value = item.PartNo;
-                            command.Parameters.Add("@p_OEMNo", MySqlDbType.VarChar).Value = item.OEMNo;
-                            command.Parameters.Add("@p_Description", MySqlDbType.VarChar).Value = item.Description;
-                            command.Parameters.Add("@p_BrandID", MySqlDbType.VarChar).Value = item.BrandID;
-                            command.Parameters.Add("@p_Category", MySqlDbType.VarChar).Value = item.Category;
-                            command.Parameters.Add("@p_VehicleBrand", MySqlDbType.VarChar).Value = item.VehicleBrand;
-                            command.Parameters.Add("@p_SupplierID", MySqlDbType.VarChar).Value = item.SupplierID;
-                            command.Parameters.Add("@p_BuyingPrice", MySqlDbType.Decimal).Value = item.BuyingPrice;
-                            command.Parameters.Add("@p_UnitPrice", MySqlDbType.Decimal).Value = item.UnitPrice;
+                await ExecuteNonQueryAsync("AddItem", CommandType.StoredProcedure, parameters);
 
-                            var p_ItemCount = new MySqlParameter("@p_ItemCount", MySqlDbType.Int32)
-                            {
-                                Direction = ParameterDirection.Output
-                            };
-                            command.Parameters.Add(p_ItemCount);
+                int itemCount = Convert.ToInt32(parameters[9].Value);
 
-                            command.ExecuteNonQuery();
-
-                            // Get the value of the output parameter
-                            int itemCount = Convert.ToInt32(p_ItemCount.Value);
-
-                            if (itemCount == 0)
-                            {
-                                MessageBox.Show("Item added successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-                            else
-                            {
-                                MessageBox.Show("Item already exists.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-                        }
-
-                        transaction.Commit();
-                    }        
+                if (itemCount == 0)
+                {
+                    MessageBox.Show("Item added successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Item already exists.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
@@ -68,57 +47,35 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public void Delete(string partNo)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Edit(ItemModel item)
+        public async Task EditAsync(ItemModel item)
         {
             try
             {
-                using (var connection = GetConnection())
+                var parameters = new MySqlParameter[]
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        using (var command = new MySqlCommand("EditItem", connection, transaction))
-                        {
-                            command.CommandType = CommandType.StoredProcedure;
+                    new MySqlParameter("@p_PartNo", item.PartNo),
+                    new MySqlParameter("@p_OEMNo", item.OEMNo),
+                    new MySqlParameter("@p_Description", item.Description),
+                    new MySqlParameter("@p_BrandID", item.BrandID),
+                    new MySqlParameter("@p_Category", item.Category),
+                    new MySqlParameter("@p_VehicleBrand", item.VehicleBrand),
+                    new MySqlParameter("@p_SupplierID", item.SupplierID),
+                    new MySqlParameter("@p_BuyingPrice", item.BuyingPrice),
+                    new MySqlParameter("@p_UnitPrice", item.UnitPrice),
+                    new MySqlParameter("@p_AffectedRows", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
+                };
 
-                            command.Parameters.Add("@p_PartNo", MySqlDbType.VarChar).Value = item.PartNo;
-                            command.Parameters.Add("@p_OEMNo", MySqlDbType.VarChar).Value = item.OEMNo;
-                            command.Parameters.Add("@p_Description", MySqlDbType.VarChar).Value = item.Description;
-                            command.Parameters.Add("@p_BrandID", MySqlDbType.VarChar).Value = item.BrandID;
-                            command.Parameters.Add("@p_Category", MySqlDbType.VarChar).Value = item.Category;
-                            command.Parameters.Add("@p_VehicleBrand", MySqlDbType.VarChar).Value = item.VehicleBrand;
-                            command.Parameters.Add("@p_SupplierID", MySqlDbType.VarChar).Value = item.SupplierID;
-                            command.Parameters.Add("@p_BuyingPrice", MySqlDbType.Decimal).Value = item.BuyingPrice;
-                            command.Parameters.Add("@p_UnitPrice", MySqlDbType.Decimal).Value = item.UnitPrice;
+                await ExecuteNonQueryAsync("EditItem", CommandType.StoredProcedure, parameters);
 
-                            var p_AffectedRows = new MySqlParameter("@p_AffectedRows", MySqlDbType.Int32)
-                            {
-                                Direction = ParameterDirection.Output
-                            };
-                            command.Parameters.Add(p_AffectedRows);
+                int affectedRows = Convert.ToInt32(parameters[9].Value);
 
-                            command.ExecuteNonQuery();
-
-                            // Get the value of the output parameter
-                            int affectedRows = Convert.ToInt32(p_AffectedRows.Value);
-
-                            if (affectedRows > 0)
-                            {
-                                MessageBox.Show("Item updated successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-                            else
-                            {
-                                MessageBox.Show("Item does not exist or no changes were made.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-                        }
-
-                        transaction.Commit();
-                    }
+                if (affectedRows > 0)
+                {
+                    MessageBox.Show("Item updated successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Item does not exist or no changes were made.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
@@ -130,30 +87,20 @@ namespace KAP_InventoryManager.Repositories
         public async Task<List<ItemModel>> GetAllAsync()
         {
             var items = new List<ItemModel>();
-
             try
             {
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT PartNo, QtyInHand FROM Item ORDER BY BrandID DESC LIMIT 20", connection))
+                using (var reader = await ExecuteReaderAsync("SELECT PartNo, QtyInHand FROM Item ORDER BY BrandID DESC LIMIT 20", CommandType.Text))
                 {
-                    await connection.OpenAsync();
                     int counter = 0;
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        counter++;
+                        items.Add(new ItemModel
                         {
-                            counter++;
-
-                            ItemModel item = new ItemModel()
-                            {
-                                Id = counter,
-                                PartNo = reader["PartNo"].ToString(),
-                                QtyInHand = (int)reader["QtyInHand"],
-                            };
-
-                            items.Add(item);
-                        }
+                            Id = counter,
+                            PartNo = reader["PartNo"].ToString(),
+                            QtyInHand = (int)reader["QtyInHand"]
+                        });
                     }
                 }
             }
@@ -167,278 +114,238 @@ namespace KAP_InventoryManager.Repositories
 
         public async Task<IEnumerable<ItemModel>> SearchItemListAsync(string partNo)
         {
+            var items = new List<ItemModel>();
+
             try
             {
-                List<ItemModel> items = new List<ItemModel>();
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SearchItemList", connection))
+                var parameters = new MySqlParameter[]
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@p_PartNo", partNo);
+                    new MySqlParameter("@p_PartNo", partNo)
+                };
 
-                    connection.Open();
+                using (var reader = await ExecuteReaderAsync("SearchItemList", CommandType.StoredProcedure, parameters))
+                {
                     int counter = 0;
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        counter++;
+                        items.Add(new ItemModel
                         {
-                            counter++;
-
-                            ItemModel item = new ItemModel()
-                            {
-                                Id = counter,
-                                PartNo = reader["PartNo"].ToString(),
-                                QtyInHand = (Int32)reader["QtyInHand"],
-                            };
-
-                            items.Add(item);
-                        }
+                            Id = counter,
+                            PartNo = reader["PartNo"].ToString(),
+                            QtyInHand = (int)reader["QtyInHand"]
+                        });
                     }
                 }
-                return items;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to search the item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
             }
+
+            return items;
         }
 
         public async Task<ItemModel> GetByPartNoAsync(string partNo)
         {
+            ItemModel item = null;
+
             try
             {
-                ItemModel item = null;
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT * FROM Item WHERE PartNo = @PartNo", connection))
+                var parameters = new MySqlParameter[]
                 {
-                    command.Parameters.Add("@PartNo", MySqlDbType.VarChar).Value = partNo;
+                    new MySqlParameter("@PartNo", partNo)
+                };
 
-                    await connection.OpenAsync();
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await ExecuteReaderAsync("SELECT * FROM Item WHERE PartNo = @PartNo", CommandType.Text, parameters))
+                {
+                    if (await reader.ReadAsync())
                     {
-                        if (await reader.ReadAsync())
+                        item = new ItemModel
                         {
-                            item = new ItemModel()
-                            {
-                                PartNo = reader["PartNo"].ToString(),
-                                OEMNo = reader["OEMNo"] is DBNull ? null : reader["OEMNo"].ToString(),
-                                Description = reader["Description"] is DBNull ? null : reader["Description"].ToString(),
-                                BrandID = reader["BrandID"] is DBNull ? null : reader["BrandID"].ToString(),
-                                Category = reader["Category"] is DBNull ? null : reader["Category"].ToString(),
-                                SupplierID = reader["SupplierID"] is DBNull ? null : reader["SupplierID"].ToString(),
-                                TotalQty = reader["TotalQty"] is DBNull ? 0 : Convert.ToInt32(reader["TotalQty"]),
-                                QtyInHand = reader["QtyInHand"] is DBNull ? 0 : Convert.ToInt32(reader["QtyInHand"]),
-                                QtySold = reader["QtySold"] is DBNull ? 0 : Convert.ToInt32(reader["QtySold"]),
-                                BuyingPrice = reader["BuyingPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["BuyingPrice"]),
-                                UnitPrice = reader["UnitPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["UnitPrice"]),
-                                VehicleBrand = reader["VehicleBrand"] is DBNull ? null : reader["VehicleBrand"].ToString()
-                            };
-                        }
+                            PartNo = reader["PartNo"].ToString(),
+                            OEMNo = reader["OEMNo"] is DBNull ? null : reader["OEMNo"].ToString(),
+                            Description = reader["Description"] is DBNull ? null : reader["Description"].ToString(),
+                            BrandID = reader["BrandID"] is DBNull ? null : reader["BrandID"].ToString(),
+                            Category = reader["Category"] is DBNull ? null : reader["Category"].ToString(),
+                            SupplierID = reader["SupplierID"] is DBNull ? null : reader["SupplierID"].ToString(),
+                            TotalQty = reader["TotalQty"] is DBNull ? 0 : Convert.ToInt32(reader["TotalQty"]),
+                            QtyInHand = reader["QtyInHand"] is DBNull ? 0 : Convert.ToInt32(reader["QtyInHand"]),
+                            QtySold = reader["QtySold"] is DBNull ? 0 : Convert.ToInt32(reader["QtySold"]),
+                            BuyingPrice = reader["BuyingPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["BuyingPrice"]),
+                            UnitPrice = reader["UnitPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["UnitPrice"]),
+                            VehicleBrand = reader["VehicleBrand"] is DBNull ? null : reader["VehicleBrand"].ToString()
+                        };
                     }
                 }
-
-                return item;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
             }
+
+            return item;
         }
 
-        public ItemModel GetByPartNo(string partNo)
+        public async Task<int> GetItemCountAsync()
         {
+            int itemCount = 0;
             try
             {
-                ItemModel item = null;
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT * FROM Item WHERE PartNo = @PartNo", connection))
+                var result = await ExecuteScalarAsync("SELECT COUNT(PartNo) AS ItemCount FROM Item", CommandType.Text);
+                if (result != null && result != DBNull.Value)
                 {
-                    command.Parameters.Add("@PartNo", MySqlDbType.VarChar).Value = partNo;
-
-                    connection.Open();
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            item = new ItemModel()
-                            {
-                                PartNo = reader["PartNo"].ToString(),
-                                OEMNo = reader["OEMNo"] is DBNull ? null : reader["OEMNo"].ToString(),
-                                Description = reader["Description"] is DBNull ? null : reader["Description"].ToString(),
-                                BrandID = reader["BrandID"] is DBNull ? null : reader["BrandID"].ToString(),
-                                VehicleBrand = reader["VehicleBrand"] is DBNull ? null : reader["VehicleBrand"].ToString(),
-                                Category = reader["Category"] is DBNull ? null : reader["Category"].ToString(),
-                                SupplierID = reader["SupplierID"] is DBNull ? null : reader["SupplierID"].ToString(),
-                                TotalQty = reader["TotalQty"] is DBNull ? 0 : Convert.ToInt32(reader["TotalQty"]),
-                                QtyInHand = reader["QtyInHand"] is DBNull ? 0 : Convert.ToInt32(reader["QtyInHand"]),
-                                QtySold = reader["QtySold"] is DBNull ? 0 : Convert.ToInt32(reader["QtySold"]),
-                                BuyingPrice = reader["BuyingPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["BuyingPrice"]),
-                                UnitPrice = reader["UnitPrice"] is DBNull ? 0 : Convert.ToDecimal(reader["UnitPrice"]),
-                            };
-                        }
-                    }
+                    itemCount = Convert.ToInt32(result);
                 }
-
-                return item;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to get the item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
-            }
-        }
-
-        public List<string> SearchPartNo(string SearchText)
-        {
-            try
-            {
-                List<string> partNumbers = new List<string>();
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SearchPartNo", connection))
-                {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@SearchText", SearchText);
-
-                    connection.Open();
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            string partNo = reader["PartNo"].ToString();
-                            partNumbers.Add(partNo);
-                        }
-                    }
-                }
-
-                return partNumbers;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to get search the part number. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
-            }
-        }
-
-        public async Task<int> GetItemCount()
-        {
-            try
-            {
-                int itemCount = 0;
-
-                using (var connection = GetConnection())
-                {
-                    await connection.OpenAsync();
-
-                    using (var command = new MySqlCommand("SELECT COUNT(PartNo) AS ItemCount FROM Item", connection))
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            string itemCountString = reader["ItemCount"].ToString();
-                            if (!reader.IsDBNull(reader.GetOrdinal("ItemCount")))
-                            {
-                                itemCount = int.Parse(itemCountString);
-                            }
-                        }
-                    }
-                }
-
-                return itemCount;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the item count. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return 0;
             }
+
+            return itemCount;
         }
 
-
-        public async Task<int> GetOutOfStockCount()
+        public async Task<int> GetOutOfStockCountAsync()
         {
+            int itemCount = 0;
             try
             {
-                int itemCount = 0;
-
-                using (var connection = GetConnection())
+                var result = await ExecuteScalarAsync("SELECT COUNT(PartNo) AS ItemCount FROM Item WHERE QtyInHand = 0", CommandType.Text);
+                if (result != null && result != DBNull.Value)
                 {
-                    await connection.OpenAsync();
-
-                    using (var command = new MySqlCommand("SELECT COUNT(PartNo) AS ItemCount FROM Item WHERE QtyInHand = 0", connection))
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            string itemCountString = reader["ItemCount"].ToString();
-                            if (!reader.IsDBNull(reader.GetOrdinal("ItemCount")))
-                            {
-                                itemCount = int.Parse(itemCountString);
-                            }
-                        }
-                    }
+                    itemCount = Convert.ToInt32(result);
                 }
-
-                return itemCount;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the out of stock count. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return 0;
             }
+
+            return itemCount;
         }
 
-        public int GetLowInStockCount()
+        public async Task<int> GetCategoryCountAsync()
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<int> GetCategoryCount()
-        {
+            int categoryCount = 0;
             try
             {
-                int categoryCount = 0;
-
-                using (var connection = GetConnection())
+                var result = await ExecuteScalarAsync("SELECT COUNT(*) AS CategoryCount FROM BrandCategory", CommandType.Text);
+                if (result != null && result != DBNull.Value)
                 {
-                    await connection.OpenAsync();
-
-                    using (var command = new MySqlCommand("SELECT COUNT(*) AS CategoryCount FROM BrandCategory", connection))
-                    using (var reader = await command.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            string categoryCountString = reader["CategoryCount"].ToString();
-                            if (!reader.IsDBNull(reader.GetOrdinal("CategoryCount")))
-                            {
-                                categoryCount = int.Parse(categoryCountString);
-                            }
-                        }
-                    }
+                    categoryCount = Convert.ToInt32(result);
                 }
-
-                return categoryCount;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the item category count. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return 0;
             }
+            return categoryCount;
+        }
+
+        public async Task<decimal> CalculateCurrentMonthRevenueByItemAsync(string partNo)
+        {
+            decimal currentMonthRevenue = 0;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_PartNo", partNo)
+                };
+
+                var result = await ExecuteScalarAsync("SELECT CalculateCurrentMonthRevenueByItem(@p_PartNo)", CommandType.Text, parameters);
+                if (result != null && result != DBNull.Value)
+                {
+                    currentMonthRevenue = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate current month revenue. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return currentMonthRevenue;
+        }
+
+        public async Task<decimal> CalculateLastMonthRevenueByItemAsync(string partNo)
+        {
+            decimal lastMonthRevenue = 0;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_PartNo", partNo)
+                };
+
+                var result = await ExecuteScalarAsync("SELECT CalculateLastMonthRevenueByItem(@p_PartNo)", CommandType.Text, parameters);
+                if (result != null && result != DBNull.Value)
+                {
+                    lastMonthRevenue = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate last month revenue. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return lastMonthRevenue;
+        }
+
+        public async Task<decimal> CalculateTodayRevenueByItemAsync(string partNo)
+        {
+            decimal todayRevenue = 0;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_PartNo", partNo)
+                };
+
+                var result = await ExecuteScalarAsync("SELECT CalculateTodayRevenueByItem(@p_PartNo)", CommandType.Text, parameters);
+                if (result != null && result != DBNull.Value)
+                {
+                    todayRevenue = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate today's revenue. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return todayRevenue;
+        }
+
+        public async Task<decimal> CalculatePercentageChangeAsync(decimal currentMonthRevenue, decimal lastMonthRevenue)
+        {
+            decimal percentageChange = 0;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_CurrentMonthRevenue", currentMonthRevenue),
+                    new MySqlParameter("@p_LastMonthRevenue", lastMonthRevenue)
+                };
+
+                var result = await ExecuteScalarAsync("SELECT CalculatePercentageChange(@p_CurrentMonthRevenue, @p_LastMonthRevenue)", CommandType.Text, parameters);
+                if (result != null && result != DBNull.Value)
+                {
+                    percentageChange = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate percentage change. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return percentageChange;
         }
 
         public bool CheckQty(string partNo, int qty)
         {
+            bool isAvailable = false;
+
             try
             {
-                bool isAvailable;
                 using (var connection = GetConnection())
                 {
                     connection.Open();
@@ -450,215 +357,114 @@ namespace KAP_InventoryManager.Repositories
                         isAvailable = Convert.ToBoolean(command.ExecuteScalar());
                     }
                 }
-                return isAvailable;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to check the qunatity. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
             }
+
+            return isAvailable;
         }
 
-
-        public List<string> GetBrands()
+        public async Task<List<string>> SearchPartNoAsync(string searchText)
         {
-            try
-            {
-                List<string> brands = new List<string>();
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT BrandID FROM Brand", connection))
-                {
-                    connection.Open();
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            string brand = reader["BrandID"].ToString();
-                            brands.Add(brand);
-                        }
-                    }
-                }
-                return brands;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to get brand. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
-            }
-        }
-
-        public string GetSupplierByBrand(string brand)
-        {
-            try
-            {
-                string supplier = null;
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT SupplierID FROM Brand WHERE BrandID = @BrandID", connection))
-                {
-                    command.Parameters.Add("@BrandID", MySqlDbType.VarChar).Value = brand;
-                    connection.Open();
-
-                    object result = command.ExecuteScalar();
-
-                    if (result != null)
-                    {
-                        supplier = result.ToString();
-                    }
-                }
-                return supplier;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to get the supplier. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
-            }
-        }
-
-        public List<string> GetCategories(string brandId)
-        {
-            try
-            {
-                List<string> categories = new List<string>();
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT Category FROM BrandCategory WHERE BrandID = @BrandID", connection))
-                {
-                    command.Parameters.Add("@BrandID", MySqlDbType.VarChar).Value = brandId;
-                    connection.Open();
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            string category = reader["Category"].ToString();
-                            categories.Add(category);
-                        }
-                    }
-                }
-                return categories;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to get the categories. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
-            }
-        }
-
-        public async Task<decimal> CalculateCurrentMonthRevenueByItem(string partNo)
-        {
-            decimal currentMonthRevenue = 0;
+            var partNumbers = new List<string>();
 
             try
             {
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT CalculateCurrentMonthRevenueByItem(@p_PartNo)", connection))
+                var parameters = new MySqlParameter[]
                 {
-                    command.Parameters.AddWithValue("@p_PartNo", partNo);
-                    await connection.OpenAsync();
+                    new MySqlParameter("@SearchText", searchText)
+                };
 
-                    // Execute scalar query to get the function result
-                    var result = await command.ExecuteScalarAsync();
-                    if (result != null && result != DBNull.Value)
+                using (var reader = await ExecuteReaderAsync("SearchPartNo", CommandType.StoredProcedure, parameters))
+                {
+                    while (await reader.ReadAsync())
                     {
-                        currentMonthRevenue = Convert.ToDecimal(result);
+                        partNumbers.Add(reader["PartNo"].ToString());
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to calculate current month revenue. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception($"Failed to search part numbers. Error: {ex.Message}", ex);
             }
 
-            return currentMonthRevenue;
+            return partNumbers;
         }
 
-        public async Task<decimal> CalculateLastMonthRevenueByItem(string partNo)
+        public async Task<List<string>> GetBrandsAsync()
         {
-            decimal lastMonthRevenue = 0;
+            var brands = new List<string>();
 
             try
             {
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT CalculateLastMonthRevenueByItem(@p_PartNo)", connection))
+                using (var reader = await ExecuteReaderAsync("SELECT BrandID FROM Brand", CommandType.Text))
                 {
-                    command.Parameters.AddWithValue("@p_PartNo", partNo);
-                    await connection.OpenAsync();
-
-                    // Execute scalar query to get the function result
-                    var result = await command.ExecuteScalarAsync();
-                    if (result != null && result != DBNull.Value)
+                    while (await reader.ReadAsync())
                     {
-                        lastMonthRevenue = Convert.ToDecimal(result);
+                        brands.Add(reader["BrandID"].ToString());
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to calculate last month revenue. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception($"Failed to get brands. Error: {ex.Message}", ex);
             }
 
-            return lastMonthRevenue;
+            return brands;
         }
 
-
-        public async Task<decimal> CalculateTodayRevenueByItem(string partNo)
+        public async Task<string> GetSupplierByBrandAsync(string brand)
         {
-            decimal todayRevenue = 0;
+            string supplier = null;
 
             try
             {
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT CalculateTodayRevenueByItem(@p_PartNo)", connection))
+                var parameters = new MySqlParameter[]
                 {
-                    command.Parameters.AddWithValue("@p_PartNo", partNo);
-                    await connection.OpenAsync();
+                    new MySqlParameter("@BrandID", brand)
+                };
 
-                    // Execute scalar query to get the function result
-                    var result = await command.ExecuteScalarAsync();
-                    if (result != null && result != DBNull.Value)
+                var result = await ExecuteScalarAsync("SELECT SupplierID FROM Brand WHERE BrandID = @BrandID", CommandType.Text, parameters);
+                if (result != null)
+                {
+                    supplier = result.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to get supplier by brand. Error: {ex.Message}", ex);
+            }
+
+            return supplier;
+        }
+
+        public async Task<List<string>> GetCategoriesAsync(string brandId)
+        {
+            var categories = new List<string>();
+
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@BrandID", brandId)
+                };
+
+                using (var reader = await ExecuteReaderAsync("SELECT Category FROM BrandCategory WHERE BrandID = @BrandID", CommandType.Text, parameters))
+                {
+                    while (await reader.ReadAsync())
                     {
-                        todayRevenue = Convert.ToDecimal(result);
+                        categories.Add(reader["Category"].ToString());
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to calculate today's revenue. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new Exception($"Failed to get categories. Error: {ex.Message}", ex);
             }
 
-            return todayRevenue;
-        }
-
-
-        public async Task<decimal> CalculatePercentageChange(decimal currentMonthRevenue, decimal lastMonthRevenue)
-        {
-            decimal percentageChange = 0;
-
-            try
-            {
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT CalculatePercentageChange(@p_CurrentMonthRevenue, @p_LastMonthRevenue)", connection))
-                {
-                    command.Parameters.AddWithValue("@p_CurrentMonthRevenue", currentMonthRevenue);
-                    command.Parameters.AddWithValue("@p_LastMonthRevenue", lastMonthRevenue);
-                    await connection.OpenAsync();
-
-                    // Execute scalar query to get the function result
-                    var result = await command.ExecuteScalarAsync();
-                    if (result != null && result != DBNull.Value)
-                    {
-                        percentageChange = Convert.ToDecimal(result);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to calculate percentage change. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-
-            return percentageChange;
+            return categories;
         }
     }
 }

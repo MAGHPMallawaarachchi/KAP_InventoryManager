@@ -1,34 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using KAP_InventoryManager.Model;
 
-namespace KAP_InventoryManager.Model
+namespace KAP_InventoryManager.Repositories
 {
-    internal interface IItemRepository
+    public interface IItemRepository
     {
-        void Add(ItemModel item);
-        void Edit(ItemModel item);
-        void Delete(string partNo);
+        Task AddAsync(ItemModel item);
+        Task EditAsync(ItemModel item);
         Task<List<ItemModel>> GetAllAsync();
         Task<IEnumerable<ItemModel>> SearchItemListAsync(string partNo);
         Task<ItemModel> GetByPartNoAsync(string partNo);
-        ItemModel GetByPartNo(string partNo);
-        List<string> SearchPartNo(string SearchText);
-        Task<int> GetItemCount();
-        Task<int> GetOutOfStockCount();
-        int GetLowInStockCount();
-        Task<int> GetCategoryCount();
+        Task<int> GetItemCountAsync();
+        Task<int> GetOutOfStockCountAsync();
+        Task<int> GetCategoryCountAsync();
+        Task<decimal> CalculateCurrentMonthRevenueByItemAsync(string partNo);
+        Task<decimal> CalculateLastMonthRevenueByItemAsync(string partNo);
+        Task<decimal> CalculateTodayRevenueByItemAsync(string partNo);
+        Task<decimal> CalculatePercentageChangeAsync(decimal currentMonthRevenue, decimal lastMonthRevenue);
         bool CheckQty(string partNo, int qty);
-        List<string> GetBrands();
-        string GetSupplierByBrand(string brand);
-        List<string> GetCategories(string brandId);
-        Task<decimal> CalculateCurrentMonthRevenueByItem(string partNo);
-        Task<decimal> CalculateLastMonthRevenueByItem(string partNo);
-        Task<decimal> CalculateTodayRevenueByItem(string partNo);
-        Task<decimal> CalculatePercentageChange(decimal currentMonthRevenue, decimal lastMonthRevenue);
-        //...
+        Task<List<string>> SearchPartNoAsync(string searchText);
+        Task<List<string>> GetBrandsAsync();
+        Task<string> GetSupplierByBrandAsync(string brand);
+        Task<List<string>> GetCategoriesAsync(string brandId);
     }
 }

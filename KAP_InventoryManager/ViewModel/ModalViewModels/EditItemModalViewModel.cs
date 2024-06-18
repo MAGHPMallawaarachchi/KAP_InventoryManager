@@ -219,7 +219,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 UnitPrice = UnitPrice,
             };
 
-            ItemRepository.Edit(editedItem);
+            ItemRepository.EditAsync(editedItem);
 
             //close the dialog view
             Messenger.Default.Send(new NotificationMessage("CloseDialog"));
@@ -230,7 +230,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private async Task LoadBrandsAsync()
         {
-            Brands = await Task.Run(() => ItemRepository.GetBrands());
+            Brands = await Task.Run(() => ItemRepository.GetBrandsAsync());
             Brands.Insert(0, "None");
 
             if (Item != null && !string.IsNullOrEmpty(Item.BrandID))
@@ -259,8 +259,8 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             if (BrandID != null && BrandID != "None")
             {
-                SupplierID = await Task.Run(() => ItemRepository.GetSupplierByBrand(BrandID));
-                Categories = await Task.Run(() => ItemRepository.GetCategories(BrandID));
+                SupplierID = await Task.Run(() => ItemRepository.GetSupplierByBrandAsync(BrandID));
+                Categories = await Task.Run(() => ItemRepository.GetCategoriesAsync(BrandID));
             }
             else
             {

@@ -13,9 +13,10 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
     public class DetailsViewModel : ViewModelBase
     {
         public string DisplayName => "Details";
-        private ItemModel _item;
-        private readonly IItemRepository ItemRepository;
 
+        private readonly IItemRepository _itemRepository;
+
+        private ItemModel _item;
         private string _currentMonthRevenue;
         private string _lastMonthRevenue;
         private string _todayRevenue;
@@ -24,10 +25,9 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 
         public ItemModel Item
         {
-            get { return _item; }
+            get => _item;
             set
             {
-
                 _item = value;
                 OnPropertyChanged(nameof(Item));
             }
@@ -42,6 +42,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
                 OnPropertyChanged(nameof(CurrentMonthRevenue));
             } 
         }
+
         public string LastMonthRevenue
         {
             get => _lastMonthRevenue;
@@ -83,55 +84,68 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
         }
         public DetailsViewModel()
         {
-            ItemRepository = new ItemRepository();
+            _itemRepository = new ItemRepository();
 
             IsCurrentMonthRevenueHigh = false;
 
             Messenger.Default.Register<ItemModel>(this, OnMessageReceived);
             Messenger.Default.Send(new object(), "RequestSelectedItem");
             Messenger.Default.Register<object>(this, "RequestSelectedItem", OnRequestSelectedItem);
-
             Messenger.Default.Register<string>(this, "ItemUpdated", OnItemUpdated);
         }
 
         private void OnMessageReceived(ItemModel item)
         {
-            if (Item == null || Item.PartNo != item.PartNo)
+            if (item != null && (Item == null || Item.PartNo != item.PartNo))
             {
                 Item = item;
                 PopulateRevenue();
             }
-        }
+        } 
 
         private void OnRequestSelectedItem(object obj)
         {
             Messenger.Default.Send(Item);
         }
 
-        private void OnItemUpdated(string partNo)
+        private async void OnItemUpdated(string partNo)
         {
-            Item = ItemRepository.GetByPartNo(partNo);
+            try
+            {
+                Item = await _itemRepository.GetByPartNoAsync(partNo);
+                if (Item != null)
+                {
+                    PopulateRevenue();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Failed to update item details. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private async void PopulateRevenue()
         {
-            if(Item != null &&  Item.PartNo != null)
+            if (Item != null && !string.IsNullOrEmpty(Item.PartNo))
             {
-                var currentMonthRevenue = await ItemRepository.CalculateCurrentMonthRevenueByItem(Item.PartNo);
-                var lastMonthRevenue = await ItemRepository.CalculateLastMonthRevenueByItem(Item.PartNo);
-                var todayRevenue = await ItemRepository.CalculateTodayRevenueByItem(Item.PartNo);
-                var percentageChange = await ItemRepository.CalculatePercentageChange(currentMonthRevenue, lastMonthRevenue);
+                try
+                {
+                    var currentMonthRevenue = await _itemRepository.CalculateCurrentMonthRevenueByItemAsync(Item.PartNo);
+                    var lastMonthRevenue = await _itemRepository.CalculateLastMonthRevenueByItemAsync(Item.PartNo);
+                    var todayRevenue = await _itemRepository.CalculateTodayRevenueByItemAsync(Item.PartNo);
+                    var percentageChange = await _itemRepository.CalculatePercentageChangeAsync(currentMonthRevenue, lastMonthRevenue);
 
-                CurrentMonthRevenue = $"Rs. {currentMonthRevenue:N2}";
-                LastMonthRevenue = $"Compared to Rs. {lastMonthRevenue:N2} last month";
-                TodayRevenue = $"Rs. {todayRevenue:N2}";
-                PercentageChange = $"{percentageChange}%";
+                    CurrentMonthRevenue = $"Rs. {currentMonthRevenue:N2}";
+                    LastMonthRevenue = $"Compared to Rs. {lastMonthRevenue:N2} last month";
+                    TodayRevenue = $"Rs. {todayRevenue:N2}";
+                    PercentageChange = $"{percentageChange}%";
 
-                if (currentMonthRevenue > lastMonthRevenue)
-                    IsCurrentMonthRevenueHigh = true;
-                else
-                    IsCurrentMonthRevenueHigh = false;
-
+                    IsCurrentMonthRevenueHigh = currentMonthRevenue > lastMonthRevenue;
+                }
+                catch (System.Exception ex)
+                {
+                    MessageBox.Show($"Failed to populate revenue details. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

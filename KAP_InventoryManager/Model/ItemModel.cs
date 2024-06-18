@@ -21,5 +21,6 @@ namespace KAP_InventoryManager.Model
         public int QtySold { get; set; }
         public decimal BuyingPrice { get; set; }
         public decimal UnitPrice { get; set; }
+        public string StockStatus { get; set; }
     }
 }

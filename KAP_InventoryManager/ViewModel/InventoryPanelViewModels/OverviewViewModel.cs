@@ -13,7 +13,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
     public class OverviewViewModel : ViewModelBase
     {
         public string DisplayName => "Overview";
-        private readonly IItemRepository ItemRepository;
+        private readonly IItemRepository _itemRepository;
 
         private int _itemCount;
         private int _categoryCount;
@@ -21,7 +21,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 
         public int ItemCount
         {
-            get { return _itemCount; }
+            get => _itemCount;
             set
             {
                 _itemCount = value;
@@ -31,7 +31,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 
         public int CategoryCount
         {
-            get { return _categoryCount; }
+            get => _categoryCount;
             set
             {
                 _categoryCount = value;
@@ -41,7 +41,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 
         public int OutOfStockCount
         {
-            get { return _outOfStockCount; }
+            get => _outOfStockCount;
             set
             {
                 _outOfStockCount = value;
@@ -51,15 +51,22 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 
         public OverviewViewModel()
         {
-            ItemRepository = new ItemRepository();
+            _itemRepository = new ItemRepository();
             PopulateInventorySummary();
         }
 
         private async void PopulateInventorySummary()
         {
-            ItemCount = await ItemRepository.GetItemCount();
-            CategoryCount = await ItemRepository.GetCategoryCount();
-            OutOfStockCount = await ItemRepository.GetOutOfStockCount();
+            try
+            {
+                ItemCount = await _itemRepository.GetItemCountAsync();
+                CategoryCount = await _itemRepository.GetCategoryCountAsync();
+                OutOfStockCount = await _itemRepository.GetOutOfStockCountAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to populate inventory summary. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
