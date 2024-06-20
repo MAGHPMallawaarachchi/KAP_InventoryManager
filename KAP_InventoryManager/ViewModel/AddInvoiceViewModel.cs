@@ -1,4 +1,5 @@
-﻿using KAP_InventoryManager.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
 using QuestPDF.ExampleInvoice;
 using System;
@@ -643,6 +644,7 @@ namespace KAP_InventoryManager.ViewModel
                     invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems);
 
                     ClearInvoice();
+                    Messenger.Default.Send("NewInvoiceAdded");
                     MessageBox.Show("Invoice saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }

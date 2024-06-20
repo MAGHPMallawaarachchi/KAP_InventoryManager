@@ -200,6 +200,9 @@ namespace KAP_InventoryManager.ViewModel
 
                 foreach (var customer in customers)
                 {
+                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                        break;
+
                     Customers.Add(customer);
                     await Task.Delay(50, _cancellationTokenSource.Token);
                 }

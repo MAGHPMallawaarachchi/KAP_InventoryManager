@@ -122,7 +122,24 @@
                                     <StackPanel Orientation="Horizontal" Grid.Column="2">
                                         <fa:IconImage Icon="DotCircle"
                                                       Height="14"
-                                                      Margin="0,0,4,0"/>
+                                                      Margin="0,0,4,0">
+                                            <fa:IconImage.Style>
+                                                <Style TargetType="fa:IconImage">
+                                                    <Setter Property="Foreground" Value="{StaticResource Green}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Cancelled">
+                                                            <Setter Property="Foreground" Value="{StaticResource Red}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Pending">
+                                                            <Setter Property="Foreground" Value="{StaticResource Orange}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Paid">
+                                                            <Setter Property="Foreground" Value="{StaticResource Green}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </fa:IconImage.Style>
+                                        </fa:IconImage>
                                         <TextBlock Text="{Binding Status}"
                                                    Style="{StaticResource regular-text}"/>
                                     </StackPanel>

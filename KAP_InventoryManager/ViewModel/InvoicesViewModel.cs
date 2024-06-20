@@ -1,37 +1,52 @@
-﻿using KAP_InventoryManager.Model;
+﻿using GalaSoft.MvvmLight.Messaging;
+using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace KAP_InventoryManager.ViewModel
 {
     public class InvoicesViewModel : ViewModelBase
     {
-        private readonly ICustomerRepository CustomerRepository;
-        private readonly IInvoiceRepository InvoiceRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IInvoiceRepository _invoiceRepository;
 
-        private IEnumerable<InvoiceModel> _invoices;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private CancellationTokenSource _cancellationTokenSource;
+
+        private ObservableCollection<InvoiceModel> _invoices;
+        private IEnumerable<InvoiceItemModel> _invoiceItems;
         private string _invoiceSearchText;
         private InvoiceModel _selectedInvoice;
         private InvoiceModel _currentInvoice;
         private CustomerModel _customer;
-        private IEnumerable<InvoiceItemModel> _invoiceItems;
 
-        public IEnumerable<InvoiceModel> Invoices
+        public ObservableCollection<InvoiceModel> Invoices
         {
             get => _invoices; 
             set
             {
                 _invoices = value;
                 OnPropertyChanged(nameof(Invoices));
+            }
+        }
 
-                SelectedInvoice = Invoices.FirstOrDefault();
+        public IEnumerable<InvoiceItemModel> InvoiceItems
+        {
+            get => _invoiceItems;
+            set
+            {
+                _invoiceItems = value;
+                OnPropertyChanged(nameof(InvoiceItems));
             }
         }
 
@@ -78,25 +93,25 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        public IEnumerable<InvoiceItemModel> InvoiceItems
-        {
-            get => _invoiceItems;
-            set
-            {
-                _invoiceItems = value;
-                OnPropertyChanged(nameof(InvoiceItems));
-            }
-        }
 
         public ICommand CancelInvoiceCommand { get; }
 
         public InvoicesViewModel()
         {
+            _customerRepository = new CustomerRepository();
+            _invoiceRepository = new InvoiceRepository();
+
             CancelInvoiceCommand = new ViewModelCommand(ExecuteCancelInvoiceCommand);
 
-            CustomerRepository = new CustomerRepository();
-            InvoiceRepository = new InvoiceRepository();
+            Invoices = new ObservableCollection<InvoiceModel>();
 
+            PopulateInvoicesAsync();
+
+            Messenger.Default.Register<string>(this, OnMessageReceived);
+        }
+
+        private void OnMessageReceived(string obj)
+        {
             PopulateInvoicesAsync();
         }
 
@@ -110,9 +125,11 @@ namespace KAP_InventoryManager.ViewModel
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        await InvoiceRepository.CancelInvoiceAsync(CurrentInvoice.InvoiceNo);
+                        await _invoiceRepository.CancelInvoiceAsync(CurrentInvoice.InvoiceNo);
                         MessageBox.Show("Invoice cancelled successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
+
+                    PopulateInvoicesAsync();
                 }
                 else
                 {
@@ -127,16 +144,47 @@ namespace KAP_InventoryManager.ViewModel
 
         private async void PopulateInvoicesAsync()
         {
+            await _semaphore.WaitAsync();
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+
             try
             {
-                if (InvoiceSearchText == null)
-                    Invoices = await InvoiceRepository.GetAllInvoicesAsync();
-                else
-                    Invoices = await InvoiceRepository.SearchInvoiceListAsync(InvoiceSearchText);
 
-            }catch (Exception ex)
+                var invoices = (string.IsNullOrEmpty(InvoiceSearchText)
+                    ? await _invoiceRepository.GetAllInvoicesAsync()
+                    : await _invoiceRepository.SearchInvoiceListAsync(InvoiceSearchText));
+
+                var invoicesList = new List<InvoiceModel>(invoices);
+
+                Invoices.Clear();
+
+                foreach (var invoice in invoicesList)
+                {
+                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                        break;
+
+                    Invoices.Add(invoice);
+                    await Task.Delay(50, _cancellationTokenSource.Token);
+                }
+
+                if (Invoices.Any())
+                {
+                    SelectedInvoice = Invoices.First();
+                }
+
+            }
+            catch (MySqlException ex)
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (TaskCanceledException)
+            {
+                // Task was canceled, ignore the exception
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
@@ -146,12 +194,12 @@ namespace KAP_InventoryManager.ViewModel
             {
                 if( SelectedInvoice != null)
                 {
-                    CurrentInvoice = await InvoiceRepository.GetByInvoiceNoAsync(SelectedInvoice.InvoiceNo);
+                    CurrentInvoice = await _invoiceRepository.GetByInvoiceNoAsync(SelectedInvoice.InvoiceNo);
 
                     if (CurrentInvoice != null)
                     {
-                        Customer = await CustomerRepository.GetByCustomerIDAsync(CurrentInvoice.CustomerID);
-                        InvoiceItems = await InvoiceRepository.GetInvoiceItemsAsync(CurrentInvoice.InvoiceNo);
+                        Customer = await _customerRepository.GetByCustomerIDAsync(CurrentInvoice.CustomerID);
+                        InvoiceItems = await _invoiceRepository.GetInvoiceItemsAsync(CurrentInvoice.InvoiceNo);
                     }
                 }
             }catch (Exception ex)
