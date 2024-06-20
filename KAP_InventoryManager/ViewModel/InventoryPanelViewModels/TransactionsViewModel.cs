@@ -108,7 +108,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
             {
                 if (Item != null)
                 {
-                    Transactions = await InvoiceRepository.GetInvoicesByPartNo(Item.PartNo, 15, PageNumber);
+                    Transactions = await InvoiceRepository.GetInvoicesByPartNoAsync(Item.PartNo, 15, PageNumber);
                     if(Transactions.Count()<15)
                         IsFinalPage = true;
                 }

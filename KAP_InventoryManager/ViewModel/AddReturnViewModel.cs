@@ -454,7 +454,7 @@ namespace KAP_InventoryManager.ViewModel
                 AddReturnItem();
         }
 
-        private void PopulateInvoices()
+        private async void PopulateInvoices()
         {
             try
             {
@@ -462,7 +462,7 @@ namespace KAP_InventoryManager.ViewModel
 
                 if (InvoiceSearchText != null || InvoiceSearchText != "")
                 {
-                    var results = InvoiceRepository.SearchInvoiceNumber(InvoiceSearchText);
+                    var results = await InvoiceRepository.SearchInvoiceNumberAsync(InvoiceSearchText);
 
                     if (results != null)
                     {
@@ -479,12 +479,12 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private void PopulatePartNumbers()
+        private async void PopulatePartNumbers()
         {
             try
             {
                 PartNumbers.Clear();
-                var partNumbers = InvoiceRepository.GetPartNumbersByInvoice(SelectedInvoiceNo);
+                var partNumbers = await InvoiceRepository.GetPartNumbersByInvoiceAsync(SelectedInvoiceNo);
                 if (partNumbers != null)
                 {
                     foreach (var partNumber in partNumbers)
@@ -526,7 +526,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 if(SelectedPartNo != null && SelectedInvoiceNo != null)
                 {
-                    SelectedInvoiceItem = await InvoiceRepository.GetInvoiceItem(SelectedInvoiceNo, SelectedPartNo);
+                    SelectedInvoiceItem = await InvoiceRepository.GetInvoiceItemAsync(SelectedInvoiceNo, SelectedPartNo);
                 }
             }
             catch (Exception ex)
@@ -539,7 +539,7 @@ namespace KAP_InventoryManager.ViewModel
         {
             try
             {
-                Invoice = InvoiceRepository.GetByInvoiceNo(SelectedInvoiceNo);
+                Invoice = await InvoiceRepository.GetByInvoiceNoAsync(SelectedInvoiceNo);
                 if (Invoice != null)
                 {
                     Customer = await CustomerRepository.GetByCustomerIDAsync(Invoice.CustomerID);

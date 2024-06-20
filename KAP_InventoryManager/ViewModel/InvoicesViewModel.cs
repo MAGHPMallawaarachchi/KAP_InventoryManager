@@ -110,7 +110,7 @@ namespace KAP_InventoryManager.ViewModel
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        await InvoiceRepository.CancelInvoice(CurrentInvoice.InvoiceNo);
+                        await InvoiceRepository.CancelInvoiceAsync(CurrentInvoice.InvoiceNo);
                         MessageBox.Show("Invoice cancelled successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
@@ -151,7 +151,7 @@ namespace KAP_InventoryManager.ViewModel
                     if (CurrentInvoice != null)
                     {
                         Customer = await CustomerRepository.GetByCustomerIDAsync(CurrentInvoice.CustomerID);
-                        InvoiceItems = await InvoiceRepository.GetInvoiceItems(CurrentInvoice.InvoiceNo);
+                        InvoiceItems = await InvoiceRepository.GetInvoiceItemsAsync(CurrentInvoice.InvoiceNo);
                     }
                 }
             }catch (Exception ex)

@@ -8,20 +8,19 @@ namespace KAP_InventoryManager.Model
 {
     internal interface IInvoiceRepository
     {
-        void AddInvoice(InvoiceModel invoice);
-        void AddInvoiceItem(InvoiceItemModel invoiceItem);
-        string GetNextInvoiceNumber();
-        Task<IEnumerable<InvoiceModel>> GetAllInvoicesAsync();
-        Task<IEnumerable<InvoiceModel>> SearchInvoiceListAsync(string invoiceNo);
+        Task AddInvoiceAsync(InvoiceModel invoice);
+        Task AddInvoiceItemAsync(InvoiceItemModel invoiceItem);
+        Task<string> GetNextInvoiceNumberAsync();
         Task<IEnumerable<InvoiceModel>> GetInvoiceByCustomerAsync(string customerId, int pageSize, int page);
         Task<IEnumerable<InvoiceModel>> SearchCustomerInvoiceListAsync(string invoiceNo, string customerId, int pageSize, int page);
+        Task<IEnumerable<InvoiceModel>> GetAllInvoicesAsync();
+        Task<IEnumerable<InvoiceModel>> SearchInvoiceListAsync(string invoiceNo);
         Task<InvoiceModel> GetByInvoiceNoAsync(string invoiceNo);
-        InvoiceModel GetByInvoiceNo(string invoiceNo);
-        Task<IEnumerable<InvoiceItemModel>> GetInvoiceItems(string invoiceNo);
-        Task<IEnumerable<InvoiceItemModel>> GetInvoicesByPartNo(string partNo, int pageSize, int page);
-        Task CancelInvoice(string invoiceNo);
-        List<string> SearchInvoiceNumber(string SearchText);
-        List<string> GetPartNumbersByInvoice(string invoiceNo);
-        Task<InvoiceItemModel> GetInvoiceItem(string invoiceNo, string partNo);
+        Task<IEnumerable<InvoiceItemModel>> GetInvoiceItemsAsync(string invoiceNo);
+        Task<IEnumerable<InvoiceItemModel>> GetInvoicesByPartNoAsync(string partNo, int pageSize, int page);
+        Task CancelInvoiceAsync(string invoiceNo);
+        Task<List<string>> SearchInvoiceNumberAsync(string searchText);
+        Task<List<string>> GetPartNumbersByInvoiceAsync(string invoiceNo);
+        Task<InvoiceItemModel> GetInvoiceItemAsync(string invoiceNo, string partNo);
     }
 }

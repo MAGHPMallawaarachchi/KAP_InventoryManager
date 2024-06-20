@@ -3,6 +3,8 @@ using KAP_InventoryManager.Repositories;
 using QuestPDF.ExampleInvoice;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -78,7 +80,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _customerSearchText = value;
                 OnPropertyChanged(nameof(CustomerSearchText));
-                PopulateCustomers();
+                PopulateCustomersAsync();
             }
         }
         public string PartNoSearchText
@@ -88,7 +90,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _partNoSearchText = value;
                 OnPropertyChanged(nameof(PartNoSearchText));
-                PopulatePartNumbers();
+                PopulatePartNumbersAsync();
             }
         }
 
@@ -99,7 +101,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _selectedCustomerId = value;
                 OnPropertyChanged(nameof(SelectedCustomerId));
-                PopulateCustomerDetails();
+                PopulateCustomerDetailsAsync();
             }
         }
 
@@ -110,7 +112,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _selectedPartNo = value;
                 OnPropertyChanged(nameof(SelectedPartNo));
-                PopulateItemDetails();
+                PopulateItemDetailsAsync();
             }
         }
 
@@ -310,9 +312,6 @@ namespace KAP_InventoryManager.ViewModel
             ItemRepository = new ItemRepository();
             InvoiceRepository = new InvoiceRepository();
 
-            InvoiceNo = InvoiceRepository.GetNextInvoiceNumber();
-            InvoiceItems = new ObservableCollection<InvoiceItemModel>();
-
             AddInvoiceItemCommand = new ViewModelCommand(ExecuteAddInvoiceItemCommand);
             ClearInvoiceCommand = new ViewModelCommand(ExecuteClearInvoiceCommand);
             DeleteInvoiceItemCommand = new ViewModelCommand(ExecuteDeleteInvoiceItemCommand);
@@ -320,14 +319,181 @@ namespace KAP_InventoryManager.ViewModel
             CancelInvoiceItemCommand = new ViewModelCommand(ExecuteCancelInvoiceItemCommand);
             SaveInvoiceCommand = new ViewModelCommand(ExecuteSaveInvoiceCommand);
 
+            Initialize();
+        }
+
+        private async void Initialize()
+        {
+            InvoiceNo = await InvoiceRepository.GetNextInvoiceNumberAsync();
+            InvoiceItems = new ObservableCollection<InvoiceItemModel>();
+
             DateTime currentDateTime = DateTime.Now;
             CurrentDate = currentDateTime.ToString("yyyy-MM-dd");
             CurrentTime = currentDateTime.ToString("t");
 
-            PopulateSalesReps();
+            await PopulateSalesRepsAsync();
             Number = Counter = 1;
             Total = 0;
             IsSelectedInvoiceItem = false;
+        }
+
+        private async void PopulateCustomersAsync()
+        {
+            try
+            {
+                Customers.Clear();
+
+                if (!string.IsNullOrEmpty(CustomerSearchText))
+                {
+                    var results = await CustomerRepository.SearchCustomerAsync(CustomerSearchText);
+
+                    if (results != null)
+                    {
+                        foreach (var suggestion in results)
+                        {
+                            Customers.Add(suggestion);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
+        }
+
+        private async void PopulatePartNumbersAsync()
+        {
+            try
+            {
+                PartNumbers.Clear();
+
+                if (!string.IsNullOrEmpty(PartNoSearchText))
+                {
+                    var results = await ItemRepository.SearchPartNoAsync(PartNoSearchText);
+
+                    if (results != null)
+                    {
+                        foreach (var suggestion in results)
+                        {
+                            PartNumbers.Add(suggestion);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
+        }
+
+        private async Task PopulateSalesRepsAsync()
+        {
+            try
+            {
+                var salesReps = await SalesRepRepository.GetAllRepIdsAsync();
+                if (salesReps != null)
+                {
+                    foreach (var salesRep in salesReps)
+                    {
+                        SalesReps.Add(salesRep);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
+        }
+
+        private async void PopulateCustomerDetailsAsync()
+        {
+            try
+            {
+                SelectedCustomer = await CustomerRepository.GetByCustomerIDAsync(SelectedCustomerId);
+                if (SelectedCustomer != null)
+                {
+                    SelectedPaymentType = SelectedCustomer.PaymentType;
+                    CustomerDiscount = SelectedPaymentType == "CASH" ? 30 : 25;
+                    SelectedRepId = SelectedCustomer.RepID ?? "None";
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
+        }
+
+        private async void PopulateItemDetailsAsync()
+        {
+            try
+            {
+                SelectedItem = await ItemRepository.GetByPartNoAsync(SelectedPartNo);
+                Discount = CustomerDiscount;
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
+        }
+
+        private void CalculateAmount()
+        {
+            if (SelectedItem != null)
+            {
+                Amount = SelectedItem.UnitPrice * Quantity * (100 - Discount) / 100;
+            }
+        }
+
+        private bool CanExecuteAddInvoiceItemCommand()
+        {
+            if (SelectedCustomer == null || string.IsNullOrEmpty(SelectedCustomerId))
+            {
+                ShowErrorMessage("Please select a customer");
+                return false;
+            }
+            if (string.IsNullOrEmpty(SelectedPartNo) || SelectedItem == null)
+            {
+                ShowErrorMessage("Please select an item");
+                return false;
+            }
+            if (IsItemExist())
+            {
+                ShowErrorMessage("Oops! You've already added this item to the invoice");
+                return false;
+            }
+            if (Quantity == 0)
+            {
+                ShowErrorMessage("Please enter the quantity");
+                return false;
+            }
+            if (!ItemRepository.CheckQty(SelectedPartNo, Quantity))
+            {
+                ShowErrorMessage("This item is out of stock");
+                return false;
+            }
+            return true;
+        }
+
+        private void ExecuteAddInvoiceItemCommand(object obj)
+        {
+            if (CanExecuteAddInvoiceItemCommand() == true)
+                AddInvoiceItem();
+        }
+
+        private bool CanExecuteSaveInvoiceCommand()
+        {
+            if (SelectedCustomer == null || string.IsNullOrEmpty(SelectedCustomerId))
+            {
+                ShowErrorMessage("Please select a customer");
+                return false;
+            }
+            if (InvoiceItems == null || InvoiceItems.Count == 0)
+            {
+                ShowErrorMessage("Please add at least one item to the invoice");
+                return false;
+            }
+            return true;
         }
 
         private void ExecuteSaveInvoiceCommand(object obj)
@@ -338,7 +504,7 @@ namespace KAP_InventoryManager.ViewModel
         private void ExecuteCancelInvoiceItemCommand(object obj)
         {
             SelectedInvoiceItem = null;
-            Clear();
+            ClearItemDetails();
             IsSelectedInvoiceItem = false;
             Number = Counter;
         }
@@ -359,7 +525,7 @@ namespace KAP_InventoryManager.ViewModel
             InvoiceItems = new ObservableCollection<InvoiceItemModel>(InvoiceItems);
 
             SelectedInvoiceItem = null;
-            Clear();
+            ClearItemDetails();
             IsSelectedInvoiceItem = false;
             Number = Counter;
         }
@@ -372,7 +538,7 @@ namespace KAP_InventoryManager.ViewModel
                 InvoiceItems.Remove(SelectedInvoiceItem);
                 Counter--;
                 Number = Counter;
-                Clear();
+                ClearItemDetails();
                 SelectedInvoiceItem = null;
                 IsSelectedInvoiceItem = false;
 
@@ -388,185 +554,13 @@ namespace KAP_InventoryManager.ViewModel
             }
             else
             {
-                MessageBox.Show("Please select a item to delete", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowErrorMessage("Please select an item to delete");
             }
-        }
-
-        private bool CanAddInvoiceItem()
-        {
-            bool validate;
-            if (SelectedCustomer == null || string.IsNullOrEmpty(SelectedCustomerId))
-            {
-                validate = false;
-                MessageBox.Show("Please select a customer", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if(string.IsNullOrEmpty(SelectedPartNo) || SelectedItem == null)
-            {
-                validate = false;
-                MessageBox.Show("Please select an item", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (IsItemExist() == true)
-            {
-                validate = false;
-                MessageBox.Show("Oops! You've Already Added This Item to the Invoice", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (Quantity == 0)
-            {
-                validate = false;
-                MessageBox.Show("Please enter the quantity", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if(ItemRepository.CheckQty(SelectedPartNo, Quantity) == false)
-            {
-                validate = false;
-                MessageBox.Show("This item is out of stock", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-                validate = true;
-            return validate;
-        }
-
-        private bool CanAddInvoice()
-        {
-            bool validate;
-            if (SelectedCustomer == null || string.IsNullOrEmpty(SelectedCustomerId))
-            {
-                validate = false;
-                MessageBox.Show("Please select a customer", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (InvoiceItems == null || InvoiceItems.Count == 0)
-            {
-                validate = false;
-                MessageBox.Show("Please add at least one item to the invoice", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-                validate = true;
-            return validate;
-        }
-
-        private bool IsItemExist()
-        {
-            bool isItemExist = false;
-            foreach (var item in InvoiceItems)
-            {
-                if(item.PartNo == SelectedPartNo)
-                {
-                    isItemExist = true;
-                }
-            }
-            return isItemExist;
         }
 
         private void ExecuteClearInvoiceCommand(object obj)
         {
             ClearInvoice();
-        }
-
-        private void ExecuteAddInvoiceItemCommand(object obj)
-        {
-            if(CanAddInvoiceItem() == true)
-                AddInvoiceItem();
-        }
-
-        private async void PopulateCustomers()
-        {
-            try
-            {
-                Customers.Clear();
-
-                if(CustomerSearchText != null || CustomerSearchText != "")
-                {
-                    var results = await CustomerRepository.SearchCustomerAsync(CustomerSearchText);
-
-                    if (results != null)
-                    {
-                        foreach (var suggestion in results)
-                        {
-                            Customers.Add(suggestion);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private async void PopulatePartNumbers()
-        {
-            try
-            {
-                PartNumbers.Clear();
-
-                if (PartNoSearchText != null || PartNoSearchText != "")
-                {
-                    var results = await ItemRepository.SearchPartNoAsync(PartNoSearchText);
-
-                    if (results != null)
-                    {
-                        foreach (var suggestion in results)
-                        {
-                            PartNumbers.Add(suggestion);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void PopulateSalesReps()
-        {
-            try
-            {
-                var salesReps = SalesRepRepository.GetAllRepIds();
-                if (salesReps != null)
-                {
-                    foreach(var salesRep in salesReps)
-                    {
-                        SalesReps.Add(salesRep);
-                    }
-                }
-            }catch(Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private async void PopulateCustomerDetails()
-        {
-            try
-            {
-                SelectedCustomer = await CustomerRepository.GetByCustomerIDAsync(SelectedCustomerId);
-                if(SelectedCustomer != null)
-                {
-                    SelectedPaymentType = SelectedCustomer.PaymentType;
-
-                    if(SelectedPaymentType == "CASH")
-                    {
-                        CustomerDiscount = 30;
-                    }
-                    else
-                    {
-                        CustomerDiscount = 25;
-                    }
-
-                    if (SelectedCustomer.RepID != null)
-                    {
-                        SelectedRepId = SelectedCustomer.RepID;
-                    }
-                    else
-                    {
-                        SelectedRepId = "None";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
         private void AddInvoiceItem()
@@ -587,31 +581,15 @@ namespace KAP_InventoryManager.ViewModel
             Total += Amount;
             Counter++;
             Number = Counter;
-            Clear();
+            ClearItemDetails();
         }
 
-        private async void PopulateItemDetails()
+        private bool IsItemExist()
         {
-            try
-            {
-                SelectedItem = await ItemRepository.GetByPartNoAsync(SelectedPartNo);
-                Discount = CustomerDiscount;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            return InvoiceItems.Any(item => item.PartNo == SelectedPartNo);
         }
 
-        private void CalculateAmount()
-        {
-            if(SelectedItem != null)
-            {
-                Amount = SelectedItem.UnitPrice * Quantity * (100 - Discount) / 100;
-            }
-        }
-
-        private void Clear()
+        private void ClearItemDetails()
         {
             SelectedItem = null;
             SelectedPartNo = null;
@@ -622,7 +600,7 @@ namespace KAP_InventoryManager.ViewModel
 
         private void ClearInvoice()
         {
-            Clear();
+            ClearItemDetails();
             SelectedCustomer = null;
             SelectedCustomerId = null;
             SelectedPaymentType = null;
@@ -633,14 +611,14 @@ namespace KAP_InventoryManager.ViewModel
             Total = 0;
             Counter = 1;
             Number = 1;
-            InvoiceNo = InvoiceRepository.GetNextInvoiceNumber();
+            Initialize();
         }
 
-        private void AddInvoice()
+        private async void AddInvoice()
         {
             try
             {
-                if (CanAddInvoice() == true)
+                if (CanExecuteSaveInvoiceCommand())
                 {
                     var invoice = new InvoiceModel
                     {
@@ -650,26 +628,18 @@ namespace KAP_InventoryManager.ViewModel
                         CustomerID = SelectedCustomerId,
                         RepID = SelectedRepId == "None" ? null : SelectedRepId,
                         Date = DateTime.Now,
+                        DueDate = SelectedPaymentType == "CASH" ? DateTime.Now.AddDays(7) : DateTime.Now.AddDays(60)
                     };
 
-                    if (invoice.Terms == "CASH")
-                    {
-                        invoice.DueDate = DateTime.Now.AddDays(7);
-                    }
-                    else
-                    {
-                        invoice.DueDate = DateTime.Now.AddDays(60);
-                    }
-
-                    InvoiceRepository.AddInvoice(invoice);
+                    await InvoiceRepository.AddInvoiceAsync(invoice);
 
                     foreach (var invoiceItem in InvoiceItems)
                     {
                         invoiceItem.InvoiceNo = InvoiceNo;
-                        InvoiceRepository.AddInvoiceItem(invoiceItem);
+                        await InvoiceRepository.AddInvoiceItemAsync(invoiceItem);
                     }
 
-                    InvoiceDocument invoiceDoc = new InvoiceDocument();
+                    var invoiceDoc = new InvoiceDocument();
                     invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems);
 
                     ClearInvoice();
@@ -680,6 +650,11 @@ namespace KAP_InventoryManager.ViewModel
             {
                 MessageBox.Show($"Failed to save the invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ShowErrorMessage(string message)
+        {
+            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

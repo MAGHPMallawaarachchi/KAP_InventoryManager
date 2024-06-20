@@ -13,27 +13,18 @@ namespace KAP_InventoryManager.Repositories
 {
     internal class SalesRepRepository : RepositoryBase, ISalesRepRepository
     {
-        public List<string> GetAllRepIds()
+        public async Task<List<string>> GetAllRepIdsAsync()
         {
             try
             {
-                List<string> salesReps = new List<string>
-                {
-                    "None"
-                };
+                var salesReps = new List<string> { "None" };
 
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT RepID FROM SalesRep", connection))
+                using (var reader = await ExecuteReaderAsync("SELECT RepID FROM SalesRep", CommandType.Text))
                 {
-                    connection.Open();
-
-                    using (var reader = command.ExecuteReader())
+                    while (await reader.ReadAsync())
                     {
-                        while (reader.Read())
-                        {
-                            string repId = reader["RepID"].ToString();
-                            salesReps.Add(repId);
-                        }
+                        string repId = reader["RepID"].ToString();
+                        salesReps.Add(repId);
                     }
                 }
 

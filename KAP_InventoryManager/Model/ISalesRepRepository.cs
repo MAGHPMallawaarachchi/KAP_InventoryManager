@@ -8,6 +8,6 @@ namespace KAP_InventoryManager.Model
 {
     internal interface ISalesRepRepository
     {
-        List<string> GetAllRepIds();
+        Task<List<string>> GetAllRepIdsAsync();
     }
 }

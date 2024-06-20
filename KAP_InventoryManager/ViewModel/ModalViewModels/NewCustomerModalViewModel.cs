@@ -188,9 +188,9 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             Messenger.Default.Send("NewCustomerAdded");
         }
 
-        private void GetReps()
+        private async void GetReps()
         {
-            Reps = SalesRepRepository.GetAllRepIds();
+            Reps = await SalesRepRepository.GetAllRepIdsAsync();
         }
 
         private void ClearTextBoxes()
