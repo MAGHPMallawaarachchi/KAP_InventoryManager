@@ -183,7 +183,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 RepID = RepID,
             };
 
-            CustomerRepository.Add(newCustomer);
+            CustomerRepository.AddAsync(newCustomer);
             ClearTextBoxes();
             Messenger.Default.Send("NewCustomerAdded");
         }

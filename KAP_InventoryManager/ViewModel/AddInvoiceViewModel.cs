@@ -467,7 +467,7 @@ namespace KAP_InventoryManager.ViewModel
                 AddInvoiceItem();
         }
 
-        private void PopulateCustomers()
+        private async void PopulateCustomers()
         {
             try
             {
@@ -475,7 +475,7 @@ namespace KAP_InventoryManager.ViewModel
 
                 if(CustomerSearchText != null || CustomerSearchText != "")
                 {
-                    var results = CustomerRepository.SearchCustomer(CustomerSearchText);
+                    var results = await CustomerRepository.SearchCustomerAsync(CustomerSearchText);
 
                     if (results != null)
                     {
@@ -535,11 +535,11 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private void PopulateCustomerDetails()
+        private async void PopulateCustomerDetails()
         {
             try
             {
-                SelectedCustomer = CustomerRepository.GetByCustomerID(SelectedCustomerId);
+                SelectedCustomer = await CustomerRepository.GetByCustomerIDAsync(SelectedCustomerId);
                 if(SelectedCustomer != null)
                 {
                     SelectedPaymentType = SelectedCustomer.PaymentType;

@@ -63,15 +63,23 @@ namespace KAP_InventoryManager.Repositories
         {
             var connection = GetConnection();
             await connection.OpenAsync();
-            using (var command = new MySqlCommand(query, connection))
+            try
             {
-                command.CommandType = commandType;
+                var command = new MySqlCommand(query, connection)
+                {
+                    CommandType = commandType
+                };
                 if (parameters != null)
                 {
                     command.Parameters.AddRange(parameters);
                 }
 
                 return await command.ExecuteReaderAsync(CommandBehavior.CloseConnection);
+            }
+            catch
+            {
+                await connection.CloseAsync();
+                throw;
             }
         }
     }

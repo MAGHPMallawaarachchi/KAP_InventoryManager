@@ -1,17 +1,15 @@
-﻿using System;
+﻿using KAP_InventoryManager.Model;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace KAP_InventoryManager.Model
+namespace KAP_InventoryManager.Repositories
 {
     internal interface ICustomerRepository
     {
-        void Add(CustomerModel customer);
+        Task AddAsync(CustomerModel customer);
         Task<IEnumerable<CustomerModel>> GetAllAsync();
-        CustomerModel GetByCustomerID(string customerID);
-        List<string> SearchCustomer(string SearchText);
+        Task<IEnumerable<string>> SearchCustomerAsync(string searchText);
         Task<IEnumerable<CustomerModel>> SearchCustomerListAsync(string customerId);
+        Task<CustomerModel> GetByCustomerIDAsync(string customerID);
     }
 }

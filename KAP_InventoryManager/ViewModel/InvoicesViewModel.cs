@@ -150,7 +150,7 @@ namespace KAP_InventoryManager.ViewModel
 
                     if (CurrentInvoice != null)
                     {
-                        Customer = CustomerRepository.GetByCustomerID(CurrentInvoice.CustomerID);
+                        Customer = await CustomerRepository.GetByCustomerIDAsync(CurrentInvoice.CustomerID);
                         InvoiceItems = await InvoiceRepository.GetInvoiceItems(CurrentInvoice.InvoiceNo);
                     }
                 }

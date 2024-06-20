@@ -3,8 +3,6 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -12,52 +10,31 @@ namespace KAP_InventoryManager.Repositories
 {
     internal class CustomerRepository : RepositoryBase, ICustomerRepository
     {
-        public void Add(CustomerModel customer)
+        public async Task AddAsync(CustomerModel customer)
         {
             try
             {
-                using (var connection = GetConnection())
+                var parameters = new MySqlParameter[]
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        using (var command = new MySqlCommand("AddCustomer", connection, transaction))
-                        {
-                            command.CommandType = CommandType.StoredProcedure;
+                    new MySqlParameter("@p_CustomerID", customer.CustomerID),
+                    new MySqlParameter("@p_Name", customer.Name),
+                    new MySqlParameter("@p_Address", customer.Address),
+                    new MySqlParameter("@p_Email", customer.Email),
+                    new MySqlParameter("@p_City", customer.City),
+                    new MySqlParameter("@p_ContactNo", customer.ContactNo),
+                    new MySqlParameter("@p_PaymentType", customer.PaymentType),
+                    new MySqlParameter("@p_DebtLimit", customer.DebtLimit),
+                    new MySqlParameter("@p_RepID", customer.RepID),
+                    new MySqlParameter("@p_CustomerCount", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
+                };
 
-                            command.Parameters.Add("@p_CustomerID", MySqlDbType.VarChar).Value = customer.CustomerID;
-                            command.Parameters.Add("@p_Name", MySqlDbType.VarChar).Value = customer.Name;
-                            command.Parameters.Add("@p_Address", MySqlDbType.VarChar).Value = customer.Address;
-                            command.Parameters.Add("@p_Email", MySqlDbType.VarChar).Value = customer.Email;
-                            command.Parameters.Add("@p_City", MySqlDbType.VarChar).Value = customer.City;
-                            command.Parameters.Add("@p_ContactNo", MySqlDbType.VarChar).Value = customer.ContactNo;
-                            command.Parameters.Add("@p_PaymentType", MySqlDbType.VarChar).Value = customer.PaymentType;
-                            command.Parameters.Add("@p_DebtLimit", MySqlDbType.Decimal).Value = customer.DebtLimit;
-                            command.Parameters.Add("@p_RepID", MySqlDbType.VarChar).Value = customer.RepID;
+                await ExecuteNonQueryAsync("AddCustomer", CommandType.StoredProcedure, parameters);
 
-                            var p_CustomerCount = new MySqlParameter("@p_CustomerCount", MySqlDbType.Int32)
-                            {
-                                Direction = ParameterDirection.Output
-                            };
-                            command.Parameters.Add(p_CustomerCount);
+                int customerCount = Convert.ToInt32(parameters[9].Value);
 
-                            command.ExecuteNonQuery();
-
-                            // Get the value of the output parameter
-                            int customerCount = Convert.ToInt32(p_CustomerCount.Value);
-
-                            if (customerCount == 0)
-                            {
-                                MessageBox.Show("Customer added successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-                            else
-                            {
-                                MessageBox.Show("Customer already exists.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                            }
-                        }
-                        transaction.Commit();
-                    }
-                }
+                MessageBox.Show(customerCount == 0
+                    ? "Customer added successfully."
+                    : "Customer already exists.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -67,156 +44,125 @@ namespace KAP_InventoryManager.Repositories
 
         public async Task<IEnumerable<CustomerModel>> GetAllAsync()
         {
+            var customers = new List<CustomerModel>();
             try
             {
-                List<CustomerModel> customers = new List<CustomerModel>();
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT CustomerID FROM Customer ORDER BY CustomerID DESC LIMIT 20", connection))
+                using (var reader = await ExecuteReaderAsync("SELECT CustomerID FROM Customer ORDER BY CustomerID DESC LIMIT 20", CommandType.Text))
                 {
-                    await connection.OpenAsync();
                     int counter = 0;
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        counter++;
+                        customers.Add(new CustomerModel
                         {
-                            counter++;
-
-                            CustomerModel customer = new CustomerModel()
-                            {
-                                Id = counter,
-                                CustomerID = reader["CustomerID"].ToString(),
-                            };
-
-                            customers.Add(customer);
-                        }
+                            Id = counter,
+                            CustomerID = reader["CustomerID"].ToString()
+                        });
                     }
                 }
-                return customers;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get customers. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
             }
+
+            return customers;
         }
 
-        public List<string> SearchCustomer(string SearchText)
+        public async Task<IEnumerable<string>> SearchCustomerAsync(string searchText)
         {
+            var customers = new List<string>();
             try
             {
-                List<string> customers = new List<string>();
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SearchCustomer", connection))
+                var parameters = new MySqlParameter[]
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@SearchText", SearchText);
+                    new MySqlParameter("@SearchText", searchText)
+                };
 
-                    connection.Open();
-
-                    using (var reader = command.ExecuteReader())
+                using (var reader = await ExecuteReaderAsync("SearchCustomer", CommandType.StoredProcedure, parameters))
+                {
+                    while (await reader.ReadAsync())
                     {
-                        while (reader.Read())
-                        {
-                            string customerId = reader["CustomerID"].ToString();
-                            customers.Add(customerId);
-                        }
+                        customers.Add(reader["CustomerID"].ToString());
                     }
                 }
-
-                return customers;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to search customer. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
             }
+
+            return customers;
         }
 
         public async Task<IEnumerable<CustomerModel>> SearchCustomerListAsync(string customerId)
         {
+            var customers = new List<CustomerModel>();
             try
             {
-                List<CustomerModel> customers = new List<CustomerModel>();
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SearchCustomerList", connection))
+                var parameters = new MySqlParameter[]
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@p_CustomerId", customerId);
+                    new MySqlParameter("@p_CustomerId", customerId)
+                };
 
-                    connection.Open();
+                using (var reader = await ExecuteReaderAsync("SearchCustomerList", CommandType.StoredProcedure, parameters))
+                {
                     int counter = 0;
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        counter++;
+                        customers.Add(new CustomerModel
                         {
-                            counter++;
-
-                            CustomerModel customer = new CustomerModel()
-                            {
-                                Id = counter,
-                                CustomerID = reader["CustomerID"].ToString(),
-                            };
-
-                            customers.Add(customer);
-                        }
+                            Id = counter,
+                            CustomerID = reader["CustomerID"].ToString()
+                        });
                     }
                 }
-
-                return customers;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to search customer. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
             }
+
+            return customers;
         }
 
-
-        public CustomerModel GetByCustomerID(string customerID)
+        public async Task<CustomerModel> GetByCustomerIDAsync(string customerID)
         {
+            CustomerModel customer = null;
             try
             {
-                CustomerModel customer = null;
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT * FROM Customer WHERE CustomerID = @CustomerID", connection))
+                var parameters = new MySqlParameter[]
                 {
-                    command.Parameters.Add("@CustomerID", MySqlDbType.VarChar).Value = customerID;
+                    new MySqlParameter("@CustomerID", customerID)
+                };
 
-                    connection.Open();
-
-                    using (var reader = command.ExecuteReader())
+                using (var reader = await ExecuteReaderAsync("SELECT * FROM Customer WHERE CustomerID = @CustomerID", CommandType.Text, parameters))
+                {
+                    if (await reader.ReadAsync())
                     {
-                        if (reader.Read())
+                        customer = new CustomerModel
                         {
-                            customer = new CustomerModel()
-                            {
-                                CustomerID = reader["CustomerID"].ToString(),
-                                Name = reader["Name"] is DBNull ? null : reader["Name"].ToString(),
-                                Address = reader["Address"] is DBNull ? null : reader["Address"].ToString(),
-                                City = reader["City"] is DBNull ? null : reader["City"].ToString(),
-                                ContactNo = reader["ContactNo"] is DBNull ? null : reader["ContactNo"].ToString(),
-                                Email = reader["Email"] is DBNull ? null : reader["Email"].ToString(),
-                                PaymentType = reader["PaymentType"] is DBNull ? null : reader["PaymentType"].ToString(),
-                                DebtLimit = reader["DebtLimit"] is DBNull ? 99 : Convert.ToDecimal(reader["DebtLimit"]),
-                                TotalDebt = reader["TotalDebt"] is DBNull ? 1 : Convert.ToDecimal(reader["TotalDebt"]),
-                                RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
-                            };
-                        }
+                            CustomerID = reader["CustomerID"].ToString(),
+                            Name = reader["Name"] is DBNull ? null : reader["Name"].ToString(),
+                            Address = reader["Address"] is DBNull ? null : reader["Address"].ToString(),
+                            City = reader["City"] is DBNull ? null : reader["City"].ToString(),
+                            ContactNo = reader["ContactNo"] is DBNull ? null : reader["ContactNo"].ToString(),
+                            Email = reader["Email"] is DBNull ? null : reader["Email"].ToString(),
+                            PaymentType = reader["PaymentType"] is DBNull ? null : reader["PaymentType"].ToString(),
+                            DebtLimit = reader["DebtLimit"] is DBNull ? 99 : Convert.ToDecimal(reader["DebtLimit"]),
+                            TotalDebt = reader["TotalDebt"] is DBNull ? 1 : Convert.ToDecimal(reader["TotalDebt"]),
+                            RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString()
+                        };
                     }
                 }
-                return customer;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get customer. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null;
             }
+
+            return customer;
         }
     }
 }

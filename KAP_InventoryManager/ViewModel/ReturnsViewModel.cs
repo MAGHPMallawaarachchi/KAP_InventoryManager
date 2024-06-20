@@ -151,7 +151,7 @@ namespace KAP_InventoryManager.ViewModel
 
                     if (CurrentReturn != null)
                     {
-                        Customer = CustomerRepository.GetByCustomerID(CurrentReturn.CustomerID);
+                        Customer = await CustomerRepository.GetByCustomerIDAsync(CurrentReturn.CustomerID);
                         ReturnItems = await ReturnRepository.GetReturnItems(CurrentReturn.ReturnNo);
                     }
                 }

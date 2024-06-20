@@ -535,14 +535,14 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private void PopulateInvoiceDetails()
+        private async void PopulateInvoiceDetails()
         {
             try
             {
                 Invoice = InvoiceRepository.GetByInvoiceNo(SelectedInvoiceNo);
                 if (Invoice != null)
                 {
-                    Customer = CustomerRepository.GetByCustomerID(Invoice.CustomerID);
+                    Customer = await CustomerRepository.GetByCustomerIDAsync(Invoice.CustomerID);
                 }
             }
             catch(Exception ex)

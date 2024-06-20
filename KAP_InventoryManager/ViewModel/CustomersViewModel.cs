@@ -5,22 +5,28 @@ using LiveCharts;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Xceed.Wpf.Toolkit.Primitives;
 
 namespace KAP_InventoryManager.ViewModel
 {
     public class CustomersViewModel : ViewModelBase
     {
-        private readonly ICustomerRepository CustomerRepository;
-        private readonly IInvoiceRepository InvoiceRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IInvoiceRepository _invoiceRepository;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private CancellationTokenSource _cancellationTokenSource;
 
-        private IEnumerable<CustomerModel> _customers;
+        private ObservableCollection<CustomerModel> _customers;
         private IEnumerable<InvoiceModel> _invoices;
+
         private CustomerModel _selectedCustomer;
         private CustomerModel _currentCustomer;
         private double _debtPercentage;
@@ -30,9 +36,9 @@ namespace KAP_InventoryManager.ViewModel
         private int _pageNumber;
         private bool _isFinalPage;
 
-        public IEnumerable<CustomerModel> Customers
+        public ObservableCollection<CustomerModel> Customers
         {
-            get { return _customers; }
+            get => _customers; 
             set
             {
                 _customers = value;
@@ -44,7 +50,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public IEnumerable<InvoiceModel> Invoices
         {
-            get { return _invoices; }
+            get => _invoices; 
             set
             {
                 _invoices = value;
@@ -54,7 +60,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public CustomerModel SelectedCustomer
         {
-            get { return _selectedCustomer; }
+            get => _selectedCustomer;
             set
             {
                 _selectedCustomer = value;
@@ -69,7 +75,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public CustomerModel CurrentCustomer
         {
-            get { return _currentCustomer; }
+            get => _currentCustomer;
             set
             {
                 _currentCustomer = value;
@@ -80,7 +86,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public double DebtPercentage
         {
-            get { return _debtPercentage; }
+            get => _debtPercentage;
             set
             {
                 _debtPercentage = value;
@@ -90,7 +96,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public double DebtRemainder
         {
-            get { return _debtRemainder; }
+            get => _debtRemainder;
             set
             {
                 _debtRemainder = value;
@@ -100,7 +106,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public string SearchCustomerText
         {
-            get { return _searchCustomerText; }
+            get => _searchCustomerText;
             set
             {
                 _searchCustomerText = value;
@@ -112,7 +118,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public string SearchInvoiceText
         {
-            get { return _searchInvoiceText; }
+            get => _searchInvoiceText;
             set
             {
                 _searchInvoiceText = value;
@@ -124,7 +130,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public int PageNumber
         {
-            get { return _pageNumber; }
+            get => _pageNumber;
             set
             {
                 _pageNumber = value;
@@ -134,7 +140,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public bool IsFinalPage
         {
-            get { return _isFinalPage; }
+            get => _isFinalPage;
             set
             {
                 _isFinalPage = value;
@@ -147,13 +153,15 @@ namespace KAP_InventoryManager.ViewModel
 
         public CustomersViewModel() 
         {
-            CustomerRepository = new CustomerRepository();
-            InvoiceRepository = new InvoiceRepository();
+            _customerRepository = new CustomerRepository();
+            _invoiceRepository = new InvoiceRepository();
 
             GoToNextPageCommand = new ViewModelCommand(ExecuteGoToNextPageCommand);
             GoToPreviousPageCommand = new ViewModelCommand(ExecuteGoToPreviousPageCommand);
 
             PageNumber = 1;
+
+            Customers = new ObservableCollection<CustomerModel>();
             PopulateCustomersAsync();
 
             Messenger.Default.Register<string>(this, OnMessageReceived);
@@ -179,16 +187,39 @@ namespace KAP_InventoryManager.ViewModel
 
         private async void PopulateCustomersAsync()
         {
+            await _semaphore.WaitAsync();
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+
             try
             {
-                if (SearchCustomerText == null)
-                    Customers = await CustomerRepository.GetAllAsync();
-                else
-                    Customers = await CustomerRepository.SearchCustomerListAsync(SearchCustomerText);
+                Customers.Clear();
+                List<CustomerModel> customers = (List<CustomerModel>)(string.IsNullOrEmpty(SearchCustomerText)
+                    ? await _customerRepository.GetAllAsync()
+                    : await _customerRepository.SearchCustomerListAsync(SearchCustomerText));
+
+                foreach (var customer in customers)
+                {
+                    Customers.Add(customer);
+                    await Task.Delay(50, _cancellationTokenSource.Token);
+                }
+
+                if (Customers.Any())
+                {
+                    SelectedCustomer = Customers.First();
+                }
             }
-            catch (Exception ex)
+            catch (MySqlException ex)
             {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to fetch customers. MySQL Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (TaskCanceledException)
+            {
+                // Task was canceled, ignore the exception
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
@@ -196,30 +227,23 @@ namespace KAP_InventoryManager.ViewModel
         {
             try
             {
-                if(SearchInvoiceText == null)
-                {
-                    Invoices = await InvoiceRepository.GetInvoiceByCustomerAsync(CurrentCustomer.CustomerID, 10, PageNumber);
-                    if (Invoices.Count() < 10)
-                        IsFinalPage = true;
-                }
-                else
-                {
-                    Invoices = await InvoiceRepository.SearchCustomerInvoiceListAsync(SearchInvoiceText, CurrentCustomer.CustomerID, 10, PageNumber);
-                    if (Invoices.Count() < 10)
-                        IsFinalPage = true;
-                }
+                Invoices = string.IsNullOrEmpty(SearchInvoiceText)
+                    ? await _invoiceRepository.GetInvoiceByCustomerAsync(CurrentCustomer.CustomerID, 10, PageNumber)
+                    : await _invoiceRepository.SearchCustomerInvoiceListAsync(SearchInvoiceText, CurrentCustomer.CustomerID, 10, PageNumber);
 
-            }catch (Exception ex)
+                IsFinalPage = Invoices.Count() < 10;
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void PopulateDetails()
+        private async void PopulateDetails()
         {
             try
             {
-                CurrentCustomer = CustomerRepository.GetByCustomerID(SelectedCustomer.CustomerID);               
+                CurrentCustomer = await _customerRepository.GetByCustomerIDAsync(SelectedCustomer.CustomerID);               
                 CalculateDebtPercentage();
                 PopulateInvoicesAsync();
             }
