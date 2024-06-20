@@ -269,16 +269,19 @@
                                Style="{StaticResource regular-text}"/>
 
                     <ComboBox Grid.Column="1"
-                              Margin="0,0,20,0"
-                              ItemsSource="{Binding PartNumbers}"
-                              SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
-                              IsEditable="True"
-                              StaysOpenOnEdit="True"
-                              Text="{Binding PartNoSearchText, UpdateSourceTrigger=PropertyChanged}"/>
-
+                                Padding="0,0,20,0"
+                                ItemsSource="{Binding PartNumbers}"
+                                SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
+                                IsEditable="True"
+                                StaysOpenOnEdit="True">
+                        <ComboBox.Text>
+                            <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged" />
+                        </ComboBox.Text>
+                    </ComboBox>
+                    
                     <TextBlock Text="{Binding SelectedItem.BrandID}"                   
-                               Style="{StaticResource regular-text}"
-                               Grid.Column="2"/>
+                            Style="{StaticResource regular-text}"
+                            Grid.Column="2"/>
 
                     <TextBlock Text="{Binding SelectedItem.Description}"                   
                                Style="{StaticResource regular-text}"

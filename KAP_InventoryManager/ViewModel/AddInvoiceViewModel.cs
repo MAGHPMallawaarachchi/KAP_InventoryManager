@@ -5,6 +5,7 @@ using QuestPDF.ExampleInvoice;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -13,15 +14,20 @@ namespace KAP_InventoryManager.ViewModel
 {
     public class AddInvoiceViewModel : ViewModelBase
     {
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private CancellationTokenSource _cancellationTokenSource;
+
         private string _invoiceNo;
         private string _customerSearchText;
         private string _partNoSearchText;
 
         private string _selectedCustomerId;
         private CustomerModel _selectedCustomer;
+        private ObservableCollection<string> _customers;
 
         private string _selectedPartNo;
         private ItemModel _selectedItem;
+        private ObservableCollection<string> _partNumbers;
 
         private decimal _discount;
         private decimal _customerDiscount;
@@ -45,13 +51,13 @@ namespace KAP_InventoryManager.ViewModel
         private string _errorMessage;
         private ObservableCollection<InvoiceItemModel> _invoiceItems;
 
-        private readonly ICustomerRepository CustomerRepository;
-        private readonly ISalesRepRepository SalesRepRepository;
-        private readonly IItemRepository ItemRepository;
-        private readonly IInvoiceRepository InvoiceRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly ISalesRepRepository _salesRepRepository;
+        private readonly IItemRepository _itemRepository;
+        private readonly IInvoiceRepository _invoiceRepository;
 
-        public ObservableCollection<string> Customers { get; set; } = new ObservableCollection<string>();
-        public ObservableCollection<string> PartNumbers { get; set; } = new ObservableCollection<string>();
+        //public ObservableCollection<string> Customers { get; set; } = new ObservableCollection<string>();
+        //public ObservableCollection<string> PartNumbers { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> SalesReps { get; set; } = new ObservableCollection<string>();
 
         public ObservableCollection<InvoiceItemModel> InvoiceItems
@@ -76,25 +82,14 @@ namespace KAP_InventoryManager.ViewModel
 
         public string CustomerSearchText
         {
-            get { return _customerSearchText; }
+            get => _customerSearchText; 
             set
             {
                 _customerSearchText = value;
                 OnPropertyChanged(nameof(CustomerSearchText));
-                PopulateCustomersAsync();
+                DebouncePopulateCustomersAsync();
             }
         }
-        public string PartNoSearchText
-        {
-            get { return _partNoSearchText; }
-            set
-            {
-                _partNoSearchText = value;
-                OnPropertyChanged(nameof(PartNoSearchText));
-                PopulatePartNumbersAsync();
-            }
-        }
-
         public string SelectedCustomerId
         {
             get => _selectedCustomerId;
@@ -106,6 +101,27 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public ObservableCollection<string> Customers
+        {
+            get => _customers;
+            set
+            {
+                _customers = value;
+                OnPropertyChanged(nameof(Customers));
+            }
+        }
+
+        public string PartNoSearchText
+        {
+            get => _partNoSearchText;
+            set
+            {
+                _partNoSearchText = value;
+                OnPropertyChanged(nameof(PartNoSearchText));
+                DebouncePopulatePartNumbersAsync();
+            }
+        }
+
         public string SelectedPartNo
         {
             get => _selectedPartNo;
@@ -114,6 +130,16 @@ namespace KAP_InventoryManager.ViewModel
                 _selectedPartNo = value;
                 OnPropertyChanged(nameof(SelectedPartNo));
                 PopulateItemDetailsAsync();
+            }
+        }
+
+        public ObservableCollection<string> PartNumbers
+        {
+            get => _partNumbers;
+            set
+            {
+                _partNumbers = value;
+                OnPropertyChanged(nameof(PartNumbers));
             }
         }
 
@@ -174,7 +200,6 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _selectedRepId = value;
                 OnPropertyChanged(nameof(SelectedRepId));
-                Console.WriteLine(SelectedRepId);
             }
         }
 
@@ -241,7 +266,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public decimal Total
         {
-            get { return _total; }
+            get => _total;
             set
             {
                 _total = value;
@@ -308,10 +333,10 @@ namespace KAP_InventoryManager.ViewModel
 
         public AddInvoiceViewModel() 
         {
-            CustomerRepository = new CustomerRepository();
-            SalesRepRepository = new SalesRepRepository();
-            ItemRepository = new ItemRepository();
-            InvoiceRepository = new InvoiceRepository();
+            _customerRepository = new CustomerRepository();
+            _salesRepRepository = new SalesRepRepository();
+            _itemRepository = new ItemRepository();
+            _invoiceRepository = new InvoiceRepository();
 
             AddInvoiceItemCommand = new ViewModelCommand(ExecuteAddInvoiceItemCommand);
             ClearInvoiceCommand = new ViewModelCommand(ExecuteClearInvoiceCommand);
@@ -320,12 +345,15 @@ namespace KAP_InventoryManager.ViewModel
             CancelInvoiceItemCommand = new ViewModelCommand(ExecuteCancelInvoiceItemCommand);
             SaveInvoiceCommand = new ViewModelCommand(ExecuteSaveInvoiceCommand);
 
+            Customers = new ObservableCollection<string>();
+            PartNumbers = new ObservableCollection<string>();
+            _cancellationTokenSource = new CancellationTokenSource();
             Initialize();
         }
 
         private async void Initialize()
         {
-            InvoiceNo = await InvoiceRepository.GetNextInvoiceNumberAsync();
+            InvoiceNo = await _invoiceRepository.GetNextInvoiceNumberAsync();
             InvoiceItems = new ObservableCollection<InvoiceItemModel>();
 
             DateTime currentDateTime = DateTime.Now;
@@ -338,48 +366,75 @@ namespace KAP_InventoryManager.ViewModel
             IsSelectedInvoiceItem = false;
         }
 
-        private async void PopulateCustomersAsync()
+        private async void DebouncePopulateCustomersAsync()
         {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+
             try
             {
-                Customers.Clear();
+                await Task.Delay(300, _cancellationTokenSource.Token); // 300ms debounce time
+
+                if (!_cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    await PopulateCustomersAsync(_cancellationTokenSource.Token);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // Ignore the TaskCanceledException
+            }
+        }
+
+        private async Task PopulateCustomersAsync(CancellationToken cancellationToken)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                var customers = new ObservableCollection<string>();
 
                 if (!string.IsNullOrEmpty(CustomerSearchText))
                 {
-                    var results = await CustomerRepository.SearchCustomerAsync(CustomerSearchText);
+                    var results = await _customerRepository.SearchCustomerAsync(CustomerSearchText);
 
                     if (results != null)
                     {
                         foreach (var suggestion in results)
                         {
-                            Customers.Add(suggestion);
+                            if (cancellationToken.IsCancellationRequested)
+                                return;
+
+                            customers.Add(suggestion);
                         }
                     }
                 }
+
+                Customers = customers;
             }
             catch (Exception ex)
             {
-                ShowErrorMessage(ex.Message);
+                ShowErrorMessage($"Error: {ex.Message}");
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
-        private async void PopulatePartNumbersAsync()
+        private async void PopulateCustomerDetailsAsync()
         {
             try
             {
-                PartNumbers.Clear();
-
-                if (!string.IsNullOrEmpty(PartNoSearchText))
+                SelectedCustomer = await _customerRepository.GetByCustomerIDAsync(SelectedCustomerId);
+                if (SelectedCustomer != null)
                 {
-                    var results = await ItemRepository.SearchPartNoAsync(PartNoSearchText);
-
-                    if (results != null)
-                    {
-                        foreach (var suggestion in results)
-                        {
-                            PartNumbers.Add(suggestion);
-                        }
-                    }
+                    SelectedPaymentType = SelectedCustomer.PaymentType;
+                    CustomerDiscount = SelectedPaymentType == "CASH" ? 30 : 25;
+                    SelectedRepId = SelectedCustomer.RepID ?? "None";
                 }
             }
             catch (Exception ex)
@@ -387,12 +442,72 @@ namespace KAP_InventoryManager.ViewModel
                 ShowErrorMessage(ex.Message);
             }
         }
+
+        private async void DebouncePopulatePartNumbersAsync()
+        {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(300, _cancellationTokenSource.Token); // 300ms debounce time
+
+                if (!_cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    await PopulatePartNumbersAsync(_cancellationTokenSource.Token);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // Ignore the TaskCanceledException
+            }
+        }
+
+        private async Task PopulatePartNumbersAsync(CancellationToken cancellationToken)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                var partNumbers = new ObservableCollection<string>();
+
+                if (!string.IsNullOrEmpty(PartNoSearchText))
+                {
+                    var results = await _itemRepository.SearchPartNoAsync(PartNoSearchText);
+
+                    if (results != null)
+                    {
+                        foreach (var suggestion in results)
+                        {
+                            if (cancellationToken.IsCancellationRequested)
+                                return;
+
+                            partNumbers.Add(suggestion);
+                        }
+                    }
+                }
+
+                PartNumbers = partNumbers;
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Error: {ex.Message}");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
 
         private async Task PopulateSalesRepsAsync()
         {
             try
             {
-                var salesReps = await SalesRepRepository.GetAllRepIdsAsync();
+                var salesReps = await _salesRepRepository.GetAllRepIdsAsync();
                 if (salesReps != null)
                 {
                     foreach (var salesRep in salesReps)
@@ -407,29 +522,12 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private async void PopulateCustomerDetailsAsync()
-        {
-            try
-            {
-                SelectedCustomer = await CustomerRepository.GetByCustomerIDAsync(SelectedCustomerId);
-                if (SelectedCustomer != null)
-                {
-                    SelectedPaymentType = SelectedCustomer.PaymentType;
-                    CustomerDiscount = SelectedPaymentType == "CASH" ? 30 : 25;
-                    SelectedRepId = SelectedCustomer.RepID ?? "None";
-                }
-            }
-            catch (Exception ex)
-            {
-                ShowErrorMessage(ex.Message);
-            }
-        }
 
         private async void PopulateItemDetailsAsync()
         {
             try
             {
-                SelectedItem = await ItemRepository.GetByPartNoAsync(SelectedPartNo);
+                SelectedItem = await _itemRepository.GetByPartNoAsync(SelectedPartNo);
                 Discount = CustomerDiscount;
             }
             catch (Exception ex)
@@ -468,7 +566,7 @@ namespace KAP_InventoryManager.ViewModel
                 ShowErrorMessage("Please enter the quantity");
                 return false;
             }
-            if (!ItemRepository.CheckQty(SelectedPartNo, Quantity))
+            if (!_itemRepository.CheckQty(SelectedPartNo, Quantity))
             {
                 ShowErrorMessage("This item is out of stock");
                 return false;
@@ -632,12 +730,12 @@ namespace KAP_InventoryManager.ViewModel
                         DueDate = SelectedPaymentType == "CASH" ? DateTime.Now.AddDays(7) : DateTime.Now.AddDays(60)
                     };
 
-                    await InvoiceRepository.AddInvoiceAsync(invoice);
+                    await _invoiceRepository.AddInvoiceAsync(invoice);
 
                     foreach (var invoiceItem in InvoiceItems)
                     {
                         invoiceItem.InvoiceNo = InvoiceNo;
-                        await InvoiceRepository.AddInvoiceItemAsync(invoiceItem);
+                        await _invoiceRepository.AddInvoiceItemAsync(invoiceItem);
                     }
 
                     var invoiceDoc = new InvoiceDocument();
