@@ -12,6 +12,7 @@
         WindowStartupLocation="CenterScreen"
         MouseDown="Window_MouseDown"
         Background="Transparent"
+        Icon="/Images/logo_small.png"
         AllowsTransparency="True">
 
     <Window.DataContext>
