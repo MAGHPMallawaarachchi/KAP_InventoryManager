@@ -164,7 +164,7 @@
                                         <TextBlock Text="Returns" Style="{StaticResource menuButtontext}"/>
                                     </StackPanel>
                                 </RadioButton>
-                                <RadioButton Style="{StaticResource menuButton}" 
+                                <!--<RadioButton Style="{StaticResource menuButton}" 
                                              Margin="0,0,0,12"
                                              Cursor="Hand"
                                              Command="{Binding ShowInvoicesViewCommand}">
@@ -174,7 +174,7 @@
                                             Style="{StaticResource menuButtonIcon}"/>
                                         <TextBlock Text="Shipments" Style="{StaticResource menuButtontext}"/>
                                     </StackPanel>
-                                </RadioButton>
+                                </RadioButton>-->
                                 <RadioButton Style="{StaticResource menuButton}" 
                                              Margin="0,0,0,12"
                                              Cursor="Hand"
