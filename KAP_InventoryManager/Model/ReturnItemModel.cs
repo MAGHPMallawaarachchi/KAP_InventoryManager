@@ -12,6 +12,7 @@ namespace KAP_InventoryManager.Model
         public string ReturnNo { get; set; }
         public string PartNo { get; set; }
         public string Description { get; set; }
+        public string BrandID { get; set; }
         public decimal BuyingPrice { get; set; }
         public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }

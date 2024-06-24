@@ -56,8 +56,6 @@ namespace KAP_InventoryManager.ViewModel
         private readonly IItemRepository _itemRepository;
         private readonly IInvoiceRepository _invoiceRepository;
 
-        //public ObservableCollection<string> Customers { get; set; } = new ObservableCollection<string>();
-        //public ObservableCollection<string> PartNumbers { get; set; } = new ObservableCollection<string>();
         public ObservableCollection<string> SalesReps { get; set; } = new ObservableCollection<string>();
 
         public ObservableCollection<InvoiceItemModel> InvoiceItems
@@ -345,8 +343,6 @@ namespace KAP_InventoryManager.ViewModel
             CancelInvoiceItemCommand = new ViewModelCommand(ExecuteCancelInvoiceItemCommand);
             SaveInvoiceCommand = new ViewModelCommand(ExecuteSaveInvoiceCommand);
 
-            Customers = new ObservableCollection<string>();
-            PartNumbers = new ObservableCollection<string>();
             _cancellationTokenSource = new CancellationTokenSource();
             Initialize();
         }
@@ -355,6 +351,8 @@ namespace KAP_InventoryManager.ViewModel
         {
             InvoiceNo = await _invoiceRepository.GetNextInvoiceNumberAsync();
             InvoiceItems = new ObservableCollection<InvoiceItemModel>();
+            Customers = new ObservableCollection<string>();
+            PartNumbers = new ObservableCollection<string>();
 
             DateTime currentDateTime = DateTime.Now;
             CurrentDate = currentDateTime.ToString("yyyy-MM-dd");

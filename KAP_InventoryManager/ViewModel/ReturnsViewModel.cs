@@ -7,31 +7,35 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
+using GalaSoft.MvvmLight.Messaging;
+using System.Collections.ObjectModel;
+using System.Threading;
+using MySql.Data.MySqlClient;
 
 namespace KAP_InventoryManager.ViewModel
 {
     public class ReturnsViewModel : ViewModelBase
     {
-        private readonly ICustomerRepository CustomerRepository;
-        private readonly IInvoiceRepository InvoiceRepository;
-        private readonly IReturnRepository ReturnRepository;
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IReturnRepository _returnRepository;
 
-        private IEnumerable<ReturnModel> _returns;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private CancellationTokenSource _cancellationTokenSource;
+
+        private ObservableCollection<ReturnModel> _returns;
         private string _returnSearchText;
         private ReturnModel _selectedReturn;
         private ReturnModel _currentReturn;
         private CustomerModel _customer;
         private IEnumerable<ReturnItemModel> _returnItems;
 
-        public IEnumerable<ReturnModel> Returns
+        public ObservableCollection<ReturnModel> Returns
         {
             get => _returns;
             set
             {
                 _returns = value;
                 OnPropertyChanged(nameof(Returns));
-
-                SelectedReturn = Returns.FirstOrDefault();
             }
         }
 
@@ -92,15 +96,22 @@ namespace KAP_InventoryManager.ViewModel
 
         public ReturnsViewModel()
         {
+            _customerRepository = new CustomerRepository();
+            _returnRepository = new ReturnRepository();
+
             CancelReturnCommand = new ViewModelCommand(ExecuteCancelReturnCommand);
+            Returns = new ObservableCollection<ReturnModel>();
 
-            CustomerRepository = new CustomerRepository();
-            ReturnRepository = new ReturnRepository();
+            PopulateReturnsAsync();
+            Messenger.Default.Register<string>(this, OnMessageReceived);
+        }
 
+        private void OnMessageReceived(string obj)
+        {
             PopulateReturnsAsync();
         }
 
-        private async void ExecuteCancelReturnCommand(object obj)
+        private void ExecuteCancelReturnCommand(object obj)
         {
             try
             {
@@ -127,17 +138,45 @@ namespace KAP_InventoryManager.ViewModel
 
         private async void PopulateReturnsAsync()
         {
+            await _semaphore.WaitAsync();
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+
             try
             {
-                if (ReturnSearchText == null)
-                    Returns = await ReturnRepository.GetAllReturnsAsync();
-                else
-                    Returns = await ReturnRepository.SearchReturnListAsync(ReturnSearchText);
+                var returns = (string.IsNullOrEmpty(ReturnSearchText)
+                    ? await _returnRepository.GetAllReturnsAsync()
+                    : await _returnRepository.SearchReturnListAsync(ReturnSearchText));
 
+                var returnsList = new List<ReturnModel>(returns);
+
+                Returns.Clear();
+
+                foreach (var returnReceipt in returnsList)
+                {
+                    if (_cancellationTokenSource.Token.IsCancellationRequested)
+                        break;
+
+                    Returns.Add(returnReceipt);
+                    await Task.Delay(50, _cancellationTokenSource.Token);
+                }
+
+                if (Returns.Any())
+                {
+                    SelectedReturn = Returns.First();
+                }
             }
-            catch (Exception ex)
+            catch (MySqlException ex)
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (TaskCanceledException)
+            {
+                // Task was canceled, ignore the exception
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 
@@ -147,12 +186,12 @@ namespace KAP_InventoryManager.ViewModel
             {
                 if (SelectedReturn != null)
                 {
-                    CurrentReturn = await ReturnRepository.GetByReturnNo(SelectedReturn.ReturnNo);
+                    CurrentReturn = await _returnRepository.GetByReturnNoAsync(SelectedReturn.ReturnNo);
 
                     if (CurrentReturn != null)
                     {
-                        Customer = await CustomerRepository.GetByCustomerIDAsync(CurrentReturn.CustomerID);
-                        ReturnItems = await ReturnRepository.GetReturnItems(CurrentReturn.ReturnNo);
+                        Customer = await _customerRepository.GetByCustomerIDAsync(CurrentReturn.CustomerID);
+                        ReturnItems = await _returnRepository.GetReturnItemsAsync(CurrentReturn.ReturnNo);
                     }
                 }
             }

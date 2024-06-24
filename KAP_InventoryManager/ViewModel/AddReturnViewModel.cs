@@ -11,11 +11,16 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows;
 using Xceed.Wpf.Toolkit.Primitives;
+using System.Threading;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace KAP_InventoryManager.ViewModel
 {
     public class AddReturnViewModel: ViewModelBase
     {
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private CancellationTokenSource _cancellationTokenSource;
+
         private string _returnNo;
         private string _currentTime;
         private string _currentDate;
@@ -46,14 +51,12 @@ namespace KAP_InventoryManager.ViewModel
         private string _errorMessage;
         private ObservableCollection<ReturnItemModel> _returnItems;
 
-        private readonly ICustomerRepository CustomerRepository;
-        private readonly ISalesRepRepository SalesRepRepository;
-        private readonly IItemRepository ItemRepository;
-        private readonly IInvoiceRepository InvoiceRepository;
-        private readonly IReturnRepository ReturnRepository;
+        private ObservableCollection<string> _partNumbers;
+        private ObservableCollection<string> _invoices;
 
-        public ObservableCollection<string> PartNumbers { get; set; } = new ObservableCollection<string>();
-        public ObservableCollection<string> Invoices { get; set; } = new ObservableCollection<string>();
+        private readonly ICustomerRepository _customerRepository;
+        private readonly IInvoiceRepository _invoiceRepository;
+        private readonly IReturnRepository _returnRepository;
 
         public ObservableCollection<ReturnItemModel> ReturnItems
         {
@@ -61,7 +64,7 @@ namespace KAP_InventoryManager.ViewModel
             set
             {
                 _returnItems = value;
-                OnPropertyChanged(nameof(_returnItems));
+                OnPropertyChanged(nameof(ReturnItems));
             }
         }
 
@@ -77,17 +80,17 @@ namespace KAP_InventoryManager.ViewModel
 
         public string InvoiceSearchText
         {
-            get { return _invoiceSearchText; }
+            get => _invoiceSearchText; 
             set
             {
                 _invoiceSearchText = value;
                 OnPropertyChanged(nameof(InvoiceSearchText));
-                PopulateInvoices();
+                DebouncePopulateInvoicesAsync();
             }
         }
         public string PartNoSearchText
         {
-            get { return _partNoSearchText; }
+            get => _partNoSearchText; 
             set
             {
                 _partNoSearchText = value;
@@ -221,7 +224,7 @@ namespace KAP_InventoryManager.ViewModel
 
         public decimal Total
         {
-            get { return _total; }
+            get => _total; 
             set
             {
                 _total = value;
@@ -278,6 +281,26 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public ObservableCollection<string> PartNumbers
+        {
+            get => _partNumbers;
+            set
+            {
+                _partNumbers = value;
+                OnPropertyChanged(nameof(PartNumbers));
+            }
+        }
+
+        public ObservableCollection<string> Invoices
+        {
+            get => _invoices;
+            set
+            {
+                _invoices = value;
+                OnPropertyChanged(nameof(Invoices));
+            }
+        }
+
         public ICommand AddReturnItemCommand { get; }
         public ICommand ClearReturnCommand { get; }
         public ICommand DeleteReturnItemCommand { get; }
@@ -286,17 +309,11 @@ namespace KAP_InventoryManager.ViewModel
         public ICommand SaveReturnCommand { get; }
 
 
-
         public AddReturnViewModel()
         {
-            CustomerRepository = new CustomerRepository();
-            SalesRepRepository = new SalesRepRepository();
-            ItemRepository = new ItemRepository();
-            InvoiceRepository = new InvoiceRepository();
-            ReturnRepository = new ReturnRepository();
-
-            ReturnNo = ReturnRepository.GetNextReturnNumber();
-            ReturnItems = new ObservableCollection<ReturnItemModel>();
+            _customerRepository = new CustomerRepository();
+            _invoiceRepository = new InvoiceRepository();
+            _returnRepository = new ReturnRepository();
 
             AddReturnItemCommand = new ViewModelCommand(ExecuteAddReturnItemCommand);
             ClearReturnCommand = new ViewModelCommand(ExecuteClearReturnCommand);
@@ -305,26 +322,204 @@ namespace KAP_InventoryManager.ViewModel
             CancelReturnItemCommand = new ViewModelCommand(ExecuteCancelReturnItemCommand);
             SaveReturnCommand = new ViewModelCommand(ExecuteSaveReturnCommand);
 
+            _cancellationTokenSource = new CancellationTokenSource();
+            Initialize();
+        }
+
+        private async void Initialize()
+        {
+            ReturnNo = await _returnRepository.GetNextReturnNumberAsync();
+            ReturnItems = new ObservableCollection<ReturnItemModel>();
+            PartNumbers = new ObservableCollection<string>();
+            Invoices = new ObservableCollection<string>();
+
             DateTime currentDateTime = DateTime.Now;
             CurrentDate = currentDateTime.ToString("yyyy-MM-dd");
             CurrentTime = currentDateTime.ToString("t");
-
-            PopulateInvoices();
 
             Number = Counter = 1;
             Total = 0;
             IsSelectedReturnItem = false;
         }
 
+        private async void DebouncePopulateInvoicesAsync()
+        {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(300, _cancellationTokenSource.Token); // 300ms debounce time
+
+                if (!_cancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    await PopulateInvoicesAsync(_cancellationTokenSource.Token);
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // Ignore the TaskCanceledException
+            }
+        }
+
+        private async Task PopulateInvoicesAsync(CancellationToken cancellationToken)
+        {
+            await _semaphore.WaitAsync();
+
+            try
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                var invoices = new ObservableCollection<string>();
+
+                if (!string.IsNullOrEmpty(InvoiceSearchText))
+                {
+                    var results = await _invoiceRepository.SearchInvoiceNumberAsync(InvoiceSearchText);
+
+                    if (results != null)
+                    {
+                        foreach (var suggestion in results)
+                        {
+                            if (cancellationToken.IsCancellationRequested)
+                                return;
+
+                            invoices.Add(suggestion);
+                        }
+                    }
+                }
+
+                Invoices = invoices;
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Error: {ex.Message}");
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private async void PopulatePartNumbers()
+        {
+            try
+            {
+                PartNumbers.Clear();
+                var partNumbers = await _invoiceRepository.GetPartNumbersByInvoiceAsync(SelectedInvoiceNo);
+                if (partNumbers != null)
+                {
+                    foreach (var partNumber in partNumbers)
+                    {
+                        PartNumbers.Add(partNumber);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Error: {ex.Message}");
+            }
+        }
+        private async void PopulateItemDetails()
+        {
+            try
+            {
+                if (SelectedPartNo != null && SelectedInvoiceNo != null)
+                {
+                    SelectedInvoiceItem = await _invoiceRepository.GetInvoiceItemAsync(SelectedInvoiceNo, SelectedPartNo);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Error: {ex.Message}");
+            }
+        }
+
+        private async void PopulateInvoiceDetails()
+        {
+            try
+            {
+                Invoice = await _invoiceRepository.GetByInvoiceNoAsync(SelectedInvoiceNo);
+                if (Invoice != null)
+                {
+                    Customer = await _customerRepository.GetByCustomerIDAsync(Invoice.CustomerID);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Error: {ex.Message}");
+            }
+        }
+
+        private void CalculateAmount()
+        {
+            if (SelectedInvoiceItem != null)
+            {
+                Amount = Math.Round(SelectedInvoiceItem.UnitPrice * Qty * (100 - SelectedInvoiceItem.Discount) / 100, 2);
+            }
+        }
+
+        private bool CanExecuteAddReturnItemCommand()
+        {
+            if (Invoice == null || string.IsNullOrEmpty(SelectedInvoiceNo))
+            {
+                ShowErrorMessage("Please select an invoice");
+                return false;
+            }
+            if (string.IsNullOrEmpty(SelectedPartNo) || SelectedInvoiceItem == null)
+            {
+                ShowErrorMessage("Please select an item");
+                return false;
+            }
+            if (IsItemExist() == true)
+            {
+                ShowErrorMessage("Oops! You've Already Added This Item to the Return");
+                return false;
+            }
+            if (Qty == 0)
+            {
+                ShowErrorMessage("Please enter the quantity");
+                return false;
+            }
+            if (Qty > SelectedInvoiceItem.Quantity || DamagedQty > SelectedInvoiceItem.Quantity)
+            {
+                ShowErrorMessage("Invalid quantity");
+                return false;
+            }
+            return true;
+        }
+
+        private void ExecuteAddReturnItemCommand(object obj)
+        {
+            if (CanExecuteAddReturnItemCommand())
+                AddReturnItem();
+        }
+
+        private bool CanExecuteSaveReturnCommand()
+        {
+            if (Invoice == null || string.IsNullOrEmpty(SelectedInvoiceNo))
+            {
+                ShowErrorMessage("Please select an Invoice");
+                return false;
+            }
+            if (ReturnItems == null || ReturnItems.Count == 0)
+            {
+                ShowErrorMessage("Please add at least one item to the Return");
+                return false;
+            }
+            return true;
+        }
+
         private void ExecuteSaveReturnCommand(object obj)
         {
-            AddReturn();
+            if (CanExecuteSaveReturnCommand())
+                AddReturn();
         }
 
         private void ExecuteCancelReturnItemCommand(object obj)
         {
             SelectedReturnItem = null;
-            Clear();
+            ClearItemDetails();
             IsSelectedReturnItem = false;
             Number = Counter;
         }
@@ -346,7 +541,7 @@ namespace KAP_InventoryManager.ViewModel
             ReturnItems = new ObservableCollection<ReturnItemModel>(ReturnItems);
 
             SelectedReturnItem = null;
-            Clear();
+            ClearItemDetails();
             IsSelectedReturnItem = false;
             Number = Counter;
         }
@@ -359,7 +554,7 @@ namespace KAP_InventoryManager.ViewModel
                 ReturnItems.Remove(SelectedReturnItem);
                 Counter--;
                 Number = Counter;
-                Clear();
+                ClearItemDetails();
                 SelectedReturnItem = null;
                 IsSelectedReturnItem = false;
 
@@ -375,72 +570,13 @@ namespace KAP_InventoryManager.ViewModel
             }
             else
             {
-                MessageBox.Show("Please select a item to delete", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowErrorMessage("Please select a item to delete");
             }
-        }
-
-        private bool CanAddReturnItem()
-        {
-            bool validate;
-            if (Invoice == null || string.IsNullOrEmpty(SelectedInvoiceNo))
-            {
-                validate = false;
-                MessageBox.Show("Please select an invoice", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (string.IsNullOrEmpty(SelectedPartNo) || SelectedInvoiceItem == null)
-            {
-                validate = false;
-                MessageBox.Show("Please select an item", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (IsItemExist() == true)
-            {
-                validate = false;
-                MessageBox.Show("Oops! You've Already Added This Item to the Return", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (Qty == 0)
-            {
-                validate = false;
-                MessageBox.Show("Please enter the quantity", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if(Qty > SelectedInvoiceItem.Quantity || DamagedQty > SelectedInvoiceItem.Quantity)
-            {
-                validate = false;
-                MessageBox.Show("Invalid quantity", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-                validate = true;
-            return validate;
-        }
-
-        private bool CanAddReturn()
-        {
-            bool validate;
-            if (Invoice == null || string.IsNullOrEmpty(SelectedInvoiceNo))
-            {
-                validate = false;
-                MessageBox.Show("Please select an Invoice", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else if (ReturnItems == null || ReturnItems.Count == 0)
-            {
-                validate = false;
-                MessageBox.Show("Please add at least one item to the Return", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            else
-                validate = true;
-            return validate;
         }
 
         private bool IsItemExist()
         {
-            bool isItemExist = false;
-            foreach (var item in ReturnItems)
-            {
-                if (item.PartNo == SelectedPartNo)
-                {
-                    isItemExist = true;
-                }
-            }
-            return isItemExist;
+            return ReturnItems.Any(item => item.PartNo == SelectedPartNo);
         }
 
         private void ExecuteClearReturnCommand(object obj)
@@ -448,55 +584,26 @@ namespace KAP_InventoryManager.ViewModel
             ClearReturn();
         }
 
-        private void ExecuteAddReturnItemCommand(object obj)
+        private void ClearItemDetails()
         {
-            if (CanAddReturnItem() == true)
-                AddReturnItem();
+            SelectedInvoiceItem = null;
+            SelectedPartNo = null;
+            Qty = 0;
+            DamagedQty = 0;
+            Amount = 0;
         }
 
-        private async void PopulateInvoices()
+        private void ClearReturn()
         {
-            try
-            {
-                Invoices.Clear();
-
-                if (InvoiceSearchText != null || InvoiceSearchText != "")
-                {
-                    var results = await InvoiceRepository.SearchInvoiceNumberAsync(InvoiceSearchText);
-
-                    if (results != null)
-                    {
-                        foreach (var suggestion in results)
-                        {
-                            Invoices.Add(suggestion);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private async void PopulatePartNumbers()
-        {
-            try
-            {
-                PartNumbers.Clear();
-                var partNumbers = await InvoiceRepository.GetPartNumbersByInvoiceAsync(SelectedInvoiceNo);
-                if (partNumbers != null)
-                {
-                    foreach (var partNumber in partNumbers)
-                    {
-                        PartNumbers.Add(partNumber);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            ClearItemDetails();
+            Invoice = null;
+            Customer = null;
+            SelectedInvoiceNo = null;
+            ReturnItems.Clear();
+            Total = 0;
+            Counter = 1;
+            Number = 1;
+            Initialize();
         }
 
         private void AddReturnItem()
@@ -517,112 +624,55 @@ namespace KAP_InventoryManager.ViewModel
             Total += Amount;
             Counter++;
             Number = Counter;
-            Clear();
+            ClearItemDetails();
         }
 
-        private async void PopulateItemDetails()
+        private async void AddReturn()
         {
             try
             {
-                if(SelectedPartNo != null && SelectedInvoiceNo != null)
+                var returnReceipt = new ReturnModel
                 {
-                    SelectedInvoiceItem = await InvoiceRepository.GetInvoiceItemAsync(SelectedInvoiceNo, SelectedPartNo);
+                    ReturnNo = ReturnNo,
+                    InvoiceNo = SelectedInvoiceNo,
+                    CustomerID = Invoice.CustomerID,
+                    RepID = Invoice.RepID == "None" ? null : Invoice.RepID,
+                    Date = DateTime.Now,
+                    TotalAmount = Total,
+                };
+
+                bool success = await _returnRepository.AddReturnAsync(returnReceipt);
+
+                foreach (var returnItem in ReturnItems)
+                {
+                    returnItem.ReturnNo = ReturnNo;
+                    await _returnRepository.AddReturnItemAsync(returnItem, SelectedInvoiceNo);
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private async void PopulateInvoiceDetails()
-        {
-            try
-            {
-                Invoice = await InvoiceRepository.GetByInvoiceNoAsync(SelectedInvoiceNo);
-                if (Invoice != null)
-                {
-                    Customer = await CustomerRepository.GetByCustomerIDAsync(Invoice.CustomerID);
-                }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void CalculateAmount()
-        {
-            if (SelectedInvoiceItem != null)
-            {
-                Amount = SelectedInvoiceItem.UnitPrice * Qty * (100 - SelectedInvoiceItem.Discount) / 100;
-            }
-        }
-
-        private void Clear()
-        {
-            SelectedInvoiceItem = null;
-            SelectedPartNo = null;
-            Qty = 0;
-            DamagedQty = 0;
-            Amount = 0;
-        }
-
-        private void ClearReturn()
-        {
-            Clear();
-            Invoice = null;
-            Customer = null;
-            SelectedInvoiceNo = null;
-            ReturnItems.Clear();
-            Total = 0;
-            Counter = 1;
-            Number = 1;
-            ReturnNo = ReturnRepository.GetNextReturnNumber();
-        }
-
-        private void AddReturn()
-        {
-            try
-            {
-                if (CanAddReturn() == true)
-                {
-                    var returnReceipt = new ReturnModel
-                    {
-                        ReturnNo = ReturnNo,
-                        InvoiceNo = SelectedInvoiceNo,
-                        CustomerID = Invoice.CustomerID,
-                        RepID = Invoice.RepID == "None" ? null : Invoice.RepID,
-                        Date = DateTime.Now,
-                        TotalAmount = Total,
-                    };
-
-                    bool success = ReturnRepository.AddReturn(returnReceipt);
-
-                    foreach (var returnItem in ReturnItems)
-                    {
-                        returnItem.ReturnNo = ReturnNo;
-                        ReturnRepository.AddReturnItem(returnItem, SelectedInvoiceNo);
-                    }
 
 /*                    InvoiceDocument invoiceDoc = new InvoiceDocument();
-                    invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems);*/
+                invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems);*/
 
-                    if(success == true)
-                    {
-                        ClearReturn();
-                        MessageBox.Show("Return saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Failed to save the Return!", "Error", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
+                if(success == true)
+                {
+                    ClearReturn();
+                    Messenger.Default.Send("NewInvoiceAdded");
+                    MessageBox.Show("Return saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
+                else
+                {
+                    MessageBox.Show("Failed to save the Return!", "Error", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to save the return. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void ShowErrorMessage(string message)
+        {
+            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

@@ -294,7 +294,7 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Text="Date n Time"
+                                    <TextBlock Text="Date &amp; Time"
                                                Style="{StaticResource regular-text}"/>
                                     <TextBlock Text=":" Grid.Column="1"
                                                Style="{StaticResource regular-text}"/>

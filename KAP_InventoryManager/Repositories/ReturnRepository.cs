@@ -12,33 +12,22 @@ namespace KAP_InventoryManager.Repositories
 {
     internal class ReturnRepository : RepositoryBase, IReturnRepository
     {
-        public bool AddReturn(ReturnModel vReturn)
+        public async Task<bool> AddReturnAsync(ReturnModel vReturn)
         {
             try
             {
-                using (var connection = GetConnection())
+                var parameters = new MySqlParameter[]
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        using (var command = new MySqlCommand("AddReturn", connection, transaction))
-                        {
-                            command.CommandType = CommandType.StoredProcedure;
+                    new MySqlParameter("@p_ReturnNo", vReturn.ReturnNo),
+                    new MySqlParameter("@p_InvoiceNo", vReturn.InvoiceNo),
+                    new MySqlParameter("@p_CustomerID", vReturn.CustomerID),
+                    new MySqlParameter("@p_RepID", vReturn.RepID),
+                    new MySqlParameter("@p_Date", vReturn.Date),
+                    new MySqlParameter("@p_TotalAmount", vReturn.TotalAmount)
+                };
 
-                            command.Parameters.Add("@p_ReturnNo", MySqlDbType.VarChar).Value = vReturn.ReturnNo;
-                            command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = vReturn.InvoiceNo;
-                            command.Parameters.Add("@p_CustomerID", MySqlDbType.VarChar).Value = vReturn.CustomerID;
-                            command.Parameters.Add("@p_RepID", MySqlDbType.VarChar).Value = vReturn.RepID;
-                            command.Parameters.Add("@p_Date", MySqlDbType.DateTime).Value = vReturn.Date;
-                            command.Parameters.Add("@p_TotalAmount", MySqlDbType.Decimal).Value = vReturn.TotalAmount;
-
-                            command.ExecuteNonQuery();
-                        }
-
-                        transaction.Commit();
-                        return true;
-                    }
-                }
+                await ExecuteNonQueryAsync("AddReturn", CommandType.StoredProcedure, parameters);
+                return true;
             }
             catch (Exception ex)
             {
@@ -47,33 +36,22 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public void AddReturnItem(ReturnItemModel returnItem, string invoiceNo)
+        public async Task AddReturnItemAsync(ReturnItemModel returnItem, string invoiceNo)
         {
             try
             {
-                using (var connection = GetConnection())
+                var parameters = new MySqlParameter[]
                 {
-                    connection.Open();
-                    using (var transaction = connection.BeginTransaction())
-                    {
-                        using (var command = new MySqlCommand("AddReturnItem", connection, transaction))
-                        {
-                            command.CommandType = CommandType.StoredProcedure;
+                    new MySqlParameter("@p_No", returnItem.No),
+                    new MySqlParameter("@p_ReturnNo", returnItem.ReturnNo),
+                    new MySqlParameter("@p_InvoiceNo", invoiceNo),
+                    new MySqlParameter("@p_PartNo", returnItem.PartNo),
+                    new MySqlParameter("@p_Quantity", returnItem.Quantity),
+                    new MySqlParameter("@p_DamagedQty", returnItem.DamagedQty),
+                    new MySqlParameter("@p_Amount", returnItem.Amount)
+                };
 
-                            command.Parameters.Add("@p_No", MySqlDbType.Int32).Value = returnItem.No;
-                            command.Parameters.Add("@p_ReturnNo", MySqlDbType.VarChar).Value = returnItem.ReturnNo;
-                            command.Parameters.Add("@p_InvoiceNo", MySqlDbType.VarChar).Value = invoiceNo;
-                            command.Parameters.Add("@p_PartNo", MySqlDbType.VarChar).Value = returnItem.PartNo;
-                            command.Parameters.Add("@p_Quantity", MySqlDbType.Int32).Value = returnItem.Quantity;
-                            command.Parameters.Add("@p_DamagedQty", MySqlDbType.Int32).Value = returnItem.DamagedQty;
-                            command.Parameters.Add("@p_Amount", MySqlDbType.Decimal).Value = returnItem.Amount;
-
-                            command.ExecuteNonQuery();
-                        }
-
-                        transaction.Commit();
-                    }
-                }
+                await ExecuteNonQueryAsync("AddReturnItem", CommandType.StoredProcedure, parameters);
             }
             catch (Exception ex)
             {
@@ -81,24 +59,12 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public string GetNextReturnNumber()
+        public async Task<string> GetNextReturnNumberAsync()
         {
             try
             {
-                string nextReturnNo = string.Empty;
-                using (var connection = GetConnection())
-                {
-                    connection.Open();
-                    using (var command = new MySqlCommand("SELECT GetNextReturnNo()", connection))
-                    {
-                        object result = command.ExecuteScalar();
-                        if (result != null)
-                        {
-                            nextReturnNo = result.ToString();
-                        }
-                    }
-                }
-                return nextReturnNo;
+                var result = await ExecuteScalarAsync("SELECT GetNextReturnNo()", CommandType.Text);
+                return result?.ToString() ?? string.Empty;
             }
             catch (Exception ex)
             {
@@ -111,29 +77,20 @@ namespace KAP_InventoryManager.Repositories
         {
             try
             {
-                List<ReturnModel> returns = new List<ReturnModel>();
+                var returns = new List<ReturnModel>();
+                var query = "SELECT ReturnNo FROM `Return` ORDER BY Date DESC LIMIT 20";
 
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT ReturnNo FROM `Return` ORDER BY Date DESC LIMIT 20", connection))
+                using (var reader = await ExecuteReaderAsync(query, CommandType.Text))
                 {
-
-                    await connection.OpenAsync();
                     int counter = 0;
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        counter++;
+                        returns.Add(new ReturnModel
                         {
-                            counter++;
-
-                            ReturnModel returning = new ReturnModel()
-                            {
-                                Id = counter,
-                                ReturnNo = reader["ReturnNo"].ToString(),
-                            };
-
-                            returns.Add(returning);
-                        }
+                            Id = counter,
+                            ReturnNo = reader["ReturnNo"].ToString()
+                        });
                     }
                 }
                 return returns;
@@ -149,32 +106,23 @@ namespace KAP_InventoryManager.Repositories
         {
             try
             {
-                List<ReturnModel> returns = new List<ReturnModel>();
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SearchReturnList", connection))
+                var returns = new List<ReturnModel>();
+                var parameters = new MySqlParameter[]
                 {
-                    command.CommandType = CommandType.StoredProcedure;
+                    new MySqlParameter("@p_ReturnNo", returnNo)
+                };
 
-                    command.Parameters.AddWithValue("@p_ReturnNo", returnNo);
-
-                    await connection.OpenAsync();
+                using (var reader = await ExecuteReaderAsync("SearchReturnList", CommandType.StoredProcedure, parameters))
+                {
                     int counter = 0;
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        counter++;
+                        returns.Add(new ReturnModel
                         {
-                            counter++;
-
-                            ReturnModel invoice = new ReturnModel()
-                            {
-                                Id = counter,
-                                ReturnNo = reader["ReturnNo"].ToString(),
-                            };
-
-                            returns.Add(invoice);
-                        }
+                            Id = counter,
+                            ReturnNo = reader["ReturnNo"].ToString()
+                        });
                     }
                 }
                 return returns;
@@ -186,36 +134,31 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public async Task<ReturnModel> GetByReturnNo(string returnNo)
+        public async Task<ReturnModel> GetByReturnNoAsync(string returnNo)
         {
             try
             {
-                ReturnModel returnModel = null;
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("SELECT * FROM `Return` WHERE ReturnNo = @ReturnNo", connection))
+                var parameters = new MySqlParameter[]
                 {
-                    command.Parameters.Add("@ReturnNo", MySqlDbType.VarChar).Value = returnNo;
+                    new MySqlParameter("@ReturnNo", returnNo)
+                };
 
-                    await connection.OpenAsync();
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await ExecuteReaderAsync("SELECT * FROM `Return` WHERE ReturnNo = @ReturnNo", CommandType.Text, parameters))
+                {
+                    if (await reader.ReadAsync())
                     {
-                        if (await reader.ReadAsync())
+                        return new ReturnModel()
                         {
-                            returnModel = new ReturnModel()
-                            {
-                                ReturnNo = reader["ReturnNo"].ToString(),
-                                InvoiceNo = reader["InvoiceNo"].ToString(),
-                                CustomerID = reader["CustomerID"] is DBNull ? null : reader["CustomerID"].ToString(),
-                                RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
-                                DateString = reader["Date"] is DBNull ? null : ((DateTime)reader["Date"]).ToString("dd-MM-yyyy @ HH.mm"),
-                                TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
-                            };
-                        }
+                            ReturnNo = reader["ReturnNo"].ToString(),
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            CustomerID = reader["CustomerID"] is DBNull ? null : reader["CustomerID"].ToString(),
+                            RepID = reader["RepID"] is DBNull ? null : reader["RepID"].ToString(),
+                            DateString = reader["Date"] is DBNull ? null : ((DateTime)reader["Date"]).ToString("dd-MM-yyyy @ HH.mm"),
+                            TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                        };
                     }
+                    return null;
                 }
-                return returnModel;
             }
             catch (Exception ex)
             {
@@ -224,38 +167,31 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public async Task<IEnumerable<ReturnItemModel>> GetReturnItems(string returnNo)
+        public async Task<IEnumerable<ReturnItemModel>> GetReturnItemsAsync(string returnNo)
         {
             try
             {
-                List<ReturnItemModel> returnItems = new List<ReturnItemModel>();
-
-                using (var connection = GetConnection())
-                using (var command = new MySqlCommand("GetReturnItems", connection))
+                var returnItems = new List<ReturnItemModel>();
+                var parameters = new MySqlParameter[]
                 {
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@p_ReturnNo", returnNo);
+                    new MySqlParameter("@p_ReturnNo", returnNo)
+                };
 
-                    await connection.OpenAsync();
-
-                    using (var reader = await command.ExecuteReaderAsync())
+                using (var reader = await ExecuteReaderAsync("GetReturnItems", CommandType.StoredProcedure, parameters))
+                {
+                    while (await reader.ReadAsync())
                     {
-                        while (await reader.ReadAsync())
+                        returnItems.Add(new ReturnItemModel
                         {
-                            ReturnItemModel returnItem = new ReturnItemModel()
-                            {
-                                No = (int)reader["No"],
-                                PartNo = reader["PartNo"].ToString(),
-                                Description = reader["Description"].ToString(),
-                                Quantity = (int)reader["Quantity"],
-                                DamagedQty = (int)reader["DamagedQty"],
-                                UnitPrice = (Decimal)reader["UnitPrice"],
-                                Discount = (Decimal)reader["Discount"],
-                                Amount = (Decimal)reader["Amount"],
-                            };
-
-                            returnItems.Add(returnItem);
-                        }
+                            No = (int)reader["No"],
+                            PartNo = reader["PartNo"].ToString(),
+                            Description = reader["Description"].ToString(),
+                            Quantity = (int)reader["Quantity"],
+                            DamagedQty = (int)reader["DamagedQty"],
+                            UnitPrice = (decimal)reader["UnitPrice"],
+                            Discount = (decimal)reader["Discount"],
+                            Amount = (decimal)reader["Amount"]
+                        });
                     }
                 }
                 return returnItems;
