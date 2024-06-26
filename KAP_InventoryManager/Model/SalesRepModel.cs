@@ -8,6 +8,7 @@ namespace KAP_InventoryManager.Model
 {
     public class SalesRepModel
     {
+        public int Id { get; set; }
         public string RepID { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }

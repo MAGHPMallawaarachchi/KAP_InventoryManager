@@ -108,6 +108,45 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
+        public async Task<IEnumerable<InvoiceModel>> GetInvoiceByRepAsync(string repId, int pageSize, int page)
+        {
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_PageSize", pageSize),
+                    new MySqlParameter("@p_Offset", (page - 1) * pageSize),
+                    new MySqlParameter("@p_RepID", repId)
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetInvoiceByRep", CommandType.StoredProcedure, parameters))
+                {
+                    var invoices = new List<InvoiceModel>();
+                    int counter = pageSize * (page - 1);
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+                        invoices.Add(new InvoiceModel
+                        {
+                            Id = counter,
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            Terms = reader["Terms"].ToString(),
+                            DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
+                            DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
+                            TotalAmount = (Decimal)reader["TotalAmount"],
+                            Status = reader["Status"].ToString()
+                        });
+                    }
+                    return invoices;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoices. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
         public async Task<IEnumerable<InvoiceModel>> SearchCustomerInvoiceListAsync(string invoiceNo, string customerId, int pageSize, int page)
         {
             try
@@ -121,6 +160,46 @@ namespace KAP_InventoryManager.Repositories
                 };
 
                 using (var reader = await ExecuteReaderAsync("SearchCustomerInvoiceList", CommandType.StoredProcedure, parameters))
+                {
+                    var invoices = new List<InvoiceModel>();
+                    int counter = pageSize * (page - 1);
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+                        invoices.Add(new InvoiceModel
+                        {
+                            Id = counter,
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            Terms = reader["Terms"].ToString(),
+                            DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
+                            DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
+                            TotalAmount = (Decimal)reader["TotalAmount"],
+                            Status = reader["Status"].ToString()
+                        });
+                    }
+                    return invoices;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to search invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<InvoiceModel>> SearchRepInvoiceListAsync(string invoiceNo, string repId, int pageSize, int page)
+        {
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_InvoiceNo", invoiceNo),
+                    new MySqlParameter("@p_PageSize", pageSize),
+                    new MySqlParameter("@p_Offset", (page - 1) * pageSize),
+                    new MySqlParameter("@p_RepID", repId)
+                };
+
+                using (var reader = await ExecuteReaderAsync("SearchRepInvoiceList", CommandType.StoredProcedure, parameters))
                 {
                     var invoices = new List<InvoiceModel>();
                     int counter = pageSize * (page - 1);

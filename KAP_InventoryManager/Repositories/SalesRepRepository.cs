@@ -36,5 +36,193 @@ namespace KAP_InventoryManager.Repositories
                 return null;
             }
         }
+
+        public async Task<IEnumerable<SalesRepModel>> GetAllAsync()
+        {
+            var reps = new List<SalesRepModel>();
+            try
+            {
+                using (var reader = await ExecuteReaderAsync("SELECT RepID FROM SalesRep ORDER BY RepID DESC LIMIT 20", CommandType.Text))
+                {
+                    int counter = 0;
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+                        reps.Add(new SalesRepModel
+                        {
+                            Id = counter,
+                            RepID = reader["RepID"].ToString()
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get sales reps. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return reps;
+        }
+
+        public async Task<IEnumerable<SalesRepModel>> SearchRepsListAsync(string repId)
+        {
+            var reps = new List<SalesRepModel>();
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_RepId", repId)
+                };
+
+                using (var reader = await ExecuteReaderAsync("SearchRepsList", CommandType.StoredProcedure, parameters))
+                {
+                    int counter = 0;
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+                        reps.Add(new SalesRepModel
+                        {
+                            Id = counter,
+                            RepID = reader["RepID"].ToString()
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to search sales rep. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return reps;
+        }
+
+        public async Task<SalesRepModel> GetByRepIDAsync(string repId)
+        {
+            SalesRepModel rep = null;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@RepID", repId)
+                };
+
+                using (var reader = await ExecuteReaderAsync("SELECT * FROM SalesRep WHERE RepID = @RepID", CommandType.Text, parameters))
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        rep = new SalesRepModel
+                        {
+                            RepID = reader["RepID"].ToString(),
+                            Name = reader["Name"] is DBNull ? null : reader["Name"].ToString(),
+                            Address = reader["Address"] is DBNull ? null : reader["Address"].ToString(),
+                            ContactNo = reader["ContactNo"] is DBNull ? null : reader["ContactNo"].ToString(),
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get sales rep. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return rep;
+        }
+
+        public async Task<decimal> CalculateCurrentMonthCommissionAsync(string repId)
+        {
+            decimal currentMonthCommission = 0;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_RepID", repId)
+                };
+
+                var result = await ExecuteScalarAsync("SELECT CalculateCurrentMonthCommission(@p_RepID)", CommandType.Text, parameters);
+                if (result != null && result != DBNull.Value)
+                {
+                    currentMonthCommission = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate current month commission. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return currentMonthCommission;
+        }
+
+        public async Task<decimal> CalculateLastMonthCommissionAsync(string repId)
+        {
+            decimal lastMonthCommission = 0;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_RepID", repId)
+                };
+
+                var result = await ExecuteScalarAsync("SELECT CalculateLastMonthCommission(@p_RepID)", CommandType.Text, parameters);
+                if (result != null && result != DBNull.Value)
+                {
+                    lastMonthCommission = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate last month commission. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return lastMonthCommission;
+        }
+
+        public async Task<decimal> CalculateTodayCommissionAsync(string repId)
+        {
+            decimal todayCommission = 0;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_RepID", repId)
+                };
+
+                var result = await ExecuteScalarAsync("SELECT CalculateTodayCommission(@p_RepID)", CommandType.Text, parameters);
+                if (result != null && result != DBNull.Value)
+                {
+                    todayCommission = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate today's commission. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return todayCommission;
+        }
+
+        public async Task<decimal> CalculatePercentageChangeAsync(decimal currentMonthCommission, decimal lastMonthCommission)
+        {
+            decimal percentageChange = 0;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_CurrentMonthRevenue", currentMonthCommission),
+                    new MySqlParameter("@p_LastMonthRevenue", lastMonthCommission)
+                };
+
+                var result = await ExecuteScalarAsync("SELECT CalculatePercentageChange(@p_CurrentMonthRevenue, @p_LastMonthRevenue)", CommandType.Text, parameters);
+                if (result != null && result != DBNull.Value)
+                {
+                    percentageChange = Convert.ToDecimal(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to calculate percentage change. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return percentageChange;
+        }
     }
 }
