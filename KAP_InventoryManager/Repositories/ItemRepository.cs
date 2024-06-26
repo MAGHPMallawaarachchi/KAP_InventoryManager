@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -465,6 +466,64 @@ namespace KAP_InventoryManager.Repositories
             }
 
             return categories;
+        }
+
+        public async Task ExportDataToCSVAsync(string brandId)
+        {
+            string query = @"
+                SELECT PartNo, OEMNo, Category, Description, VehicleBrand, QtyInHand, DamagedQty, BuyingPrice, UnitPrice
+                FROM Item
+                WHERE BrandID = @BrandID
+                ORDER BY Category;";
+
+            string folderPath = @"C:/Users/Hasini/OneDrive/Documents/Kamal Auto Parts/stock reports/";
+            string currentDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string fileName = $"{brandId}_{currentDateTime}.csv";
+            string filePath = Path.Combine(folderPath, fileName);
+
+            MySqlParameter brandIdParameter = new MySqlParameter("@BrandID", MySqlDbType.VarChar)
+            {
+                Value = brandId
+            };
+
+            try
+            {
+                using (var reader = await ExecuteReaderAsync(query, CommandType.Text, brandIdParameter))
+                {
+                    using (StreamWriter writer = new StreamWriter(filePath))
+                    {
+                        // Write CSV header
+                        writer.WriteLine("PartNo,OEMNo,Category,Description,VehicleBrand,QtyInHand,DamagedQty,BuyingPrice,UnitPrice");
+
+                        // Write CSV rows
+                        while (await reader.ReadAsync())
+                        {
+                            string[] row = new string[reader.FieldCount];
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                row[i] = QuoteValue(reader[i].ToString());
+                            }
+                            writer.WriteLine(string.Join(",", row));
+                        }
+                    }
+                }
+
+                Console.WriteLine($"Data exported to {filePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+
+        private string QuoteValue(string value)
+        {
+            if (value.Contains(",") || value.Contains("\"") || value.Contains("\n"))
+            {
+                value = value.Replace("\"", "\"\"");
+                return $"\"{value}\"";
+            }
+            return value;
         }
     }
 }

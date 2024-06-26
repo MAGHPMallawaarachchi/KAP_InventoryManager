@@ -23,5 +23,6 @@ namespace KAP_InventoryManager.Repositories
         Task<List<string>> GetBrandsAsync();
         Task<string> GetSupplierByBrandAsync(string brand);
         Task<List<string>> GetCategoriesAsync(string brandId);
+        Task ExportDataToCSVAsync(string brandId);
     }
 }
