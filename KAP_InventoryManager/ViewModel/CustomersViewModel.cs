@@ -260,7 +260,7 @@ namespace KAP_InventoryManager.ViewModel
         {
             if(CurrentCustomer.TotalDebt != 0 && CurrentCustomer.DebtLimit != 0)
             {
-                DebtPercentage = (double)(CurrentCustomer.TotalDebt / CurrentCustomer.DebtLimit * 100);
+                DebtPercentage = (double)Math.Round((CurrentCustomer.TotalDebt / CurrentCustomer.DebtLimit * 100), 2);
                 DebtRemainder = 100 - DebtPercentage;
             }
             else

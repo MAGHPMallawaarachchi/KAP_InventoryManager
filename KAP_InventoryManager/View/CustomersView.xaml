@@ -158,10 +158,10 @@
                                                Margin="10,0,10,0"/>
                                 </Border>
                             </StackPanel>
-                            <customcontrols:Button ButtonText="Edit"
+                            <!--<customcontrols:Button ButtonText="Edit"
                                                    ButtonBackgroundColor="{StaticResource Color3}"
                                                    ButtonIcon="Edit"
-                                                   Grid.Column="1"/>
+                                                   Grid.Column="1"/>-->
                         </Grid>
 
                         <StackPanel Orientation="Horizontal"
