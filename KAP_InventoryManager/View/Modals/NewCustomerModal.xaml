@@ -54,7 +54,7 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
-                        <RowDefinition/>
+                        <!--<RowDefinition/>-->
                     </Grid.RowDefinitions>
 
                     <TextBlock Text="Customer ID" Style="{StaticResource regular-text}"/>
@@ -64,8 +64,8 @@
                     <TextBlock Text="Contact No" Style="{StaticResource regular-text}" Grid.Row="4"/>
                     <TextBlock Text="Email" Style="{StaticResource regular-text}" Grid.Row="5"/>
                     <TextBlock Text="Payment Type" Style="{StaticResource regular-text}" Grid.Row="6"/>
-                    <TextBlock Text="Debt Limit" Style="{StaticResource regular-text}" Grid.Row="7"/>
-                    <TextBlock Text="Sales Rep" Style="{StaticResource regular-text}" Grid.Row="8"/>
+                    <!--<TextBlock Text="Debt Limit" Style="{StaticResource regular-text}" Grid.Row="7"/>-->
+                    <TextBlock Text="Sales Rep" Style="{StaticResource regular-text}" Grid.Row="7"/>
 
                     <TextBox Text="{Binding CustomerID, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ModalTextBox}"
@@ -104,16 +104,16 @@
                         <ComboBoxItem >CREDIT</ComboBoxItem>
                     </ComboBox>
 
-                    <xctk:DecimalUpDown Value="{Binding DebtLimit}"
+                    <!--<xctk:DecimalUpDown Value="{Binding DebtLimit}"
                                         FormatString="F2"
                                         Grid.Column="1" Grid.Row="7"
                                         Style="{StaticResource DecimalUpDownStyle}"
                                         Foreground="{StaticResource Color4}"
                                         IsTabStop="True"
                                         Height="32"
-                                        Margin="0,10"/>
+                                        Margin="0,10"/>-->
 
-                    <ComboBox Grid.Column="1" Grid.Row="8" Height="32" 
+                    <ComboBox Grid.Column="1" Grid.Row="7" Height="32" 
                               Padding="6,0,6,0"
                               IsEditable="True"
                               SelectedItem="{Binding RepID}"

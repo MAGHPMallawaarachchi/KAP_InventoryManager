@@ -273,7 +273,7 @@
                                             <TextBlock Style="{StaticResource regular-text}"
                                                        Text="of Rs. "/>
                                             <TextBlock Style="{StaticResource regular-text}"
-                                                       Text="{Binding CurrentCustomer.DebtLimit}"/>
+                                                       Text="{Binding DebtLimit}"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>

@@ -152,11 +152,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             bool validate;
 
-            if (string.IsNullOrEmpty(CustomerID) || string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Address) || string.IsNullOrEmpty(City) || string.IsNullOrEmpty(ContactNo) || string.IsNullOrEmpty(PaymentType))
-            {
-                validate = false;
-            }
-            else if (PaymentType == "CREDIT" && DebtLimit == 0)
+            if (string.IsNullOrEmpty(CustomerID) || string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Address) || string.IsNullOrEmpty(City) || string.IsNullOrEmpty(PaymentType))
             {
                 validate = false;
             }
@@ -179,7 +175,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 ContactNo = ContactNo,
                 Email = Email,
                 PaymentType = PaymentType,
-                DebtLimit = DebtLimit,
                 RepID = RepID,
             };
 

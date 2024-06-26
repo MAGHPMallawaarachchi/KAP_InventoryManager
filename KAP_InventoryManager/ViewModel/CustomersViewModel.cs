@@ -35,6 +35,8 @@ namespace KAP_InventoryManager.ViewModel
         private string _searchInvoiceText;
         private int _pageNumber;
         private bool _isFinalPage;
+        private decimal _debtLimit;
+        private string _address;
 
         public ObservableCollection<CustomerModel> Customers
         {
@@ -148,6 +150,26 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public decimal DebtLimit
+        {
+            get => _debtLimit;
+            set
+            {
+                _debtLimit = value;
+                OnPropertyChanged(nameof(DebtLimit));
+            }
+        }
+
+        public string Address
+        {
+            get => _address;
+            set
+            {
+                _address = value;
+                OnPropertyChanged(nameof(Address));
+            }
+        }
+
         public ICommand GoToNextPageCommand { get; }
         public ICommand GoToPreviousPageCommand { get; }
 
@@ -160,6 +182,7 @@ namespace KAP_InventoryManager.ViewModel
             GoToPreviousPageCommand = new ViewModelCommand(ExecuteGoToPreviousPageCommand);
 
             PageNumber = 1;
+            DebtLimit = 500000;
 
             Customers = new ObservableCollection<CustomerModel>();
             PopulateCustomersAsync();
@@ -246,7 +269,8 @@ namespace KAP_InventoryManager.ViewModel
         {
             try
             {
-                CurrentCustomer = await _customerRepository.GetByCustomerIDAsync(SelectedCustomer.CustomerID);               
+                CurrentCustomer = await _customerRepository.GetByCustomerIDAsync(SelectedCustomer.CustomerID);
+                Address = CurrentCustomer.Address + " " +CurrentCustomer.City;
                 CalculateDebtPercentage();
                 PopulateInvoicesAsync();
             }
@@ -258,9 +282,9 @@ namespace KAP_InventoryManager.ViewModel
 
         private void CalculateDebtPercentage()
         {
-            if(CurrentCustomer.TotalDebt != 0 && CurrentCustomer.DebtLimit != 0)
+            if(CurrentCustomer.TotalDebt != 0 && DebtLimit != 0)
             {
-                DebtPercentage = (double)Math.Round((CurrentCustomer.TotalDebt / CurrentCustomer.DebtLimit * 100), 2);
+                DebtPercentage = (double)Math.Round((CurrentCustomer.TotalDebt / DebtLimit * 100), 2);
                 DebtRemainder = 100 - DebtPercentage;
             }
             else
