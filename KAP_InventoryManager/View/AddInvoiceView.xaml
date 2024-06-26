@@ -310,7 +310,7 @@
                             Style="{StaticResource CustomButtonStyle}"
                             Command="{Binding AddInvoiceItemCommand}"
                             Grid.Column="8"
-                            Visibility="{Binding IsAddingNewItem}">
+                            Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <TextBlock Style="{StaticResource button-text}"
                                    Text="Add"/>
                     </Button>
