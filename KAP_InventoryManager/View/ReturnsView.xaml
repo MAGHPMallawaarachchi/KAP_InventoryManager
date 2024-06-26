@@ -143,7 +143,7 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Right">
 
-                                <Button Style="{StaticResource CustomButtonStyle}"
+                                <!--<Button Style="{StaticResource CustomButtonStyle}"
                                         Background="{StaticResource Red}"
                                         Command="{Binding CancelReturnCommand}"
                                         Margin="0,0,8,0">
@@ -156,7 +156,7 @@
                                         <TextBlock Text="Cancel"
                                                    Style="{StaticResource button-text}"/>
                                     </StackPanel>
-                                </Button>
+                                </Button>-->
                             </StackPanel>
                         </Grid>
 

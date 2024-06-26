@@ -32,12 +32,12 @@
            HorizontalAlignment="Left" VerticalAlignment="Center"/>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Height="30">
-                <customcontrols:Button
+                <!--<customcontrols:Button
                     x:Name="AddCustomerButton"
                     ButtonText="Add Sales Rep"
                     ButtonBackgroundColor="{StaticResource Blue}"
                     ButtonIcon="Add"
-                    Margin="12,0,0,0" />
+                    Margin="12,0,0,0" />-->
             </StackPanel>
         </Grid>
 
@@ -143,10 +143,10 @@
                                         Margin="0,0,0,0"
                                         VerticalAlignment="Center"/>
 
-                            <customcontrols:Button ButtonText="Edit"
+                            <!--<customcontrols:Button ButtonText="Edit"
                                                    ButtonBackgroundColor="{StaticResource Color3}"
                                                    ButtonIcon="Edit"
-                                                   Grid.Column="1"/>
+                                                   Grid.Column="1"/>-->
                         </Grid>
 
                         <StackPanel Orientation="Horizontal"
@@ -467,10 +467,10 @@
                                         </Grid>
                                     </Border>
 
-                                    <customcontrols:Button ButtonText="Filter"
+                                    <!--<customcontrols:Button ButtonText="Filter"
                                                            ButtonBackgroundColor="{StaticResource Color3}"
                                                            ButtonIcon="Filter"
-                                                           Margin="10,0,0,0"/>
+                                                           Margin="10,0,0,0"/>-->
                                 </StackPanel>
                             </Grid>
 
