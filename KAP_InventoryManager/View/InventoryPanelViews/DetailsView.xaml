@@ -101,7 +101,7 @@
                                    Style="{StaticResource regular-text}"/>
                                     <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
                                    Style="{StaticResource regular-text}"/>
-                                    <TextBlock Text="{Binding Item.SupplierID}" 
+                                    <TextBlock Text="{Binding SupplierId}" 
                                    Grid.Column="2" Grid.Row="2"
                                    Style="{StaticResource regular-text}"/>
 

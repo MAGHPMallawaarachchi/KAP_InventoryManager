@@ -23,7 +23,6 @@ namespace KAP_InventoryManager.Repositories
                     new MySqlParameter("@p_BrandID", item.BrandID),
                     new MySqlParameter("@p_Category", item.Category),
                     new MySqlParameter("@p_VehicleBrand", item.VehicleBrand),
-                    new MySqlParameter("@p_SupplierID", item.SupplierID),
                     new MySqlParameter("@p_BuyingPrice", item.BuyingPrice),
                     new MySqlParameter("@p_UnitPrice", item.UnitPrice),
                     new MySqlParameter("@p_ItemCount", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
@@ -60,7 +59,6 @@ namespace KAP_InventoryManager.Repositories
                     new MySqlParameter("@p_BrandID", item.BrandID),
                     new MySqlParameter("@p_Category", item.Category),
                     new MySqlParameter("@p_VehicleBrand", item.VehicleBrand),
-                    new MySqlParameter("@p_SupplierID", item.SupplierID),
                     new MySqlParameter("@p_BuyingPrice", item.BuyingPrice),
                     new MySqlParameter("@p_UnitPrice", item.UnitPrice),
                     new MySqlParameter("@p_AffectedRows", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
@@ -169,7 +167,6 @@ namespace KAP_InventoryManager.Repositories
                             Description = reader["Description"] is DBNull ? null : reader["Description"].ToString(),
                             BrandID = reader["BrandID"] is DBNull ? null : reader["BrandID"].ToString(),
                             Category = reader["Category"] is DBNull ? null : reader["Category"].ToString(),
-                            SupplierID = reader["SupplierID"] is DBNull ? null : reader["SupplierID"].ToString(),
                             TotalQty = reader["TotalQty"] is DBNull ? 0 : Convert.ToInt32(reader["TotalQty"]),
                             QtyInHand = reader["QtyInHand"] is DBNull ? 0 : Convert.ToInt32(reader["QtyInHand"]),
                             QtySold = reader["QtySold"] is DBNull ? 0 : Convert.ToInt32(reader["QtySold"]),

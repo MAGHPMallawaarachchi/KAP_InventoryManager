@@ -20,7 +20,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private string _brandId;
         private string _category;
         private string _vehicleBrand;
-        private string _supplierId;
         private decimal _buyingPrice;
         private decimal _unitPrice;
         private List<string> _brands = new List<string> { "None"};
@@ -67,7 +66,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 _brandId = value;
                 OnPropertyChanged(nameof(BrandID));
 
-                GetSupplierByBrand();
                 GetCategories();
             }
         }
@@ -89,16 +87,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 _vehicleBrand = value;
                 OnPropertyChanged(nameof(VehicleBrand));
-            }
-        }
-
-        public string SupplierID
-        {
-            get { return _supplierId; }
-            set
-            {
-                _supplierId = value;
-                OnPropertyChanged(nameof(SupplierID));
             }
         }
 
@@ -162,7 +150,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
 
             GetBrands();
-            VehicleBrands = new List<string> { "TOYOTA", "NISSAN", "SUZUKI", "MITSUBISHI"};
+            VehicleBrands = new List<string> { "TOYOTA", "NISSAN", "SUZUKI", "MITSUBISHI", "PERODUA", "ISUZU", "MAZDA", "DIHATSU", "HONDA"};
         }
 
         private void ExecuteDiscardCommand(object obj)
@@ -174,7 +162,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             bool validate;
 
-            if (string.IsNullOrEmpty(PartNo) || string.IsNullOrEmpty(OEMNo) || string.IsNullOrEmpty(Description) || BrandID == "None" || string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(Category) || string.IsNullOrEmpty(SupplierID) || BuyingPrice == 0 || UnitPrice == 0)
+            if (string.IsNullOrEmpty(PartNo) || string.IsNullOrEmpty(Description) || BrandID == "None" || string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(Category) || UnitPrice == 0)
             {
                 validate = false;
             }
@@ -196,7 +184,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 BrandID = BrandID,
                 Category = Category,
                 VehicleBrand = VehicleBrand,
-                SupplierID = SupplierID,
                 BuyingPrice = BuyingPrice,
                 UnitPrice = UnitPrice,
             };
@@ -210,14 +197,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             Brands = await ItemRepository.GetBrandsAsync();
             Brands.Insert(0, "None");
-        }
-
-        private async void GetSupplierByBrand()
-        {
-            if(BrandID != null || BrandID != "None")
-                SupplierID = await ItemRepository.GetSupplierByBrandAsync(BrandID);
-            else
-                SupplierID = null;
         }
 
         private async void GetCategories()
@@ -236,7 +215,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             BrandID = Brands.FirstOrDefault();
             Category = string.Empty;
             VehicleBrand = string.Empty;
-            SupplierID = string.Empty;
             BuyingPrice = 0;
             UnitPrice = 0;
         }

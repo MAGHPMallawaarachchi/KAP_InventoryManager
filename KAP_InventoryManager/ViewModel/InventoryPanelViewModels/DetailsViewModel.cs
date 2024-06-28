@@ -22,6 +22,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
         private string _todayRevenue;
         private string _percentageChange;
         private bool _isCurrentMonthRevenueHigh;
+        private string _supplierId;
 
         public ItemModel Item
         {
@@ -82,6 +83,17 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
                 OnPropertyChanged(nameof(IsCurrentMonthRevenueHigh));
             }
         }
+
+        public string SupplierId
+        {
+            get => _supplierId;
+            set
+            {
+                _supplierId = value;
+                OnPropertyChanged(nameof(SupplierId));
+            }
+        }
+
         public DetailsViewModel()
         {
             _itemRepository = new ItemRepository();
@@ -141,6 +153,7 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
                     PercentageChange = $"{percentageChange}%";
 
                     IsCurrentMonthRevenueHigh = currentMonthRevenue > lastMonthRevenue;
+                    SupplierId = await _itemRepository.GetSupplierByBrandAsync(Item.BrandID);
                 }
                 catch (System.Exception ex)
                 {
