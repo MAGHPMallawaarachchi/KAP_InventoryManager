@@ -414,6 +414,18 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
+        public async Task UpdateOverdueInvoices()
+        {
+            try
+            {
+                await ExecuteNonQueryAsync("UpdateOverdueInvoices", CommandType.StoredProcedure);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to update the overdue invoices. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         public async Task<List<string>> SearchInvoiceNumberAsync(string searchText)
         {
             try

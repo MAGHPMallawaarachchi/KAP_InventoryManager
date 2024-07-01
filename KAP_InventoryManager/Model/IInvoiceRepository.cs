@@ -21,6 +21,7 @@ namespace KAP_InventoryManager.Model
         Task<IEnumerable<InvoiceItemModel>> GetInvoiceItemsAsync(string invoiceNo);
         Task<IEnumerable<InvoiceItemModel>> GetInvoicesByPartNoAsync(string partNo, int pageSize, int page);
         Task CancelInvoiceAsync(string invoiceNo);
+        Task UpdateOverdueInvoices();
         Task<List<string>> SearchInvoiceNumberAsync(string searchText);
         Task<List<string>> GetPartNumbersByInvoiceAsync(string invoiceNo);
         Task<InvoiceItemModel> GetInvoiceItemAsync(string invoiceNo, string partNo);

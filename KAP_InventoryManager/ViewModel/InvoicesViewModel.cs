@@ -29,6 +29,7 @@ namespace KAP_InventoryManager.ViewModel
         private InvoiceModel _selectedInvoice;
         private InvoiceModel _currentInvoice;
         private CustomerModel _customer;
+        private Timer _timer;
 
         public ObservableCollection<InvoiceModel> Invoices
         {
@@ -105,9 +106,11 @@ namespace KAP_InventoryManager.ViewModel
 
             Invoices = new ObservableCollection<InvoiceModel>();
 
+            SetUpDailyTimer();
             PopulateInvoicesAsync();
 
             Messenger.Default.Register<string>(this, OnMessageReceived);
+
         }
 
         private void OnMessageReceived(string obj)
@@ -206,6 +209,20 @@ namespace KAP_InventoryManager.ViewModel
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void SetUpDailyTimer()
+        {
+            DateTime now = DateTime.Now;
+            DateTime nextRun = new DateTime(now.Year, now.Month, now.Day, 0, 1, 0);
+
+            if (now > nextRun)
+            {
+                nextRun = nextRun.AddDays(1);
+            }
+
+            TimeSpan initialDelay = nextRun - now;
+            _timer = new Timer(async _ => await _invoiceRepository.UpdateOverdueInvoices(), null, initialDelay, TimeSpan.FromHours(24));
         }
     }
 }

@@ -128,13 +128,16 @@
                                                     <Setter Property="Foreground" Value="{StaticResource Green}" />
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding Status}" Value="Cancelled">
-                                                            <Setter Property="Foreground" Value="{StaticResource Red}" />
+                                                            <Setter Property="Foreground" Value="{StaticResource Color1}" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding Status}" Value="Pending">
                                                             <Setter Property="Foreground" Value="{StaticResource Orange}" />
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding Status}" Value="Paid">
                                                             <Setter Property="Foreground" Value="{StaticResource Green}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Status}" Value="Overdue">
+                                                            <Setter Property="Foreground" Value="{StaticResource Red}" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
