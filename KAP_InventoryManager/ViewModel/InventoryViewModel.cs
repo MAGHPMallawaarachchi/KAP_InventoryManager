@@ -152,7 +152,7 @@ namespace KAP_InventoryManager.ViewModel
                     }
 
                     Items.Add(item);
-                    await Task.Delay(50, _cancellationTokenSource.Token);
+                    await Task.Delay(0, _cancellationTokenSource.Token);
                 }
 
                 if (Items.Any())
