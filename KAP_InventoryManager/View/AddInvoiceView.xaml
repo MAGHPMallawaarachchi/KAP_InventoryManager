@@ -198,6 +198,15 @@
                     </Grid>
                 </Grid>
             </Border>
+
+            <TextBox Text="{Binding ShopName, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource ModalTextBox}"
+                     Visibility="{Binding IsJaneesh, Converter={StaticResource BooleanToVisibilityConverter}}"
+                     Height="25"
+                     Width="250"
+                     Margin="20"
+                     VerticalAlignment="Top"/>
+
         </StackPanel>
 
         <Border Background="{StaticResource Color2}"

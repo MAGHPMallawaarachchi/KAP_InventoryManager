@@ -5,6 +5,7 @@ using QuestPDF.ExampleInvoice;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -50,6 +51,9 @@ namespace KAP_InventoryManager.ViewModel
 
         private string _errorMessage;
         private ObservableCollection<InvoiceItemModel> _invoiceItems;
+
+        private string _shopName = "";
+        private bool _isJaneesh = false;
 
         private readonly ICustomerRepository _customerRepository;
         private readonly ISalesRepRepository _salesRepRepository;
@@ -323,6 +327,26 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public string ShopName
+        {
+            get => _shopName;
+            set
+            {
+                _shopName = value;
+                OnPropertyChanged(nameof(ShopName));
+            }
+        }
+
+        public bool IsJaneesh
+        {
+            get => _isJaneesh;
+            set
+            {
+                _isJaneesh = value;
+                OnPropertyChanged(nameof(IsJaneesh));
+            }
+        }
+
         public ICommand AddInvoiceItemCommand { get; }
         public ICommand ClearInvoiceCommand { get; }
         public ICommand DeleteInvoiceItemCommand { get; }
@@ -449,6 +473,22 @@ namespace KAP_InventoryManager.ViewModel
                     SelectedPaymentType = SelectedCustomer.PaymentType;
                     CustomerDiscount = SelectedPaymentType == "CASH" ? 30 : 25;
                     SelectedRepId = SelectedCustomer.RepID ?? "None";
+
+                    if(SelectedCustomer.CustomerID == "PMS-K" || SelectedCustomer.CustomerID == "PATHMA M. S. RP" || SelectedCustomer.CustomerID == "ORIENT MC-ALA")
+                    {
+                        CustomerDiscount = 30;
+                    }
+
+                    if(SelectedCustomer.CustomerID == "JANEESH AUTO PARTS")
+                    {
+                        CustomerDiscount = 35;
+                        IsJaneesh = true;
+                    }
+                    else
+                    {
+                        IsJaneesh = false;
+                        ShopName = string.Empty;
+                    }
                 }
             }
             catch (Exception ex)
@@ -724,6 +764,8 @@ namespace KAP_InventoryManager.ViewModel
             Total = 0;
             Counter = 1;
             Number = 1;
+            IsJaneesh = false;
+            ShopName = string.Empty;
             Initialize();
         }
 
@@ -757,7 +799,7 @@ namespace KAP_InventoryManager.ViewModel
                             await _invoiceRepository.AddInvoiceItemAsync(invoiceItem);
                         }
 
-                        invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems, invoicePath);
+                        invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems, invoicePath, ShopName);
 
                         ClearInvoice();
                         Messenger.Default.Send("NewInvoiceAdded");

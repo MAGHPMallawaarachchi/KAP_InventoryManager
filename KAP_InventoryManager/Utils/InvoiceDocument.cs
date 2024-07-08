@@ -18,7 +18,7 @@ namespace QuestPDF.ExampleInvoice
 {
     public class InvoiceDocument
     {
-        public void GenerateInvoicePDF(string invoiceNo, CustomerModel customer, InvoiceModel invoice, IEnumerable<InvoiceItemModel> invoiceItems, string path)
+        public void GenerateInvoicePDF(string invoiceNo, CustomerModel customer, InvoiceModel invoice, IEnumerable<InvoiceItemModel> invoiceItems, string path, string shopName)
         {
             QuestPDF.Settings.License = LicenseType.Community;
             //var filePath = @"C:\Users\Hasini\OneDrive\Documents\Kamal Auto Parts\invoices\"+ invoiceNo +".pdf";
@@ -101,6 +101,7 @@ namespace QuestPDF.ExampleInvoice
                                 table.Cell().Row(4).Column(1).Element(HeaderBlock).Text("CITY");
                                 table.Cell().Row(5).Column(1).Element(HeaderBlock).Text("PHONE");
                                 table.Cell().Row(6).Column(1).Element(HeaderBlock).Text("E-MAIL");
+                                table.Cell().Row(7).ColumnSpan(2).AlignLeft().Text(shopName).FontSize(9).FontFamily(Fonts.Calibri);
 
                                 table.Cell().Row(2).Column(2).Element(Block).Text(customer.Name);
                                 table.Cell().Row(3).Column(2).Element(Block).Text(customer.Address);
