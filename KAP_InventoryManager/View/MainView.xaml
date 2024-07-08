@@ -105,7 +105,7 @@
                             </StackPanel>
 
                             <StackPanel>
-                                <RadioButton Style="{StaticResource menuButton}"    
+                                <!--<RadioButton Style="{StaticResource menuButton}"    
                                              Margin="0,0,0,12"
                                              Cursor="Hand"
                                              IsChecked="True"
@@ -116,11 +116,12 @@
                                             Style="{StaticResource menuButtonIcon}"/>
                                         <TextBlock Text="Home" Style="{StaticResource menuButtontext}"/>
                                     </StackPanel>
-                                </RadioButton>
+                                </RadioButton>-->
 
                                 <RadioButton Style="{StaticResource menuButton}" 
                                              Margin="0,0,0,12"
                                              Cursor="Hand"
+                                             IsChecked="True"
                                              Command="{Binding ShowInventoryViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
                                         <fa:IconImage 

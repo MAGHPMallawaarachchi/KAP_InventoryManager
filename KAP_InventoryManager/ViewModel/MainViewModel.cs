@@ -75,7 +75,7 @@ namespace KAP_InventoryManager.ViewModel
             ShowSalesRepsViewCommand = new ViewModelCommand(ExecuteShowSalesRepsViewCommand);
 
             //default view
-            ExecuteShowHomeViewCommand(null);
+            ExecuteShowInventoryViewCommand(null);
         }
 
         private void ExecuteShowSalesRepsViewCommand(object obj)
