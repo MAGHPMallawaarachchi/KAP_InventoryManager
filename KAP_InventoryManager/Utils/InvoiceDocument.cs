@@ -24,6 +24,7 @@ namespace QuestPDF.ExampleInvoice
             //var filePath = @"C:\Users\Hasini\OneDrive\Documents\Kamal Auto Parts\invoices\"+ invoiceNo +".pdf";
 
             var filePath = $@"{path}{invoiceNo}.pdf";
+            var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "logo_color.png");
 
             Document.Create(container =>
             {
@@ -60,7 +61,7 @@ namespace QuestPDF.ExampleInvoice
                                 .Row(r =>
                                 {
                                     r.Spacing(10);
-                                    r.ConstantItem(25).Image(@"C:\Users\Hasini\OneDrive\Desktop\github\KAP_InventoryManager\KAP_InventoryManager\Images\logo_color.png");
+                                    r.ConstantItem(25).Image(logoPath);
                                     r.RelativeItem().Text("KAMAL AUTO PARTS (PVT) LTD").Bold().FontSize(18).FontFamily(Fonts.Calibri);
                                 });
 
