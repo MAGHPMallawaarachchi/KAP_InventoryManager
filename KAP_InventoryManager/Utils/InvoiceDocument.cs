@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Printing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using KAP_InventoryManager.Model;
@@ -17,10 +18,12 @@ namespace QuestPDF.ExampleInvoice
 {
     public class InvoiceDocument
     {
-        public void GenerateInvoicePDF(string invoiceNo, CustomerModel customer, InvoiceModel invoice, IEnumerable<InvoiceItemModel> invoiceItems)
+        public void GenerateInvoicePDF(string invoiceNo, CustomerModel customer, InvoiceModel invoice, IEnumerable<InvoiceItemModel> invoiceItems, string path)
         {
             QuestPDF.Settings.License = LicenseType.Community;
-            var filePath = @"C:\Users\Hasini\OneDrive\Documents\Kamal Auto Parts\invoices\"+ invoiceNo +".pdf";
+            //var filePath = @"C:\Users\Hasini\OneDrive\Documents\Kamal Auto Parts\invoices\"+ invoiceNo +".pdf";
+
+            var filePath = $@"{path}{invoiceNo}.pdf";
 
             Document.Create(container =>
             {
@@ -73,7 +76,7 @@ namespace QuestPDF.ExampleInvoice
                             {
                                 c.Spacing(-8);
                                 c.Item().AlignCenter().Text("INVOICE").FontSize(28).FontFamily(Fonts.Calibri).Bold();
-                                c.Item().AlignCenter().Text("KAP 100000006").FontSize(18).FontFamily(Fonts.Calibri).Bold();
+                                c.Item().AlignCenter().Text(invoiceNo).FontSize(18).FontFamily(Fonts.Calibri).Bold();
                             });
                         });
 
@@ -297,7 +300,7 @@ namespace QuestPDF.ExampleInvoice
                 });
             }).GeneratePdf(filePath);
 
-/*            PrintPDF("LBP6030w/6018w", "A4", filePath, 2);*/
+            //PrintPDF("LBP6030w/6018w", "A4", filePath, 2);
         }
 
         public bool PrintPDF(string printer, string paperName, string filename, int copies)

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace KAP_InventoryManager.Repositories
 {
@@ -86,6 +87,33 @@ namespace KAP_InventoryManager.Repositories
             }
 
             return user;
+        }
+
+        public async Task<string> GetInvoicePath(string username)
+        {
+            string invoicePath = "";
+
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@Username", username)
+                };
+
+                using (var reader = await ExecuteReaderAsync("SELECT InvoicePath FROM Admin WHERE Username = @Username", CommandType.Text, parameters))
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        invoicePath = reader["InvoicePath"].ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get the invoice path. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return invoicePath;
         }
 
         public void Remove(int id)

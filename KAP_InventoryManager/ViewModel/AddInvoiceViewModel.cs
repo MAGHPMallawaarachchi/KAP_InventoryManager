@@ -55,6 +55,7 @@ namespace KAP_InventoryManager.ViewModel
         private readonly ISalesRepRepository _salesRepRepository;
         private readonly IItemRepository _itemRepository;
         private readonly IInvoiceRepository _invoiceRepository;
+        private readonly IUserRepository _userRepository;
 
         public ObservableCollection<string> SalesReps { get; set; } = new ObservableCollection<string>();
 
@@ -335,6 +336,7 @@ namespace KAP_InventoryManager.ViewModel
             _salesRepRepository = new SalesRepRepository();
             _itemRepository = new ItemRepository();
             _invoiceRepository = new InvoiceRepository();
+            _userRepository = new UserRepository();
 
             AddInvoiceItemCommand = new ViewModelCommand(ExecuteAddInvoiceItemCommand);
             ClearInvoiceCommand = new ViewModelCommand(ExecuteClearInvoiceCommand);
@@ -345,6 +347,20 @@ namespace KAP_InventoryManager.ViewModel
 
             _cancellationTokenSource = new CancellationTokenSource();
             Initialize();
+        }
+
+        private async Task<string> GetInvoicePathAsync()
+        {
+            string path = string.Empty;
+            try
+            {
+                path = await Task.Run(() => _userRepository.GetInvoicePath(Thread.CurrentPrincipal.Identity.Name));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get the path. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return path;
         }
 
         private async void Initialize()
@@ -728,20 +744,29 @@ namespace KAP_InventoryManager.ViewModel
                         DueDate = SelectedPaymentType == "CASH" ? DateTime.Now.AddDays(7) : DateTime.Now.AddDays(60)
                     };
 
-                    await _invoiceRepository.AddInvoiceAsync(invoice);
-
-                    foreach (var invoiceItem in InvoiceItems)
-                    {
-                        invoiceItem.InvoiceNo = InvoiceNo;
-                        await _invoiceRepository.AddInvoiceItemAsync(invoiceItem);
-                    }
-
                     var invoiceDoc = new InvoiceDocument();
-                    invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems);
+                    string invoicePath = await GetInvoicePathAsync();
 
-                    ClearInvoice();
-                    Messenger.Default.Send("NewInvoiceAdded");
-                    MessageBox.Show("Invoice saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    if (invoicePath != null)
+                    {
+                        await _invoiceRepository.AddInvoiceAsync(invoice);
+
+                        foreach (var invoiceItem in InvoiceItems)
+                        {
+                            invoiceItem.InvoiceNo = InvoiceNo;
+                            await _invoiceRepository.AddInvoiceItemAsync(invoiceItem);
+                        }
+
+                        invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems, invoicePath);
+
+                        ClearInvoice();
+                        Messenger.Default.Send("NewInvoiceAdded");
+                        MessageBox.Show("Invoice saved successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to retrieve the invoice path.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
             catch (Exception ex)

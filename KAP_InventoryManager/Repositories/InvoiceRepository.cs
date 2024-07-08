@@ -426,6 +426,23 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
+        public async Task UpdatePaidInvoice(string invoiceNo)
+        {
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_InvoiceNo", invoiceNo)
+                };
+
+                await ExecuteNonQueryAsync("UpdatePaidInvoice", CommandType.StoredProcedure, parameters);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to update the status of the invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         public async Task<List<string>> SearchInvoiceNumberAsync(string searchText)
         {
             try
