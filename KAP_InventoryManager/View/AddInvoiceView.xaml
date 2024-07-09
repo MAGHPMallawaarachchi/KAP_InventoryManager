@@ -281,11 +281,11 @@
 
                     <ComboBox Grid.Column="1"
                               Padding="0,0,20,0"
+                              Margin="0,0,20,0"
                               ItemsSource="{Binding PartNumbers}"
                               SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
                               IsEditable="True"
                               StaysOpenOnEdit="True"
-                              IsTextSearchEnabled="False"
                               Loaded="ComboBox_Loaded">
                         <ComboBox.Text>
                             <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged" />
@@ -303,7 +303,9 @@
                     <TextBox Text="{Binding Quantity}"
                              Style="{StaticResource ModalTextBox}"
                              Grid.Column="4"
-                             Margin="0,0,20,0"/>
+                             Margin="0,0,20,0"
+                             GotFocus="TextBox_GotFocus"
+                             LostFocus="TextBox_LostFocus"/>
 
                     <TextBlock Text="{Binding SelectedItem.UnitPrice}"                   
                                Style="{StaticResource regular-text}"
