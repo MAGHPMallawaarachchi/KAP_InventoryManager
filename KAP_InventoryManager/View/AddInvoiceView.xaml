@@ -286,15 +286,28 @@
                               SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
                               IsEditable="True"
                               StaysOpenOnEdit="True"
-                              Loaded="ComboBox_Loaded">
+                              Loaded="ComboBox_Loaded"
+                              >
                         <ComboBox.Text>
                             <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged" />
                         </ComboBox.Text>
                     </ComboBox>
-                    
+
+                    <Border Grid.Column="1"
+                            Background="{StaticResource Color3}"
+                            CornerRadius="3"
+                            Padding="8,2,8,2"
+                            Margin="0,0,20,0"
+                            Height="30"
+                            Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="{Binding SelectedPartNo}"
+                                   Style="{StaticResource button-text}"
+                                   HorizontalAlignment="Center"/>
+                    </Border>
+
                     <TextBlock Text="{Binding SelectedItem.BrandID}"                   
-                            Style="{StaticResource regular-text}"
-                            Grid.Column="2"/>
+                        Style="{StaticResource regular-text}"
+                        Grid.Column="2"/>
 
                     <TextBlock Text="{Binding SelectedItem.Description}"                   
                                Style="{StaticResource regular-text}"
