@@ -28,5 +28,28 @@ namespace KAP_InventoryManager.View
             viewModel = new AddInvoiceViewModel();
             DataContext = viewModel;
         }
+
+        private void ComboBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox != null && comboBox.IsEditable)
+            {
+                var textBox = comboBox.Template.FindName("PART_EditableTextBox", comboBox) as TextBox;
+                if (textBox != null)
+                {
+                    textBox.TextChanged += TextBox_TextChanged;
+                }
+            }
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            var comboBox = textBox?.TemplatedParent as ComboBox;
+            if (comboBox != null && !comboBox.IsDropDownOpen)
+            {
+                comboBox.IsDropDownOpen = true;
+            }
+        }
     }
 }

@@ -141,7 +141,9 @@
                                   ItemsSource="{Binding Customers}"
                                   SelectedItem="{Binding SelectedCustomerId, UpdateSourceTrigger=PropertyChanged}"
                                   IsEditable="True"
-                                  StaysOpenOnEdit="True">
+                                  StaysOpenOnEdit="True"
+                                  IsTextSearchEnabled="False"
+                                  Loaded="ComboBox_Loaded">
                             <ComboBox.Text>
                                 <Binding Path="CustomerSearchText" UpdateSourceTrigger="PropertyChanged" />
                             </ComboBox.Text>
@@ -278,11 +280,13 @@
                                Style="{StaticResource regular-text}"/>
 
                     <ComboBox Grid.Column="1"
-                                Padding="0,0,20,0"
-                                ItemsSource="{Binding PartNumbers}"
-                                SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
-                                IsEditable="True"
-                                StaysOpenOnEdit="True">
+                              Padding="0,0,20,0"
+                              ItemsSource="{Binding PartNumbers}"
+                              SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
+                              IsEditable="True"
+                              StaysOpenOnEdit="True"
+                              IsTextSearchEnabled="False"
+                              Loaded="ComboBox_Loaded">
                         <ComboBox.Text>
                             <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged" />
                         </ComboBox.Text>
