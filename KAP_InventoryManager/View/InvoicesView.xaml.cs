@@ -31,5 +31,11 @@ namespace KAP_InventoryManager.View
             var addInvoiceWindow = new AddInvoiceView();
             addInvoiceWindow.Show();
         }
+
+        private void ConfirmPaymentButton_Click(object sender, RoutedEventArgs e)
+        {
+            var confirmPaymentWindow = new ConfirmPaymentModalView();
+            confirmPaymentWindow.Show();
+        }
     }
 }

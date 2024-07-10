@@ -448,8 +448,10 @@
     <Compile Include="Model\BrandModel.cs" />
     <Compile Include="Model\CustomerModel.cs" />
     <Compile Include="Model\ICustomerRepository.cs" />
+    <Compile Include="Model\IInvoiceCustomerRepository.cs" />
     <Compile Include="Model\IInvoiceRepository.cs" />
     <Compile Include="Model\IItemRepository.cs" />
+    <Compile Include="Model\InvoiceCustomerModel.cs" />
     <Compile Include="Model\InvoiceItemModel.cs" />
     <Compile Include="Model\InvoiceModel.cs" />
     <Compile Include="Model\IReturnRepository.cs" />
@@ -461,6 +463,7 @@
     <Compile Include="Model\SalesRepModel.cs" />
     <Compile Include="Model\SupplierModel.cs" />
     <Compile Include="Repositories\CustomerRepository.cs" />
+    <Compile Include="Repositories\InvoiceCustomerRepository.cs" />
     <Compile Include="Repositories\InvoiceRepository.cs" />
     <Compile Include="Repositories\ItemRepository.cs" />
     <Compile Include="Repositories\ReturnRepository.cs" />
@@ -481,6 +484,7 @@
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
+    <Compile Include="ViewModel\ModalViewModels\ConfirmPaymentModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\EditItemModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\NewCustomerModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\NewItemModalViewModel.cs" />
@@ -520,6 +524,9 @@
     </Compile>
     <Compile Include="View\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Modals\ConfirmPaymentModalView.xaml.cs">
+      <DependentUpon>ConfirmPaymentModalView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Modals\EditItemModalView.xaml.cs">
       <DependentUpon>EditItemModalView.xaml</DependentUpon>
@@ -629,6 +636,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\MainView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Modals\ConfirmPaymentModalView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

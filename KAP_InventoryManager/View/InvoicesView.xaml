@@ -198,11 +198,25 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Right">
 
-                                <Button Style="{StaticResource CustomButtonStyle}"
-                                        Background="{StaticResource Red}"
+                                <Button Background="{StaticResource Red}"
                                         Command="{Binding CancelInvoiceCommand}"
-                                        Margin="0,0,8,0"
-                                        Visibility="{Binding IsBtnVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        Margin="0,0,8,0">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Paid">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Cancelled">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Pending">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
                                     <StackPanel Orientation="Horizontal"
                                                 Margin="8">
                                         <fa:IconImage Icon="Cancel"
@@ -214,10 +228,24 @@
                                     </StackPanel>
                                 </Button>
                                 
-                                <Button Style="{StaticResource CustomButtonStyle}"
-                                        Background="{StaticResource Blue}"
-                                        Command="{Binding ConfirmPaymentCommand}"
-                                        Visibility="{Binding IsBtnVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Button Background="{StaticResource Blue}"
+                                        Click="ConfirmPaymentButton_Click">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Paid">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Cancelled">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Pending">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
                                     <StackPanel Orientation="Horizontal"
                                                 Margin="8">
                                         <fa:IconImage Icon="CircleCheck"

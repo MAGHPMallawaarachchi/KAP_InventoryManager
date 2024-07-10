@@ -28,19 +28,9 @@ namespace KAP_InventoryManager.ViewModel
         private string _invoiceSearchText;
         private InvoiceModel _selectedInvoice;
         private InvoiceModel _currentInvoice;
+        private InvoiceModel _previousInvoice;
         private CustomerModel _customer;
         private Timer _timer;
-        private bool _isBtnVisible = true;
-
-        public bool IsBtnVisible
-        {
-            get => _isBtnVisible;
-            set
-            {
-                _isBtnVisible = value;
-                OnPropertyChanged(nameof(IsBtnVisible));
-            }
-        }
 
         public ObservableCollection<InvoiceModel> Invoices
         {
@@ -95,6 +85,16 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
+        public InvoiceModel PreviousInvoice
+        {
+            get => _previousInvoice;
+            set
+            {
+                _previousInvoice = value;
+                OnPropertyChanged(nameof(PreviousInvoice));
+            }
+        }
+
         public CustomerModel Customer
         {
             get => _customer;
@@ -105,9 +105,7 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-
-        public ICommand CancelInvoiceCommand { get; }
-        public ICommand ConfirmPaymentCommand { get; }
+        public ICommand CancelInvoiceCommand { get; }      
 
         public InvoicesViewModel()
         {
@@ -115,7 +113,6 @@ namespace KAP_InventoryManager.ViewModel
             _invoiceRepository = new InvoiceRepository();
 
             CancelInvoiceCommand = new ViewModelCommand(ExecuteCancelInvoiceCommand);
-            ConfirmPaymentCommand = new ViewModelCommand(ExecuteConfirmPaymentCommand);
 
             Invoices = new ObservableCollection<InvoiceModel>();
 
@@ -123,37 +120,18 @@ namespace KAP_InventoryManager.ViewModel
             PopulateInvoicesAsync();
 
             Messenger.Default.Register<string>(this, OnMessageReceived);
-
         }
 
-        private async void ExecuteConfirmPaymentCommand(object obj)
+        private void OnMessageReceived(string message)
         {
-            try
+            if (message == "NewInvoiceAdded" || message == "PaymentConfirmed")
             {
-                if(CurrentInvoice != null && CurrentInvoice.Status != "Cancelled")
-                {
-                    MessageBoxResult result = MessageBox.Show("Are you sure you want to confirm payment?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        await _invoiceRepository.UpdatePaidInvoice(CurrentInvoice.InvoiceNo);
-                        MessageBox.Show("Payment confirmation was successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show($"No invoice selected!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                PopulateInvoicesAsync();
             }
-            catch (Exception ex)
+            else if(message == "RequestInvoice")
             {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Messenger.Default.Send(CurrentInvoice);
             }
-        }
-
-        private void OnMessageReceived(string obj)
-        {
-            PopulateInvoicesAsync();
         }
 
         private async void ExecuteCancelInvoiceCommand(object obj)
@@ -189,6 +167,11 @@ namespace KAP_InventoryManager.ViewModel
             _cancellationTokenSource?.Cancel();
             _cancellationTokenSource = new CancellationTokenSource();
 
+            if(CurrentInvoice != null) 
+            {
+                PreviousInvoice = CurrentInvoice;
+            }
+
             try
             {
 
@@ -209,7 +192,11 @@ namespace KAP_InventoryManager.ViewModel
                     await Task.Delay(0, _cancellationTokenSource.Token);
                 }
 
-                if (Invoices.Any())
+                if(PreviousInvoice != null)
+                {
+                    SelectedInvoice = Invoices.FirstOrDefault(inv => inv.InvoiceNo == PreviousInvoice.InvoiceNo);
+                }
+                else if (Invoices.Any())
                 {
                     SelectedInvoice = Invoices.First();
                 }
@@ -241,7 +228,6 @@ namespace KAP_InventoryManager.ViewModel
                     {
                         Customer = await _customerRepository.GetByCustomerIDAsync(CurrentInvoice.CustomerID);
                         InvoiceItems = await _invoiceRepository.GetInvoiceItemsAsync(CurrentInvoice.InvoiceNo);
-                        SetBtnVisibility();
                     }
                 }
             }catch (Exception ex)
@@ -262,18 +248,6 @@ namespace KAP_InventoryManager.ViewModel
 
             TimeSpan initialDelay = nextRun - now;
             _timer = new Timer(async _ => await _invoiceRepository.UpdateOverdueInvoices(), null, initialDelay, TimeSpan.FromHours(24));
-        }
-
-        private void SetBtnVisibility()
-        {
-            if(CurrentInvoice.Status == "Cancelled" || CurrentInvoice.Status == "Paid")
-            {
-                IsBtnVisible = false;
-            }
-            if(CurrentInvoice.Status == "Pending")
-            {
-                IsBtnVisible = true;
-            }
         }
     }
 }
