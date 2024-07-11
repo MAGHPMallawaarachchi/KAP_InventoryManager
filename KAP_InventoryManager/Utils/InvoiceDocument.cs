@@ -14,7 +14,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
 
-namespace QuestPDF.ExampleInvoice
+namespace KAP_InventoryManager.Utils
 {
     public class InvoiceDocument
     {
@@ -23,7 +23,13 @@ namespace QuestPDF.ExampleInvoice
             QuestPDF.Settings.License = LicenseType.Community;
             //var filePath = @"C:\Users\Hasini\OneDrive\Documents\Kamal Auto Parts\invoices\"+ invoiceNo +".pdf";
 
-            var filePath = $@"{path}{invoiceNo}.pdf";
+            var directoryPath = $@"{path}invoices";
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            var filePath = $@"{directoryPath}\{invoiceNo}.pdf";
             var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "logo_color.png");
 
             Document.Create(container =>

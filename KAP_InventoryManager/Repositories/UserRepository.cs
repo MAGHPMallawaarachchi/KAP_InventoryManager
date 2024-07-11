@@ -89,7 +89,7 @@ namespace KAP_InventoryManager.Repositories
             return user;
         }
 
-        public async Task<string> GetInvoicePath(string username)
+        public async Task<string> GetPath(string username)
         {
             string invoicePath = "";
 
@@ -110,7 +110,7 @@ namespace KAP_InventoryManager.Repositories
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get the invoice path. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get the path. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return invoicePath;

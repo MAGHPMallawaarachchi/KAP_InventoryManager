@@ -1,6 +1,5 @@
 ﻿using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
-using QuestPDF.ExampleInvoice;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

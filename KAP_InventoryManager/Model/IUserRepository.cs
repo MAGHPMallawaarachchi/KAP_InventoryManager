@@ -16,7 +16,7 @@ namespace KAP_InventoryManager.Model
         UserModel GetByID(int id);
         UserModel GetByUsername(string username);
         IEnumerable<UserModel> GetAll();
-        Task<string> GetInvoicePath(string username);
+        Task<string> GetPath(string username);
         //...
     }
 }

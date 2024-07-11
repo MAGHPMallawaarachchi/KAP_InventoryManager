@@ -40,6 +40,12 @@ namespace KAP_InventoryManager.View
             newCustomerModalWindow.ShowDialog();
         }
 
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            var download = new DownloadCustomerReportModalView();
+            download.ShowDialog();
+        }
+
         private void UpdateChart()
         {
             List<double> chartValues = new List<double> { viewModel.DebtPercentage, viewModel.DebtRemainder };

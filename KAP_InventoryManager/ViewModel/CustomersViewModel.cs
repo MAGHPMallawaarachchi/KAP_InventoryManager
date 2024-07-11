@@ -300,6 +300,10 @@ namespace KAP_InventoryManager.ViewModel
             {
                 PopulateCustomersAsync();
             }
+            else if (message == "RequestCustomer")
+            {
+                Messenger.Default.Send(CurrentCustomer);
+            }
         }
     }
 }

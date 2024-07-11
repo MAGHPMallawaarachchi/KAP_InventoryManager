@@ -1,7 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
 using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
-using QuestPDF.ExampleInvoice;
+using KAP_InventoryManager.Utils;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -378,7 +378,7 @@ namespace KAP_InventoryManager.ViewModel
             string path = string.Empty;
             try
             {
-                path = await Task.Run(() => _userRepository.GetInvoicePath(Thread.CurrentPrincipal.Identity.Name));
+                path = await Task.Run(() => _userRepository.GetPath(Thread.CurrentPrincipal.Identity.Name));
             }
             catch (Exception ex)
             {

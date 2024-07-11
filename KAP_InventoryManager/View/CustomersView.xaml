@@ -133,7 +133,7 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition Width="65"/>
+                                <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Orientation="Horizontal">
@@ -158,10 +158,28 @@
                                                Margin="10,0,10,0"/>
                                 </Border>
                             </StackPanel>
-                            <!--<customcontrols:Button ButtonText="Edit"
-                                                   ButtonBackgroundColor="{StaticResource Color3}"
-                                                   ButtonIcon="Edit"
-                                                   Grid.Column="1"/>-->
+                            <StackPanel Orientation="Horizontal"
+                                        Grid.Column="1"
+                                        HorizontalAlignment="Right">
+
+                                <Button Style="{StaticResource CustomButtonStyle}"
+                                        Background="{StaticResource Blue}"
+                                        Foreground="{StaticResource Color5}"
+                                        Height="20"
+                                        Grid.Column="2"
+                                        Click="DownloadButton_Click">
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="10,2,10,2">
+                                        <fa:IconImage Icon="Download" Style="{StaticResource AddButtonIcon}"/>
+                                        <TextBlock Text="Download" Style="{StaticResource AddButtontext}"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!--<customcontrols:Button ButtonText="Edit"
+                                                    ButtonBackgroundColor="{StaticResource Color3}"
+                                                    ButtonIcon="Edit"/>-->
+                                
+                            </StackPanel>
                         </Grid>
 
                         <StackPanel Orientation="Horizontal"

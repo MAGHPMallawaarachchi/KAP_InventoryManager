@@ -1,4 +1,5 @@
 ﻿using KAP_InventoryManager.Model;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,5 +12,6 @@ namespace KAP_InventoryManager.Repositories
         Task<IEnumerable<string>> SearchCustomerAsync(string searchText);
         Task<IEnumerable<CustomerModel>> SearchCustomerListAsync(string customerId);
         Task<CustomerModel> GetByCustomerIDAsync(string customerID);
+        Task<IEnumerable<PaymentModel>> GetCustomerReport(string customerId, DateTime startDate, DateTime endDate, string statusFilter);
     }
 }

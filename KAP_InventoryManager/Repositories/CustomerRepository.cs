@@ -162,5 +162,44 @@ namespace KAP_InventoryManager.Repositories
 
             return customer;
         }
+
+        public async Task<IEnumerable<PaymentModel>> GetCustomerReport(string customerId, DateTime startDate, DateTime endDate, string statusFilter)
+        {
+            var payments = new List<PaymentModel>();
+
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_CustomerID", MySqlDbType.VarChar) { Value = customerId },
+                    new MySqlParameter("@p_StartDate", MySqlDbType.DateTime) { Value = startDate },
+                    new MySqlParameter("@p_EndDate", MySqlDbType.DateTime) { Value = endDate },
+                    new MySqlParameter("@statusFilter", MySqlDbType.VarChar) { Value = statusFilter }
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetCustomerReport", CommandType.StoredProcedure, parameters))
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        payments.Add(new PaymentModel
+                        {
+                            Date = reader["Date"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["Date"]),
+                            InvoiceNo = reader["InvoiceNo"] is DBNull ? " " : reader["InvoiceNo"].ToString(),
+                            PaymentTerm = reader["PaymentTerm"] is DBNull ? " " : reader["PaymentTerm"].ToString(),
+                            Status = reader["Status"] is DBNull ? " " : reader["Status"].ToString(),
+                            DueDate = reader["DueDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["DueDate"]),
+                            TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                            PaymentType = reader["PaymentType"] is DBNull ? " " : reader["PaymentType"].ToString(),
+                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"])
+                        });
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Failed to get payments. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return payments;
+        }
     }
 }
