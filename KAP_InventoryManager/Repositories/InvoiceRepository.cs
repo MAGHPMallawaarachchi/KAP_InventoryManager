@@ -305,7 +305,7 @@ namespace KAP_InventoryManager.Repositories
                         {
                             InvoiceNo = reader["InvoiceNo"].ToString(),
                             Terms = reader["Terms"] is DBNull ? null : reader["Terms"].ToString(),
-                            DateString = reader["Date"] is DBNull ? null : ((DateTime)reader["Date"]).ToString("dd-MM-yyyy @ HH.mm"),
+                            DateString = reader["Date"] is DBNull ? null : ((DateTime)reader["Date"]).ToString("dd-MM-yyyy hh.mmtt"),
                             DueDateString = reader["DueDate"] is DBNull ? null : ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
                             TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
                             Status = reader["Status"] is DBNull ? null : reader["Status"].ToString(),

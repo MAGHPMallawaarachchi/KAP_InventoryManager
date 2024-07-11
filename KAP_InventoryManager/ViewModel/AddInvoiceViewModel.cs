@@ -396,7 +396,7 @@ namespace KAP_InventoryManager.ViewModel
 
             DateTime currentDateTime = DateTime.Now;
             CurrentDate = currentDateTime.ToString("yyyy-MM-dd");
-            CurrentTime = currentDateTime.ToString("t");
+            CurrentTime = currentDateTime.ToString("hh.mmtt");
 
             await PopulateSalesRepsAsync();
             Number = Counter = 1;
