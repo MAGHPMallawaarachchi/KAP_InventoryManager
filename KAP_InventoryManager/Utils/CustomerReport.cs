@@ -118,7 +118,7 @@ namespace KAP_InventoryManager.Utils
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
-                                columns.RelativeColumn();
+                                columns.ConstantColumn(50);
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
                                 if (showPaymentColumns)
