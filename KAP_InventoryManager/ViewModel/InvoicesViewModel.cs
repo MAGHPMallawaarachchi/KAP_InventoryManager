@@ -105,7 +105,7 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        public ICommand CancelInvoiceCommand { get; }      
+        public ICommand CancelInvoiceCommand { get; }
 
         public InvoicesViewModel()
         {
@@ -113,7 +113,6 @@ namespace KAP_InventoryManager.ViewModel
             _invoiceRepository = new InvoiceRepository();
 
             CancelInvoiceCommand = new ViewModelCommand(ExecuteCancelInvoiceCommand);
-
             Invoices = new ObservableCollection<InvoiceModel>();
 
             SetUpDailyTimer();
@@ -227,7 +226,24 @@ namespace KAP_InventoryManager.ViewModel
                     if (CurrentInvoice != null)
                     {
                         Customer = await _customerRepository.GetByCustomerIDAsync(CurrentInvoice.CustomerID);
-                        InvoiceItems = await _invoiceRepository.GetInvoiceItemsAsync(CurrentInvoice.InvoiceNo);
+
+                        var items = await _invoiceRepository.GetInvoiceItemsAsync(CurrentInvoice.InvoiceNo);
+                        if (items != null)
+                        {
+                            foreach (var item in items)
+                            {
+                                if (item.Description.Length > 45)
+                                {
+                                    item.Description = item.Description.Substring(0, 45) + "...";
+                                }
+                            }
+
+                            InvoiceItems = new ObservableCollection<InvoiceItemModel>(items);
+                        }
+                        else
+                        {
+                            MessageBox.Show("No items returned from the database.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
                     }
                 }
             }catch (Exception ex)

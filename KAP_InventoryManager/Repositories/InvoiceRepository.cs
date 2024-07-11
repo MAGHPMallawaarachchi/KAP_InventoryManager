@@ -529,5 +529,43 @@ namespace KAP_InventoryManager.Repositories
                 return null;
             }
         }
+
+        public async Task<IEnumerable<InvoiceItemModel>> GetInvoiceItemsAsync(string invoiceNo, int pageSize, int page)
+        {
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_PageSize", pageSize),
+                    new MySqlParameter("@p_Offset", (page - 1) * pageSize),
+                    new MySqlParameter("@p_InvoiceNo", invoiceNo)
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetInvoiceItemsPaginated", CommandType.StoredProcedure, parameters))
+                {
+                    var invoiceItems = new List<InvoiceItemModel>();
+                    while (await reader.ReadAsync())
+                    {
+                        invoiceItems.Add(new InvoiceItemModel
+                        {
+                            No = (int)reader["No"],
+                            PartNo = reader["PartNo"].ToString(),
+                            BrandID = reader["BrandID"].ToString(),
+                            Description = reader["Description"].ToString(),
+                            Quantity = (int)reader["Quantity"],
+                            UnitPrice = (Decimal)reader["UnitPrice"],
+                            Discount = (Decimal)reader["Discount"],
+                            Amount = (Decimal)reader["Amount"]
+                        });
+                    }
+                    return invoiceItems;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get invoice items. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
     }
 }
