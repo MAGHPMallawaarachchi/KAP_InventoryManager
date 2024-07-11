@@ -625,6 +625,11 @@ namespace KAP_InventoryManager.ViewModel
                 ShowErrorMessage("This item is out of stock");
                 return false;
             }
+            if(Number > 22)
+            {
+                ShowErrorMessage("You have already added 22 items");
+                return false;
+            }
             return true;
         }
 
