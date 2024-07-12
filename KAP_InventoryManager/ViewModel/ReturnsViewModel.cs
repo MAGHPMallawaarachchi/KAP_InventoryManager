@@ -191,7 +191,23 @@ namespace KAP_InventoryManager.ViewModel
                     if (CurrentReturn != null)
                     {
                         Customer = await _customerRepository.GetByCustomerIDAsync(CurrentReturn.CustomerID);
-                        ReturnItems = await _returnRepository.GetReturnItemsAsync(CurrentReturn.ReturnNo);
+                        var items = await _returnRepository.GetReturnItemsAsync(CurrentReturn.ReturnNo);
+                        if (items != null)
+                        {
+                            foreach (var item in items)
+                            {
+                                if (item.Description.Length > 45)
+                                {
+                                    item.Description = item.Description.Substring(0, 45) + "...";
+                                }
+                            }
+
+                            ReturnItems = new ObservableCollection<ReturnItemModel>(items);
+                        }
+                        else
+                        {
+                            MessageBox.Show("No items returned from the database.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
                     }
                 }
             }

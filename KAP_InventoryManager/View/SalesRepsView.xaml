@@ -232,7 +232,7 @@
                                             <TextBlock Text="Rs. "
                                                        Style="{StaticResource numbers}"
                                                        VerticalAlignment="Bottom"/>
-                                            <TextBlock Text="{Binding CurrentMonthCommission}"
+                                            <TextBlock Text="{Binding CurrentMonthCommission, StringFormat=N2}"
                                                        Style="{StaticResource numbers}"
                                                        VerticalAlignment="Bottom"/>
                                         </StackPanel>
@@ -319,7 +319,7 @@
                                                 Margin="0,5,0,8">
                                         <TextBlock Text="Compared to Rs. "
                                                    Style="{StaticResource light-text}"/>
-                                        <TextBlock Text="{Binding LastMonthCommission}"
+                                        <TextBlock Text="{Binding LastMonthCommission, StringFormat=N2}"
                                                    Style="{StaticResource light-text}"/>
                                         <TextBlock Text=" last month"
                                                    Style="{StaticResource light-text}"/>
@@ -343,7 +343,7 @@
                                                    Style="{StaticResource light-text}"
                                                    Foreground="{StaticResource Color5}"
                                                    FontWeight="Medium"/>
-                                            <TextBlock Text="{Binding TodayCommission}"
+                                            <TextBlock Text="{Binding TodayCommission, StringFormat=N2}"
                                                    Style="{StaticResource light-text}"
                                                    Foreground="{StaticResource Color5}"
                                                    FontWeight="Medium"/>
@@ -479,9 +479,9 @@
                                     Margin="0,20,0,6">
                                 <Grid  Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.5*"/>
+                                        <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="2*"/>
@@ -522,9 +522,9 @@
                                     <DataTemplate>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.5*"/>
+                                                <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="1*"/>
-                                                <ColumnDefinition Width="2*"/>
-                                                <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="2*"/>
@@ -557,7 +557,7 @@
                                                        Style="{StaticResource regular-text}"
                                                        Grid.Column="4"/>
 
-                                            <TextBlock Text="{Binding TotalAmount}"                   
+                                            <TextBlock Text="{Binding TotalAmount, StringFormat=N2}"                   
                                                        Style="{StaticResource regular-text}"
                                                        Grid.Column="5"/>
 

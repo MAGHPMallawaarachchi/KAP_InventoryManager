@@ -285,13 +285,13 @@
                                             <TextBlock Style="{StaticResource numbers}"
                                                        Text="Rs. "/>
                                             <TextBlock Style="{StaticResource numbers}"
-                                                       Text="{Binding CurrentCustomer.TotalDebt}"/>
+                                                       Text="{Binding CurrentCustomer.TotalDebt, StringFormat=N2}"/>
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Style="{StaticResource regular-text}"
                                                        Text="of Rs. "/>
                                             <TextBlock Style="{StaticResource regular-text}"
-                                                       Text="{Binding DebtLimit}"/>
+                                                       Text="{Binding DebtLimit, StringFormat=N2}"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
@@ -363,9 +363,9 @@
                                     Margin="0,20,0,6">
                                 <Grid  Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="0.5*"/>
+                                        <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="2*"/>
@@ -406,9 +406,9 @@
                                     <DataTemplate>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="0.5*"/>
+                                                <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="1*"/>
-                                                <ColumnDefinition Width="2*"/>
-                                                <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="2*"/>
@@ -441,7 +441,7 @@
                                                        Style="{StaticResource regular-text}"
                                                        Grid.Column="4"/>
 
-                                            <TextBlock Text="{Binding TotalAmount}"                   
+                                            <TextBlock Text="{Binding TotalAmount, StringFormat=N2}"                   
                                                        Style="{StaticResource regular-text}"
                                                        Grid.Column="5"/>
 

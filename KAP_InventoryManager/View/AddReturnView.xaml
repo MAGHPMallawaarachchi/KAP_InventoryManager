@@ -255,14 +255,18 @@
                         <TextBox Text="{Binding Qty}"
                                  Style="{StaticResource ModalTextBox}"
                                  Grid.Column="3"
-                                 Margin="0,0,20,0"/>
+                                 Margin="0,0,20,0"
+                                 GotFocus="TextBox_GotFocus"
+                                 LostFocus="TextBox_LostFocus"/>
 
                         <TextBox Text="{Binding DamagedQty}"
                                  Style="{StaticResource ModalTextBox}"
                                  Grid.Column="4"
-                                 Margin="0,0,20,0"/>
+                                 Margin="0,0,20,0"
+                                 GotFocus="TextBox_GotFocus"
+                                 LostFocus="TextBox_LostFocus"/>
 
-                        <TextBlock Text="{Binding SelectedInvoiceItem.UnitPrice}"                   
+                        <TextBlock Text="{Binding SelectedInvoiceItem.UnitPrice, StringFormat=N2}"                   
                                Style="{StaticResource regular-text}"
                                Grid.Column="5"/>
 
@@ -270,7 +274,7 @@
                                Style="{StaticResource regular-text}"
                                Grid.Column="6"/>
 
-                        <TextBlock Text="{Binding Amount}"                   
+                        <TextBlock Text="{Binding Amount, StringFormat=N2}"                   
                                Style="{StaticResource regular-text}"
                                Grid.Column="7"/>
 
@@ -363,7 +367,7 @@
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="4"/>
 
-                                    <TextBlock Text="{Binding UnitPrice}"                   
+                                    <TextBlock Text="{Binding UnitPrice, StringFormat=N2}"                   
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="5"/>
 
@@ -371,7 +375,7 @@
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="6"/>
 
-                                    <TextBlock Text="{Binding Amount}"                   
+                                    <TextBlock Text="{Binding Amount, StringFormat=N2}"                   
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="7"/>
 
@@ -391,10 +395,10 @@
                                 <ColumnDefinition Width="2.7*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Total"
-                                   Style="{StaticResource regular-text}"
+                                   Style="{StaticResource card-header}"
                                    Grid.Column="1"/>
-                            <TextBlock Text="{Binding Total}"
-                                       Style="{StaticResource regular-text}"
+                            <TextBlock Text="{Binding Total, StringFormat=N2}"
+                                       Style="{StaticResource card-header}"
                                        Grid.Column="2"/>
                         </Grid>
                     </Border>

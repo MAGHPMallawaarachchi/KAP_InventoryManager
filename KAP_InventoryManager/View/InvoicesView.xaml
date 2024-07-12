@@ -469,38 +469,38 @@
                                                         HorizontalAlignment="Left">
 
                                                 <TextBlock Text="{Binding PartNo}"
-                                                               Style="{StaticResource button-text}"
-                                                               HorizontalAlignment="Center"/>
+                                                           Style="{StaticResource button-text}"
+                                                           HorizontalAlignment="Center"/>
                                             </Border>
 
                                             <TextBlock Text="{Binding BrandID}"
-                                                           Style="{StaticResource regular-text}"
-                                                           Grid.Column="2"/>
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="2"/>
 
                                             <TextBlock Text="{Binding Description}"                 
-                                                           Style="{StaticResource regular-text}"
-                                                           Grid.Column="3"/>
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="3"/>
 
                                             <TextBlock Text="{Binding Quantity}"                 
-                                                           Style="{StaticResource regular-text}"
-                                                           Grid.Column="4"
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="4"
                                                        HorizontalAlignment="Center"/>
 
-                                            <TextBlock Text="{Binding UnitPrice, StringFormat=N2}"                
-                                                           Style="{StaticResource regular-text}"
-                                                           Grid.Column="5"
+                                            <TextBlock Text="{Binding UnitPrice, StringFormat=N2}"
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="5"
                                                        HorizontalAlignment="Right"/>
 
                                             <TextBlock Text="{Binding Discount}"                 
-                                                           Style="{StaticResource regular-text}"
-                                                           Grid.Column="6"
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="6"
                                                        HorizontalAlignment="Right"/>
 
-                                            <TextBlock Text="{Binding Amount, StringFormat=N2}"                   
-                                                           Style="{StaticResource regular-text}"
-                                                           Grid.Column="7"
-                                                           HorizontalAlignment="Right"
-                                                           Padding="0,0,20,0"/>
+                                            <TextBlock Text="{Binding Amount, StringFormat=N2}"
+                                                       Style="{StaticResource regular-text}"
+                                                       Grid.Column="7"
+                                                       HorizontalAlignment="Right"
+                                                       Padding="0,0,20,0"/>
                                         </Grid>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
