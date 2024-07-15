@@ -22,10 +22,13 @@ namespace KAP_InventoryManager.View.Modals
     /// </summary>
     public partial class EditItemModalView : Window
     {
+        private ViewModel.ModalViewModels.EditItemModalViewModel _viewModel;
+
         public EditItemModalView()
         {
             InitializeComponent();
-            DataContext = new ViewModel.ModalViewModels.EditItemModalViewModel();
+            _viewModel = new ViewModel.ModalViewModels.EditItemModalViewModel();
+            DataContext = _viewModel;
             Messenger.Default.Register<NotificationMessage>(this, Notify);
         }
 

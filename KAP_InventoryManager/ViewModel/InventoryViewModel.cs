@@ -106,16 +106,10 @@ namespace KAP_InventoryManager.ViewModel
 
             SelectedViewModel = ViewModels.First();
 
-            Messenger.Default.Register<object>(this, "RequestSelectedItem", OnRequestSelectedItem);
             Messenger.Default.Register<string>(this, OnMessageReceived);
 
             Items = new ObservableCollection<ItemModel>();
             PopulateItemsAsync();
-        }
-
-        private void OnRequestSelectedItem(object obj)
-        {           
-            Messenger.Default.Send(CurrentItem);
         }
 
         private async void PopulateItemsAsync()
@@ -203,6 +197,13 @@ namespace KAP_InventoryManager.ViewModel
             if (message == "NewCustomerAdded")
             {
                 PopulateItemsAsync();
+            }
+            else if (message == "RequestSelectedItem")
+            {
+                if(CurrentItem!= null && CurrentItem.PartNo != null)
+                {
+                    Messenger.Default.Send(CurrentItem);
+                }
             }
         }
     }

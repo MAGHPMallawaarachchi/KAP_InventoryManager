@@ -3,6 +3,7 @@ using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -154,7 +155,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             ItemRepository = new ItemRepository();
 
             Messenger.Default.Register<ItemModel>(this, OnMessageReceived);
-            Messenger.Default.Send(new object(), "RequestSelectedItem");
+            Messenger.Default.Send("RequestSelectedItem");
 
             AddItemCommand = new ViewModelCommand(ExecuteEditItemCommand, CanExecuteEditItemCommand);
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
@@ -162,21 +163,28 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private async void OnMessageReceived(ItemModel item)
         {
-            Item = item;
 
-            if (item != null)
+            if(item != null)
             {
-                await LoadBrandsAsync();
-                LoadVehicleBrands();
+                Item = item;
 
-                PartNo = Item.PartNo;
-                OEMNo = Item.OEMNo;
-                Description = Item.Description;
-                BrandID = Item.BrandID;
-                Category = Item.Category;
-                BuyingPrice = Item.BuyingPrice;
-                UnitPrice = Item.UnitPrice;
-                VehicleBrand = Item.VehicleBrand;
+                if (item != null)
+                {
+                    await LoadBrandsAsync();
+                    LoadVehicleBrands();
+
+                    PartNo = Item.PartNo;
+                    OEMNo = Item.OEMNo;
+                    Description = Item.Description;
+                    BrandID = Item.BrandID;
+                    Category = Item.Category;
+                    BuyingPrice = Item.BuyingPrice;
+                    UnitPrice = Item.UnitPrice;
+                    VehicleBrand = Item.VehicleBrand;
+                }
+
+                // Unregister the message handler after receiving the item
+                Messenger.Default.Unregister<ItemModel>(this, OnMessageReceived);
             }
         }
 
