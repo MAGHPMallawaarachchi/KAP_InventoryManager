@@ -1,4 +1,4 @@
-﻿<Window x:Class="KAP_InventoryManager.View.Modals.DownloadCustomerReportModalView"
+﻿<Window x:Class="KAP_InventoryManager.View.Modals.DownloadAllCustomerReportsModalView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -15,7 +15,7 @@
         Background="Transparent">
 
     <Window.DataContext>
-        <viewModel:DownloadCustomerReportModalViewModel/>
+        <viewModel:DownloadAllCustomerReportsModalViewModel/>
     </Window.DataContext>
 
     <Border Background="{StaticResource Color2}" CornerRadius="8">
@@ -36,20 +36,10 @@
             </StackPanel>
 
             <StackPanel Margin="20,0,20,20">
-                <DockPanel>
-                    <TextBlock Text="Download Report" Style="{StaticResource header}"
+                <TextBlock Text="Download All Reports" Style="{StaticResource header}"
                                Margin="0,0,20,0"/>
-                    <Border Background="{StaticResource Color3}"
-                            CornerRadius="3"
-                            Padding="8,2,8,2"
-                            DockPanel.Dock="Right">
-                        <TextBlock Text="{Binding Customer.CustomerID}"
-                                   Style="{StaticResource button-text}"
-                                   HorizontalAlignment="Center"/>
-                    </Border>
-                </DockPanel>
 
-                <Grid Margin="0,20,0,0" Height="160">
+                    <Grid Margin="0,20,0,0" Height="160">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="3*"/>
@@ -92,11 +82,11 @@
                                    Foreground="{StaticResource Color4}"/>
                     </Button>
                     <Button Style="{StaticResource AddButton}"
-                            Command="{Binding DownloadReportCommand}">
+                            Command="{Binding DownloadReportsCommand}">
                         <StackPanel Orientation="Horizontal"
                                     Margin="10,2,10,2">
                             <fa:IconImage Icon="Download" Style="{StaticResource AddButtonIcon}"/>
-                            <TextBlock Text="Download Report" Style="{StaticResource AddButtontext}"/>
+                            <TextBlock Text="Download Reports" Style="{StaticResource AddButtontext}"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>

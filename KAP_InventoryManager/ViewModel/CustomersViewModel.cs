@@ -305,5 +305,33 @@ namespace KAP_InventoryManager.ViewModel
                 Messenger.Default.Send(CurrentCustomer);
             }
         }
+
+        public async Task<IEnumerable<PaymentModel>> GetReportsForAllCustomers(DateTime startDate, DateTime endDate, string statusFilter)
+        {
+            var allReports = new List<PaymentModel>();
+
+            try
+            {
+                // Fetch the list of customers
+                var customers = await _customerRepository.GetCustomersFromInvoice(startDate, endDate);
+
+                // Process reports for each customer in parallel
+                var tasks = customers.Select(customerId => _customerRepository.GetCustomerReport(customerId, startDate, endDate, statusFilter));
+
+                var results = await Task.WhenAll(tasks);
+
+                // Combine all reports
+                foreach (var report in results)
+                {
+                    allReports.AddRange(report);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get all customer reports. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return allReports;
+        }
     }
 }

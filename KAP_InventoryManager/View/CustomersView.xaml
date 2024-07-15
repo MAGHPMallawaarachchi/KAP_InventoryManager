@@ -33,6 +33,13 @@
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Height="30">
                 <customcontrols:Button
+                    x:Name="DownloadButton"
+                    ButtonText="Download All Reports"
+                    ButtonBackgroundColor="{StaticResource Blue}"
+                    ButtonIcon="Download"
+                    Margin="12,0,0,0" 
+                    ButtonClickHandler="DownloadAllButton_Click"/>
+                <customcontrols:Button
                     x:Name="AddCustomerButton"
                     ButtonText="Add Customer"
                     ButtonBackgroundColor="{StaticResource Blue}"

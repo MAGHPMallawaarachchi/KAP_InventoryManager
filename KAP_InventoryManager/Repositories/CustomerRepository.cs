@@ -201,5 +201,32 @@ namespace KAP_InventoryManager.Repositories
             }
             return payments;
         }
+
+        public async Task<IEnumerable<string>> GetCustomersFromInvoice(DateTime startDate, DateTime endDate)
+        {
+            var customers = new List<string>();
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_StartDate", MySqlDbType.DateTime) { Value = startDate },
+                    new MySqlParameter("@p_EndDate", MySqlDbType.DateTime) { Value = endDate },
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetCustomersFromInvoice", CommandType.StoredProcedure, parameters))
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        customers.Add(reader["CustomerID"].ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get customer. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return customers;
+        }
     }
 }
