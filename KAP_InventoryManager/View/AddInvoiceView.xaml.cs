@@ -1,4 +1,5 @@
-﻿using KAP_InventoryManager.ViewModel;
+﻿using GalaSoft.MvvmLight.Messaging;
+using KAP_InventoryManager.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace KAP_InventoryManager.View
             InitializeComponent();
             viewModel = new AddInvoiceViewModel();
             DataContext = viewModel;
+            Messenger.Default.Register<NotificationMessage>(this, Notify);
         }
 
         private void ComboBox_Loaded(object sender, RoutedEventArgs e)
@@ -67,6 +69,14 @@ namespace KAP_InventoryManager.View
             if (textBox != null && string.IsNullOrEmpty(textBox.Text))
             {
                 textBox.Text = "0";
+            }
+        }
+
+        private void Notify(NotificationMessage message)
+        {
+            if (message.Notification == "CloseDialog")
+            {
+                this.Close();
             }
         }
     }

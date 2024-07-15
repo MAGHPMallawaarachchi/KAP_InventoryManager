@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace KAP_InventoryManager.View
 {
@@ -23,7 +24,7 @@ namespace KAP_InventoryManager.View
     {
         public MainView()
         {
-            InitializeComponent();       
+            InitializeComponent();
         }
 
         [DllImport("user32.dll")]
@@ -58,6 +59,10 @@ namespace KAP_InventoryManager.View
 
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
     }
 
 }

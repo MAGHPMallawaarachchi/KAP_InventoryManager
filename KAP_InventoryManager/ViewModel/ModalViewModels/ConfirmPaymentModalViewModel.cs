@@ -58,7 +58,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
             // Send the "RequestInvoice" message to request the current invoice
             Messenger.Default.Send("RequestInvoice");
-            Console.WriteLine("RequestInvoice message sent.");
 
             ConfirmPaymentCommand = new ViewModelCommand(ExecuteConfirmPaymentCommand);
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
@@ -69,7 +68,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             if (invoice != null)
             {
                 Invoice = invoice;
-                Console.WriteLine("Invoice received: " + Invoice.InvoiceNo);
 
                 Payment.InvoiceNo = Invoice.InvoiceNo;
                 Payment.CustomerId = Invoice.CustomerID;
@@ -79,6 +77,9 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 Console.WriteLine("Received null invoice");
             }
+
+            // Unregister the message handler after receiving the item
+            Messenger.Default.Unregister<InvoiceModel>(this, OnMessageReceived);
         }
 
         private void ExecuteDiscardCommand(object obj)

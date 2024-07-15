@@ -36,7 +36,7 @@
             </StackPanel>
 
             <StackPanel Margin="20,0,20,20">
-                <TextBlock Text="New Item" Style="{StaticResource header}"/>
+                <TextBlock Text="Edit Item" Style="{StaticResource header}"/>
 
                 <Grid Margin="0,20,0,0" Height="430">
                     <Grid.ColumnDefinitions>

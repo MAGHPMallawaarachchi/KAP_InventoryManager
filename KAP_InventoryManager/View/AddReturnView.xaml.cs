@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,7 @@ namespace KAP_InventoryManager.View
         public AddReturnView()
         {
             InitializeComponent();
+            Messenger.Default.Register<NotificationMessage>(this, Notify);
         }
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -40,6 +42,14 @@ namespace KAP_InventoryManager.View
                 textBox.Text = "0";
             }
         }
+        private void Notify(NotificationMessage message)
+        {
+            if (message.Notification == "CloseDialog")
+            {
+                this.Close();
+            }
+        }
+
 
     }
 }

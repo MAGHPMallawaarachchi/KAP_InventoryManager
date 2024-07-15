@@ -15,7 +15,7 @@
         d:DesignHeight="810" 
         d:DesignWidth="1440" 
         Icon="/Images/logo_small.png"
-        WindowStyle="SingleBorderWindow">
+        WindowStyle="SingleBorderWindow" Closing="Window_Closing">
 
     <Window.DataContext>
         <viewModel:MainViewModel/>
