@@ -130,6 +130,7 @@ namespace KAP_InventoryManager.Repositories
                         {
                             Id = counter,
                             InvoiceNo = reader["InvoiceNo"].ToString(),
+                            CustomerID = reader["CustomerID"].ToString(),
                             Terms = reader["Terms"].ToString(),
                             DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
                             DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
@@ -210,6 +211,7 @@ namespace KAP_InventoryManager.Repositories
                         {
                             Id = counter,
                             InvoiceNo = reader["InvoiceNo"].ToString(),
+                            CustomerID = reader["CustomerID"].ToString(),
                             Terms = reader["Terms"].ToString(),
                             DateString = ((DateTime)reader["Date"]).ToString("dd-MM-yyyy"),
                             DueDateString = ((DateTime)reader["DueDate"]).ToString("dd-MM-yyyy"),
