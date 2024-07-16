@@ -23,13 +23,13 @@ namespace KAP_InventoryManager.Repositories
                     new MySqlParameter("@p_City", customer.City),
                     new MySqlParameter("@p_ContactNo", customer.ContactNo),
                     new MySqlParameter("@p_PaymentType", customer.PaymentType),
-                    new MySqlParameter("@p_RepID", customer.RepID),
+                    new MySqlParameter("@p_RepID", string.IsNullOrEmpty(customer.RepID) ? (object)DBNull.Value : customer.RepID),
                     new MySqlParameter("@p_CustomerCount", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
                 };
 
                 await ExecuteNonQueryAsync("AddCustomer", CommandType.StoredProcedure, parameters);
 
-                int customerCount = Convert.ToInt32(parameters[9].Value);
+                int customerCount = Convert.ToInt32(parameters[8].Value);
 
                 MessageBox.Show(customerCount == 0
                     ? "Customer added successfully."

@@ -115,10 +115,11 @@
 
                     <ComboBox Grid.Column="1" Grid.Row="7" Height="32" 
                               Padding="6,0,6,0"
-                              IsEditable="True"
-                              SelectedItem="{Binding RepID}"
-                              ItemsSource="{Binding Reps}"
-                              StaysOpenOnEdit="True">
+                              SelectedValue="{Binding RepID, UpdateSourceTrigger=PropertyChanged}"
+                              SelectedValuePath="Content">
+                        <ComboBoxItem >SUGITH</ComboBoxItem>
+                        <ComboBoxItem >HARSHA</ComboBoxItem>
+                        <ComboBoxItem >SHASHIKA</ComboBoxItem>
                     </ComboBox>
 
                 </Grid>

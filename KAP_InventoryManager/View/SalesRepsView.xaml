@@ -484,7 +484,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="0.5*"/>
                                     <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="2.5*"/>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="2*"/>
                                     <ColumnDefinition Width="2*"/>
@@ -532,7 +532,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="0.5*"/>
                                             <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="2.5*"/>
                                             <ColumnDefinition Width="1*"/>
                                             <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition Width="2*"/>

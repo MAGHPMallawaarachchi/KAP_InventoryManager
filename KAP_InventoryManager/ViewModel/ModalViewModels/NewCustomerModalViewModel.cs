@@ -22,13 +22,9 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private string _contactNo;
         private string _email;
         private string _paymentType;
-        private decimal _debtLimit;
         private string _repID;
-        private List<string> _reps;
-
 
         private readonly ICustomerRepository CustomerRepository;
-        private readonly ISalesRepRepository SalesRepRepository;
 
         public string CustomerID
         {
@@ -100,16 +96,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
-        public decimal DebtLimit
-        {
-            get { return _debtLimit; }
-            set
-            {
-                _debtLimit = value;
-                OnPropertyChanged(nameof(DebtLimit));
-            }
-        }
-
         public string RepID
         {
             get { return _repID; }
@@ -120,27 +106,14 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
-        public List<string> Reps
-        {
-            get { return _reps; }
-            set
-            {
-                _reps = value;
-                OnPropertyChanged(nameof(_reps));
-            }
-        }
-
         public ICommand AddCustomerCommand { get; }
         public ICommand DiscardCommand { get; }
 
         public NewCustomerModalViewModel()
         {
             CustomerRepository = new CustomerRepository();
-            SalesRepRepository = new SalesRepRepository();
             AddCustomerCommand = new ViewModelCommand(ExecuteAddCustomerCommand, CanExecuteAddCustomerCommand);
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
-
-            GetReps();
         }
 
         private void ExecuteDiscardCommand(object obj)
@@ -183,11 +156,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             Messenger.Default.Send("NewCustomerAdded");
         }
 
-        private async void GetReps()
-        {
-            Reps = await SalesRepRepository.GetAllRepIdsAsync();
-        }
-
         private void ClearTextBoxes()
         {
             CustomerID = string.Empty;
@@ -197,7 +165,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             ContactNo = string.Empty;
             Email = string.Empty;
             PaymentType = string.Empty;
-            DebtLimit = 0;
             RepID = string.Empty;
         }
     }
