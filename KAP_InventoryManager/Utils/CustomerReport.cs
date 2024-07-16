@@ -114,7 +114,7 @@ namespace KAP_InventoryManager.Utils
 
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.ConstantColumn(16);
+                                columns.ConstantColumn(19);
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
