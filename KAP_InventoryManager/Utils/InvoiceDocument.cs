@@ -277,7 +277,7 @@ namespace KAP_InventoryManager.Utils
 
                             counter++;
                             table.Cell().Row((uint)counter).Column(4).AlignMiddle().Text("Thank you for your business!").FontFamily(Fonts.Calibri).Bold().FontSize(9);
-                            table.Cell().Row((uint)counter).Column(5).ColumnSpan(1).Element(CellStyle).Text(totalQty.ToString());
+                            table.Cell().Row((uint)counter).Column(5).ColumnSpan(1).Element(CellStyle).AlignCenter().Text(totalQty.ToString());
                             table.Cell().Row((uint)counter).Column(6).ColumnSpan(2).Element(TotalCellStyle).Text("TOTAL");
                             table.Cell().Row((uint)counter).Column(8).Element(CellStyle).AlignRight().Text(invoice.TotalAmount.ToString("N2")).Bold().FontSize(11);
                         });

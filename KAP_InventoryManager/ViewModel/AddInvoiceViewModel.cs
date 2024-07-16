@@ -848,14 +848,18 @@ namespace KAP_InventoryManager.ViewModel
 
                     if (invoicePath != null)
                     {
+                        foreach (var invoiceItem in InvoiceItems)
+                        {
+                            totalQty += invoiceItem.Quantity;
+                        }
+
                         invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems, invoicePath, ShopName, totalQty);
 
                         await _invoiceRepository.AddInvoiceAsync(invoice);
 
                         foreach (var invoiceItem in InvoiceItems)
                         {
-                            await _invoiceRepository.AddInvoiceItemAsync(invoiceItem);
-                            totalQty += invoiceItem.Quantity;
+                            await _invoiceRepository.AddInvoiceItemAsync(invoiceItem);                         
                         }
 
                         ClearInvoice();
