@@ -54,6 +54,7 @@ namespace KAP_InventoryManager.ViewModel
 
         private string _shopName = "";
         private bool _isJaneesh = false;
+        private bool _isComboboxEnabled;
 
         private readonly ICustomerRepository _customerRepository;
         private readonly ISalesRepRepository _salesRepRepository;
@@ -265,6 +266,10 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _number = value;
                 OnPropertyChanged(nameof(Number));
+                if(Number > 22)
+                {
+                    IsComboboxEnabled = false;
+                }
             }
         }
 
@@ -285,6 +290,16 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _errorMessage = value;
                 OnPropertyChanged(nameof(ErrorMessage));
+            }
+        }
+
+        public bool IsComboboxEnabled
+        {
+            get => _isComboboxEnabled; 
+            set
+            {
+                _isComboboxEnabled = value;
+                OnPropertyChanged(nameof(IsComboboxEnabled));
             }
         }
 
@@ -403,6 +418,7 @@ namespace KAP_InventoryManager.ViewModel
             Number = Counter = 1;
             Total = 0;
             IsSelectedInvoiceItem = false;
+            IsComboboxEnabled = true;
         }
 
         private async void DebouncePopulateCustomersAsync()
@@ -828,17 +844,19 @@ namespace KAP_InventoryManager.ViewModel
 
                     var invoiceDoc = new InvoiceDocument();
                     string invoicePath = await GetInvoicePathAsync();
+                    int totalQty = 0;
 
                     if (invoicePath != null)
                     {
+                        invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems, invoicePath, ShopName, totalQty);
+
                         await _invoiceRepository.AddInvoiceAsync(invoice);
 
                         foreach (var invoiceItem in InvoiceItems)
                         {
                             await _invoiceRepository.AddInvoiceItemAsync(invoiceItem);
+                            totalQty += invoiceItem.Quantity;
                         }
-
-                        invoiceDoc.GenerateInvoicePDF(InvoiceNo, SelectedCustomer, invoice, InvoiceItems, invoicePath, ShopName);
 
                         ClearInvoice();
                         Messenger.Default.Send("NewInvoiceAdded");
