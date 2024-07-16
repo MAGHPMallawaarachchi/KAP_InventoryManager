@@ -215,15 +215,24 @@
                 Grid.Row="1"
                 CornerRadius="8"
                 Padding="20">
-            <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
                 <TextBlock Text="Items"
                                Style="{StaticResource card-header}"/>
 
 
                 <Border BorderBrush="{StaticResource Color3}" 
-                                BorderThickness="0,0,0,1.5" 
-                                Margin="0,20,0,6">
+                        BorderThickness="0,0,0,1.5" 
+                        Margin="0,20,0,6"
+                        Grid.Row="1">
                     <Grid  Margin="0,0,0,6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
@@ -261,7 +270,8 @@
                     </Grid>
                 </Border>
 
-                <Grid Margin="0,20,0,0">
+                <Grid Margin="0,20,0,0"
+                      Grid.Row="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="2*"/>
@@ -286,8 +296,7 @@
                               SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
                               IsEditable="True"
                               StaysOpenOnEdit="True"
-                              Loaded="ComboBox_Loaded"
-                              >
+                              Loaded="ComboBox_Loaded">
                         <ComboBox.Text>
                             <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged" />
                         </ComboBox.Text>
@@ -320,7 +329,7 @@
                              GotFocus="TextBox_GotFocus"
                              LostFocus="TextBox_LostFocus"/>
 
-                        <TextBlock Text="{Binding SelectedItem.UnitPrice, StringFormat=N2}"                   
+                    <TextBlock Text="{Binding SelectedItem.UnitPrice, StringFormat=N2}"                   
                                Style="{StaticResource regular-text}"
                                Grid.Column="5"/>
 
@@ -329,28 +338,28 @@
                              Grid.Column="6"
                              Margin="0,0,20,0"/>
 
-                        <TextBlock Text="{Binding Amount, StringFormat=N2}"                   
+                    <TextBlock Text="{Binding Amount, StringFormat=N2}"                   
                                Style="{StaticResource regular-text}"
                                Grid.Column="7"/>
 
 
-                        <Button Command="{Binding AddInvoiceItemCommand}"
+                    <Button Command="{Binding AddInvoiceItemCommand}"
                                 Grid.Column="8"
                                 Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
-                                    <Setter Property="Background" Value="{StaticResource Blue}"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsFocused" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource Red}"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <TextBlock Style="{StaticResource button-text}" Text="Add"/>
-                        </Button>
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
+                                <Setter Property="Background" Value="{StaticResource Blue}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsFocused" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource Red}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <TextBlock Style="{StaticResource button-text}" Text="Add"/>
+                    </Button>
 
-                        <Button Style="{StaticResource IconButtonStyle}"
+                    <Button Style="{StaticResource IconButtonStyle}"
                             Grid.Column="8"
                             Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Command="{Binding DeleteInvoiceItemCommand}">
@@ -358,7 +367,7 @@
                                         Foreground="{StaticResource Color5}"
                                         Height="20"/>
                     </Button>
-                    
+
                     <Button Style="{StaticResource IconButtonStyle}"
                             Grid.Column="9"
                             Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -377,95 +386,96 @@
                                 Height="20"/>
                     </Button>
 
-                    </Grid>
+                </Grid>
 
-                    <ListBox ItemsSource="{Binding InvoiceItems, Mode=TwoWay}" 
-                             SelectedItem="{Binding SelectedInvoiceItem}"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             BorderBrush="Transparent"
-                             HorizontalContentAlignment="Stretch"
-                             Cursor="Hand"
-                             SelectionMode="Single"
-                             Margin="0,30,0,0"
-                             IsHitTestVisible="True">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="5*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="2.7*"/>
-                                    </Grid.ColumnDefinitions>
+                <ListBox ItemsSource="{Binding InvoiceItems, Mode=TwoWay}" 
+                         SelectedItem="{Binding SelectedInvoiceItem}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         BorderBrush="Transparent"
+                         HorizontalContentAlignment="Stretch"
+                         Cursor="Hand"
+                         SelectionMode="Single"
+                         Margin="0,30,0,0"
+                         IsHitTestVisible="True"
+                         Grid.Row="3">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="5*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="2.7*"/>
+                                </Grid.ColumnDefinitions>
 
-                                    <TextBlock Text="{Binding No, Mode=TwoWay}"                   
+                                <TextBlock Text="{Binding No, Mode=TwoWay}"                   
                                                Style="{StaticResource regular-text}"/>
 
-                                    <Border Grid.Column="1"
+                                <Border Grid.Column="1"
                                             Background="{StaticResource Color3}"
                                             CornerRadius="3"
                                             Padding="8,2,8,2"
                                             Margin="0,0,20,0"
                                             Height="30">
-                                        <TextBlock Text="{Binding PartNo}"
+                                    <TextBlock Text="{Binding PartNo}"
                                                     Style="{StaticResource button-text}"
                                                     HorizontalAlignment="Center"/>
-                                    </Border>
+                                </Border>
 
-                                    <TextBlock Text="{Binding BrandID}"                   
+                                <TextBlock Text="{Binding BrandID}"                   
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="2"/>
 
-                                    <TextBlock Text="{Binding Description}"                   
+                                <TextBlock Text="{Binding Description}"                   
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="3"/>
 
-                                    <TextBlock Text="{Binding Quantity}"                   
+                                <TextBlock Text="{Binding Quantity}"                   
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="4"/>
-                                
-                                    <TextBlock Text="{Binding UnitPrice}"                   
+
+                                <TextBlock Text="{Binding UnitPrice}"                   
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="5"/>
-                                
-                                    <TextBlock Text="{Binding Discount}"                   
+
+                                <TextBlock Text="{Binding Discount}"                   
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="6"/>
 
-                                    <TextBlock Text="{Binding Amount}"                   
+                                <TextBlock Text="{Binding Amount}"                   
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="7"/>
 
-                                </Grid>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>              
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
 
                 <Border BorderBrush="{StaticResource Color3}" 
-                                BorderThickness="0,0,0,1.5" 
-                                Margin="0,20,0,6">
+                        BorderThickness="0,0,0,1.5" 
+                        Margin="0,20,0,6"
+                        Grid.Row="4">
                     <Grid  Margin="0,0,0,6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="11*"/>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="2.7*"/>
                         </Grid.ColumnDefinitions>
-                            <TextBlock Text="Total"
+                        <TextBlock Text="Total"
                                    Style="{StaticResource card-header}"
                                    Grid.Column="1"/>
-                            <TextBlock Text="{Binding Total, StringFormat=N2}"
+                        <TextBlock Text="{Binding Total, StringFormat=N2}"
                                        Style="{StaticResource regular-text}"
                                        Grid.Column="2"/>
-                        </Grid>
+                    </Grid>
                 </Border>
-            </StackPanel>
-            </ScrollViewer>
+            </Grid>
         </Border>
 
         <StackPanel Grid.Row="2" 
