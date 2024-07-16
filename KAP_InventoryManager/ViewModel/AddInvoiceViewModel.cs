@@ -479,6 +479,10 @@ namespace KAP_InventoryManager.ViewModel
                     {
                         CustomerDiscount = 30;
                     }
+                    else if(SelectedCustomer.CustomerID == "Mr.Pradeep")
+                    {
+                        CustomerDiscount = 35;
+                    }
 
                     if(SelectedCustomer.CustomerID == "JANEESH AUTO PARTS")
                     {
@@ -756,6 +760,7 @@ namespace KAP_InventoryManager.ViewModel
             var invoiceItem = new InvoiceItemModel
             {
                 No = Number,
+                InvoiceNo = InvoiceNo,
                 PartNo = SelectedItem.PartNo,
                 BrandID = SelectedItem.BrandID,
                 Description = SelectedItem.Description,
@@ -830,7 +835,6 @@ namespace KAP_InventoryManager.ViewModel
 
                         foreach (var invoiceItem in InvoiceItems)
                         {
-                            invoiceItem.InvoiceNo = InvoiceNo;
                             await _invoiceRepository.AddInvoiceItemAsync(invoiceItem);
                         }
 

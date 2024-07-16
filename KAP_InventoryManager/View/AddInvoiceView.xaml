@@ -297,7 +297,6 @@
                               SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
                               IsEditable="True"
                               StaysOpenOnEdit="True"
-                              Loaded="ComboBox_Loaded"
                               PreviewTextInput="ComboBox_PreviewTextInput">
                         <ComboBox.Text>
                             <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged" />
