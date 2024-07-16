@@ -308,7 +308,7 @@ namespace KAP_InventoryManager.Utils
                 });
             }).GeneratePdf(filePath);
 
-            //PrintPDF("LBP6030w/6018w", "A4", filePath, 2);
+            PrintPDF("LBP6030w/6018w", "A4", filePath, 2);
         }
 
         public bool PrintPDF(string printer, string paperName, string filename, int copies)

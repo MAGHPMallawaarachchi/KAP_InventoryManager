@@ -122,6 +122,18 @@
                                              Margin="0,0,0,12"
                                              Cursor="Hand"
                                              IsChecked="True"
+                                             Command="{Binding ShowInvoicesViewCommand}">
+                                    <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
+                                        <fa:IconImage 
+                                            Icon="FileInvoice" 
+                                            Style="{StaticResource menuButtonIcon}"/>
+                                        <TextBlock Text="Invoices" Style="{StaticResource menuButtontext}"/>
+                                    </StackPanel>
+                                </RadioButton>
+
+                                <RadioButton Style="{StaticResource menuButton}" 
+                                             Margin="0,0,0,12"
+                                             Cursor="Hand"
                                              Command="{Binding ShowInventoryViewCommand}">
                                     <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
                                         <fa:IconImage 
@@ -143,17 +155,6 @@
                                     </StackPanel>
                                 </RadioButton>
 
-                                <RadioButton Style="{StaticResource menuButton}" 
-                                             Margin="0,0,0,12"
-                                             Cursor="Hand"
-                                             Command="{Binding ShowInvoicesViewCommand}">
-                                    <StackPanel Orientation="Horizontal" Margin="10,8,10,8">
-                                        <fa:IconImage 
-                                            Icon="FileInvoice" 
-                                            Style="{StaticResource menuButtonIcon}"/>
-                                        <TextBlock Text="Invoices" Style="{StaticResource menuButtontext}"/>
-                                    </StackPanel>
-                                </RadioButton>
                                 <RadioButton Style="{StaticResource menuButton}" 
                                              Margin="0,0,0,12"
                                              Cursor="Hand"

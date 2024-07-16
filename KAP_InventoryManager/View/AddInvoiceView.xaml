@@ -324,7 +324,7 @@
                                Style="{StaticResource regular-text}"
                                Grid.Column="5"/>
 
-                    <TextBox Text="{Binding Discount}"
+                    <TextBox Text="{Binding Discount, Mode=TwoWay}"
                              Style="{StaticResource ModalTextBox}"
                              Grid.Column="6"
                              Margin="0,0,20,0"/>
@@ -334,16 +334,23 @@
                                Grid.Column="7"/>
 
 
-                    <Button Background="{StaticResource Blue}"
-                            Style="{StaticResource CustomButtonStyle}"
-                            Command="{Binding AddInvoiceItemCommand}"
-                            Grid.Column="8"
-                            Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <TextBlock Style="{StaticResource button-text}"
-                                   Text="Add"/>
-                    </Button>
+                        <Button Command="{Binding AddInvoiceItemCommand}"
+                                Grid.Column="8"
+                                Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
+                                    <Setter Property="Background" Value="{StaticResource Blue}"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsFocused" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource Red}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <TextBlock Style="{StaticResource button-text}" Text="Add"/>
+                        </Button>
 
-                    <Button Style="{StaticResource IconButtonStyle}"
+                        <Button Style="{StaticResource IconButtonStyle}"
                             Grid.Column="8"
                             Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Command="{Binding DeleteInvoiceItemCommand}">

@@ -193,6 +193,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _customerDiscount = value;
                 OnPropertyChanged(nameof(CustomerDiscount));
+                Discount = CustomerDiscount;
             }
         }
 
