@@ -123,8 +123,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 Customer = customer;
             }
 
-            // Unregister the message handler after receiving the item
-            Messenger.Default.Unregister<CustomerModel>(this, OnMessageReceived);
         }
 
         private void ExecuteDiscardCommand(object obj)
