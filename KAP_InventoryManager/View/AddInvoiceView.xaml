@@ -289,14 +289,16 @@
                     <TextBlock Text="{Binding Number}"                   
                                Style="{StaticResource regular-text}"/>
 
-                    <ComboBox Grid.Column="1"
+                    <ComboBox x:Name="PartNumberComboBox"
+                              Grid.Column="1"
                               Padding="0,0,20,0"
                               Margin="0,0,20,0"
                               ItemsSource="{Binding PartNumbers}"
                               SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
                               IsEditable="True"
                               StaysOpenOnEdit="True"
-                              Loaded="ComboBox_Loaded">
+                              Loaded="ComboBox_Loaded"
+                              PreviewTextInput="ComboBox_PreviewTextInput">
                         <ComboBox.Text>
                             <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged" />
                         </ComboBox.Text>
@@ -315,8 +317,8 @@
                     </Border>
 
                     <TextBlock Text="{Binding SelectedItem.BrandID}"                   
-                        Style="{StaticResource regular-text}"
-                        Grid.Column="2"/>
+                               Style="{StaticResource regular-text}"
+                               Grid.Column="2"/>
 
                     <TextBlock Text="{Binding SelectedItem.Description}"                   
                                Style="{StaticResource regular-text}"
@@ -344,8 +346,9 @@
 
 
                     <Button Command="{Binding AddInvoiceItemCommand}"
-                                Grid.Column="8"
-                                Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            Grid.Column="8"
+                            Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Click="AddButton_Click">
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
                                 <Setter Property="Background" Value="{StaticResource Blue}"/>
@@ -450,7 +453,6 @@
                                 <TextBlock Text="{Binding Amount}"                   
                                                Style="{StaticResource regular-text}"
                                                Grid.Column="7"/>
-
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

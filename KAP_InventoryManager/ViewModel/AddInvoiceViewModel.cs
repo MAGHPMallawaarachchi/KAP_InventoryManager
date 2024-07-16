@@ -121,7 +121,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _partNoSearchText = value;
                 OnPropertyChanged(nameof(PartNoSearchText));
-                DebouncePopulatePartNumbersAsync();
+                _ = FetchPartNumbersAsync(value);
             }
         }
 
@@ -515,6 +515,35 @@ namespace KAP_InventoryManager.ViewModel
             catch (TaskCanceledException)
             {
                 // Ignore the TaskCanceledException
+            }
+        }
+
+        private async Task FetchPartNumbersAsync(string searchText)
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                var partNumbers = new ObservableCollection<string>();
+                if (!string.IsNullOrEmpty(searchText))
+                {
+                    var results = await _itemRepository.SearchPartNoAsync(searchText);
+                    if (results != null)
+                    {
+                        foreach (var suggestion in results)
+                        {
+                            partNumbers.Add(suggestion);
+                        }
+                    }
+                }
+                PartNumbers = partNumbers;
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage($"Error: {ex.Message}");
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
 

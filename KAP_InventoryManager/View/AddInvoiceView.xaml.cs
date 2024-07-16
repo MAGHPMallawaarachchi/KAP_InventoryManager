@@ -79,5 +79,26 @@ namespace KAP_InventoryManager.View
                 this.Close();
             }
         }
+
+        private void ComboBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            var textBox = comboBox.Template.FindName("PART_EditableTextBox", comboBox) as TextBox;
+            var currentText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
+
+            // Update the search text manually
+            var viewModel = DataContext as AddInvoiceViewModel;
+            viewModel.PartNoSearchText = currentText;
+            e.Handled = true;
+
+            // Reopen the dropdown
+            comboBox.IsDropDownOpen = true;
+            textBox.SelectionStart = currentText.Length;
+        }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            PartNumberComboBox.Focus();
+        }
     }
 }
