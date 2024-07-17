@@ -319,7 +319,14 @@
                             <RowDefinition/>
                             <RowDefinition Height="20"/>
                         </Grid.RowDefinitions>
-                        <StackPanel>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="200"/>
@@ -367,7 +374,8 @@
                       
                             <Border BorderBrush="{StaticResource Color3}" 
                                     BorderThickness="0,0,0,1.5" 
-                                    Margin="0,20,0,6">
+                                    Margin="0,20,0,6"
+                                    Grid.Row="1">
                                 <Grid  Margin="0,0,0,6">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="0.5*"/>
@@ -408,7 +416,8 @@
                                      HorizontalContentAlignment="Stretch"
                                      Cursor="Hand"
                                      SelectionMode="Single"
-                                     VerticalContentAlignment="Stretch">
+                                     VerticalContentAlignment="Stretch"
+                                     Grid.Row="2">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid>
@@ -428,9 +437,9 @@
                                             <Border Grid.Column="1"
                                                     Background="{StaticResource Color3}"
                                                     CornerRadius="5"
-                                                    Padding="8,2,8,2"
+                                                    Padding="6,2,6,2"
                                                     Margin="0,0,20,0"
-                                                    Height="30">
+                                                    Height="25">
                                                 <TextBlock Text="{Binding InvoiceNo}"
                                                         Style="{StaticResource button-text}"
                                                         HorizontalAlignment="Center"/>
@@ -483,35 +492,35 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                        </StackPanel>
-                        <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Button Style="{StaticResource DiscardButton}"
-                                    Content="Previous"
-                                    HorizontalAlignment="Left"
-                                    Height="20"
-                                    Width="60"
-                                    Command="{Binding GoToPreviousPageCommand}"/>
-                            <StackPanel Orientation="Horizontal"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Center">
-                                <TextBlock Style="{StaticResource regular-text}"
-                                           Text="Page"
-                                           Margin="0,0,6,0"/>
-                                <TextBlock Style="{StaticResource regular-text}"
-                                           Text="{Binding PageNumber}"/>
-                            </StackPanel>
-                            <Button Style="{StaticResource DiscardButton}"
-                                    Content="Next"
-                                    HorizontalAlignment="Right"
-                                    Height="20"
-                                    Width="60"
-                                    Grid.Column="2"
-                                    Command="{Binding GoToNextPageCommand}"/>
+                            <Grid Grid.Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Button Style="{StaticResource DiscardButton}"
+                                        Content="Previous"
+                                        HorizontalAlignment="Left"
+                                        Height="20"
+                                        Width="60"
+                                        Command="{Binding GoToPreviousPageCommand}"/>
+                                <StackPanel Orientation="Horizontal"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Center">
+                                    <TextBlock Style="{StaticResource regular-text}"
+                                               Text="Page"
+                                               Margin="0,0,6,0"/>
+                                    <TextBlock Style="{StaticResource regular-text}"
+                                               Text="{Binding PageNumber}"/>
+                                </StackPanel>
+                                <Button Style="{StaticResource DiscardButton}"
+                                        Content="Next"
+                                        HorizontalAlignment="Right"
+                                        Height="20"
+                                        Width="60"
+                                        Grid.Column="2"
+                                        Command="{Binding GoToNextPageCommand}"/>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Border>               

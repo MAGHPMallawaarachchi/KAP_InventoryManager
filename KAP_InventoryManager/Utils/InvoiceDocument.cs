@@ -219,7 +219,7 @@ namespace KAP_InventoryManager.Utils
                                     .BorderBottom((float)0.6)
                                     .ShowOnce()
                                     .AlignMiddle()
-                                    .PaddingVertical(3)
+                                    .PaddingVertical(2)
                                     .PaddingHorizontal(4);
                             }
 
@@ -268,7 +268,7 @@ namespace KAP_InventoryManager.Utils
                                 table.Cell().Element(CellStyle).Text(counter.ToString());
                                 table.Cell().Element(CellStyle).AlignCenter().Text(item.PartNo);
                                 table.Cell().Element(CellStyle).AlignCenter().Text(item.BrandID);
-                                table.Cell().Element(CellStyle).AlignLeft().Text(item.Description.Length > 55 ? item.Description.Substring(0, 55) + "..." : item.Description);
+                                table.Cell().Element(CellStyle).AlignLeft().Text(item.Description.Length > 60 ? item.Description.Substring(0, 60): item.Description);
                                 table.Cell().Element(CellStyle).AlignCenter().Text(item.Quantity.ToString());
                                 table.Cell().Element(CellStyle).AlignRight().Text(item.UnitPrice.ToString("N2"));
                                 table.Cell().Element(CellStyle).AlignCenter().Text(item.Discount.ToString());

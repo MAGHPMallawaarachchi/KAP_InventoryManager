@@ -182,7 +182,7 @@ namespace KAP_InventoryManager.ViewModel
             GoToPreviousPageCommand = new ViewModelCommand(ExecuteGoToPreviousPageCommand);
 
             PageNumber = 1;
-            DebtLimit = 500000;
+            DebtLimit = 1000000;
 
             Customers = new ObservableCollection<CustomerModel>();
             PopulateCustomersAsync();
