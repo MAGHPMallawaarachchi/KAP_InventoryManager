@@ -491,7 +491,7 @@ namespace KAP_InventoryManager.ViewModel
                     CustomerDiscount = SelectedPaymentType == "CASH" ? 30 : 25;
                     SelectedRepId = SelectedCustomer.RepID ?? "None";
 
-                    if(SelectedCustomer.CustomerID == "PMS-K" || SelectedCustomer.CustomerID == "PATHMA M. S. RP" || SelectedCustomer.CustomerID == "ORIENT MC-ALA")
+                    if(SelectedCustomer.CustomerID == "PMS-K" || SelectedCustomer.CustomerID == "PATHMA M. S. RP" || SelectedCustomer.CustomerID == "ORIENT MC-ALA" || SelectedCustomer.CustomerID == "DIAS AUTO - C10")
                     {
                         CustomerDiscount = 30;
                     }
