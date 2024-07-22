@@ -115,7 +115,7 @@
                                            Style="{StaticResource regular-text}"
                                            Grid.Column="3"/>
 
-                            <TextBlock Text="{Binding UnitPrice}"                 
+                            <TextBlock Text="{Binding UnitPrice, StringFormat=N2}"                 
                                            Style="{StaticResource regular-text}"
                                            Grid.Column="4"/>
 
@@ -123,7 +123,7 @@
                                            Style="{StaticResource regular-text}"
                                            Grid.Column="5"/>
 
-                            <TextBlock Text="{Binding Amount}"                   
+                            <TextBlock Text="{Binding Amount, StringFormat=N2}"                   
                                            Style="{StaticResource regular-text}"
                                            Grid.Column="6"/>
                         </Grid>

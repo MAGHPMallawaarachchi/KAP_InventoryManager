@@ -30,7 +30,7 @@ namespace KAP_InventoryManager.Repositories
 
                 await ExecuteNonQueryAsync("AddItem", CommandType.StoredProcedure, parameters);
 
-                int itemCount = Convert.ToInt32(parameters[9].Value);
+                int itemCount = Convert.ToInt32(parameters[8].Value);
 
                 if (itemCount == 0)
                 {
