@@ -98,8 +98,11 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 
         private void OnMessageReceived(ItemModel item)
         {
-            Item = item;
-            PopulateTransactionsAsync();
+            if (item != null && (Item == null || Item.PartNo != item.PartNo))
+            {
+                Item = item;
+                PopulateTransactionsAsync();
+            }
         }
 
         private async void PopulateTransactionsAsync()

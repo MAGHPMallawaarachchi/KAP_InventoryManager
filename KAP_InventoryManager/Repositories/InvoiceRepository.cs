@@ -233,7 +233,7 @@ namespace KAP_InventoryManager.Repositories
         {
             try
             {
-                using (var reader = await ExecuteReaderAsync("SELECT InvoiceNo, Status FROM Invoice ORDER BY Date DESC LIMIT 20", CommandType.Text))
+                using (var reader = await ExecuteReaderAsync("SELECT InvoiceNo, CustomerID, Status FROM Invoice ORDER BY Date DESC LIMIT 20", CommandType.Text))
                 {
                     var invoices = new List<InvoiceModel>();
                     int counter = 0;
@@ -244,6 +244,7 @@ namespace KAP_InventoryManager.Repositories
                         {
                             Id = counter,
                             InvoiceNo = reader["InvoiceNo"].ToString(),
+                            CustomerID = reader["CustomerID"].ToString(),
                             Status = reader["Status"].ToString()
                         });
                     }
@@ -277,6 +278,7 @@ namespace KAP_InventoryManager.Repositories
                         {
                             Id = counter,
                             InvoiceNo = reader["InvoiceNo"].ToString(),
+                            CustomerID = reader["CustomerID"].ToString(),
                             Status = reader["Status"].ToString()
                         });
                     }
@@ -386,7 +388,8 @@ namespace KAP_InventoryManager.Repositories
                             Quantity = (int)reader["Quantity"],
                             UnitPrice = (Decimal)reader["UnitPrice"],
                             Discount = (Decimal)reader["Discount"],
-                            Amount = (Decimal)reader["Amount"]
+                            Amount = (Decimal)reader["Amount"],
+                            CustomerID = reader["Name"].ToString(),
                         });
                     }
                     return invoiceItems;

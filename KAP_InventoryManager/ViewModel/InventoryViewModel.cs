@@ -98,11 +98,11 @@ namespace KAP_InventoryManager.ViewModel
 
             ViewModels.Add(new OverviewViewModel());
             ViewModels.Add(new DetailsViewModel());
-            //ViewModels.Add(new TransactionsViewModel());
+            ViewModels.Add(new TransactionsViewModel());
 
             ShowOverviewViewCommand = new ViewModelCommand(ExecuteShowOverviewViewCommand);
             ShowDetailsViewCommand = new ViewModelCommand(ExecuteShowDetailsViewCommand);
-            //ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);
+            ShowTransactionsViewCommand = new ViewModelCommand(ExecuteShowTransactionsViewCommand);
 
             SelectedViewModel = ViewModels.First();
 
@@ -178,6 +178,12 @@ namespace KAP_InventoryManager.ViewModel
         private void ExecuteShowOverviewViewCommand(object obj)
         {
             SelectedViewModel = ViewModels.OfType<OverviewViewModel>().FirstOrDefault();
+        }
+
+        private void ExecuteShowTransactionsViewCommand(object obj)
+        {
+            Messenger.Default.Send(CurrentItem);
+            SelectedViewModel = ViewModels.OfType<TransactionsViewModel>().FirstOrDefault();
         }
 
         private async void PopulateDetails()
