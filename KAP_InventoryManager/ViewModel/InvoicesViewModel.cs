@@ -232,9 +232,9 @@ namespace KAP_InventoryManager.ViewModel
                         {
                             foreach (var item in items)
                             {
-                                if (item.Description.Length > 45)
+                                if (item.Description.Length > 42)
                                 {
-                                    item.Description = item.Description.Substring(0, 45) + "...";
+                                    item.Description = item.Description.Substring(0, 42) + "...";
                                 }
                             }
 

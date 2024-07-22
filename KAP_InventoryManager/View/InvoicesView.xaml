@@ -48,8 +48,8 @@
 
         <Grid Grid.Row="1" Margin="0,20,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.2*"/>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Border Background="{StaticResource Color2}" CornerRadius="8">
                 <StackPanel Orientation="Vertical" Margin="20,20,20,20">
@@ -79,16 +79,16 @@
                     <Border BorderBrush="{StaticResource Color3}" BorderThickness="0,0,0,1.5" Margin="0,10,0,6">
                         <Grid  Margin="0,0,0,6">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="0.7*"/>
-                                <ColumnDefinition Width="3*"/>
-                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="30"/>
+                                <ColumnDefinition Width="130"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="No."
+                            <TextBlock Text="No"
                                        Style="{StaticResource regular-text}"/>
-                            <TextBlock Text="Invoice No."
+                            <TextBlock Text="Invoice No"
                                        Style="{StaticResource regular-text}"
                                        Grid.Column="1"/>
-                            <TextBlock Text="Status"           
+                            <TextBlock Text="Customer"           
                                        Style="{StaticResource regular-text}"
                                        Grid.Column="2"/>
                         </Grid>
@@ -106,9 +106,9 @@
                             <DataTemplate>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="0.7*"/>
-                                        <ColumnDefinition Width="3*"/>
-                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="130"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Text="{Binding Id}"                   
@@ -123,7 +123,10 @@
                                                    Style="{StaticResource button-text}"
                                                    HorizontalAlignment="Center"/>
                                     </Border>
-                                    <StackPanel Orientation="Horizontal" Grid.Column="2">
+                                    <TextBlock Text="{Binding CustomerID}"
+                                               Style="{StaticResource regular-text}"
+                                               Grid.Column="2"/>
+                                    <!--<StackPanel Orientation="Horizontal" Grid.Column="2">
                                         <fa:IconImage Icon="DotCircle"
                                                       Height="14"
                                                       Margin="0,0,4,0">
@@ -149,7 +152,7 @@
                                         </fa:IconImage>
                                         <TextBlock Text="{Binding Status}"
                                                    Style="{StaticResource regular-text}"/>
-                                    </StackPanel>
+                                    </StackPanel>-->
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -298,9 +301,15 @@
                                                    Style="{StaticResource regular-text}"/>
                                         <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
                                                    Style="{StaticResource regular-text}"/>
-                                        <TextBlock Text="{Binding Customer.Address}" 
-                                                   Grid.Column="2" Grid.Row="1"
-                                                   Style="{StaticResource regular-text}"/>
+                                        <StackPanel Orientation="Horizontal"
+                                                    Grid.Column="2" Grid.Row="1">
+                                            <TextBlock Text="{Binding Customer.Address}" 
+                                                       Style="{StaticResource regular-text}"/>
+                                            <TextBlock Text=" " 
+                                                       Style="{StaticResource regular-text}"/>
+                                            <TextBlock Text="{Binding Customer.City}" 
+                                                       Style="{StaticResource regular-text}"/>                                            
+                                        </StackPanel>
 
                                         <TextBlock Text="Phone No." Grid.Row="2"
                                                    Style="{StaticResource regular-text}"/>
@@ -391,8 +400,8 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="0.5*"/>
                                         <ColumnDefinition Width="1.6*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="5*"/>
+                                        <ColumnDefinition Width="1.3*"/>
+                                        <ColumnDefinition Width="4.8*"/>
                                         <ColumnDefinition Width="0.6*"/>
                                         <ColumnDefinition Width="1*"/>
                                         <ColumnDefinition Width="0.7*"/>
@@ -448,8 +457,8 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="0.5*"/>
                                                 <ColumnDefinition Width="1.6*"/>
-                                                <ColumnDefinition Width="1*"/>
-                                                <ColumnDefinition Width="5*"/>
+                                                <ColumnDefinition Width="1.3*"/>
+                                                <ColumnDefinition Width="4.8*"/>
                                                 <ColumnDefinition Width="0.6*"/>
                                                 <ColumnDefinition Width="1*"/>
                                                 <ColumnDefinition Width="0.7*"/>
