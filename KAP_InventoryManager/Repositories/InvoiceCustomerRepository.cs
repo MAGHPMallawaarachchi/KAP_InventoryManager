@@ -24,12 +24,13 @@ namespace KAP_InventoryManager.Repositories
                     new MySqlParameter("@p_ChequeNo", payment.ChequeNo),
                     new MySqlParameter("@p_Bank", payment.Bank),
                     new MySqlParameter("@p_Date", payment.Date),
+                    new MySqlParameter("@p_Comment", payment.Comment),
                     new MySqlParameter("@p_PaymentCount", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
                 };
 
                 await ExecuteNonQueryAsync("AddPayment", CommandType.StoredProcedure, parameters);
 
-                int paymentCount = Convert.ToInt32(parameters[6].Value);
+                int paymentCount = Convert.ToInt32(parameters[7].Value);
 
                 if (paymentCount == 0)
                 {

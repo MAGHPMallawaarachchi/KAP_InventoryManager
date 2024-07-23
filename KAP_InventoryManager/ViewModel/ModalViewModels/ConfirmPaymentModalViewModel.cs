@@ -10,7 +10,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 {
     internal class ConfirmPaymentModalViewModel : ViewModelBase
     {
-        private List<string> _paymentTypes = new List<string> { "DEPOSIT", "CHEQUE" };
+        private List<string> _paymentTypes = new List<string> { "DEPOSIT", "CHEQUE", "CASH" };
         private InvoiceCustomerModel _payment = new InvoiceCustomerModel();
         private InvoiceModel _invoice;
 
@@ -102,6 +102,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                             ChequeNo = Payment.ChequeNo,
                             Bank = Payment.Bank,
                             Date = Payment.Date,
+                            Comment = Payment.Comment,
                         };
 
                         await _invoiceCustomerRepository.ConfirmPaymentAsync(payment);
@@ -126,9 +127,10 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private void ResetTextBoxes()
         {
-            Payment.ChequeNo = "";
-            Payment.Bank = "";
+            Payment.ChequeNo = string.Empty;
+            Payment.Bank = string.Empty;
             Payment.Date = DateTime.Now;
+            Payment.Comment = string.Empty;
         }
     }
 }

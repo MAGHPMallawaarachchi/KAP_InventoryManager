@@ -9,7 +9,7 @@
         xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel.ModalViewModels"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="" Width="370" Height="370"
+        Title="" Width="370" Height="470"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
         Background="Transparent">
@@ -32,11 +32,16 @@
                     <fa:IconImage Icon="Xmark"
                       Style="{StaticResource controlBarButtonIcon}"/>
                 </Button>
-
             </StackPanel>
 
-            <StackPanel Margin="20,0,20,20">
-                <DockPanel>
+            <Grid Margin="20,10,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
+                <DockPanel Margin="0,0,0,20">
                     <TextBlock Text="Confirm Payment" Style="{StaticResource header}"
                                Margin="0,0,20,0"/>
                     <Border Background="{StaticResource Color3}"
@@ -49,46 +54,66 @@
                     </Border>
                 </DockPanel>
 
-                <Grid Margin="0,20,0,0" Height="230">
+                <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="3*"/>
                     </Grid.ColumnDefinitions>
+
                     <Grid.RowDefinitions>
+                        <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Payment Type" Style="{StaticResource regular-text}"/>
-                    <TextBlock Text="Cheque No" Style="{StaticResource regular-text}" Grid.Row="1"/>
-                    <TextBlock Text="Bank" Style="{StaticResource regular-text}" Grid.Row="2"/>
-                    <TextBlock Text="Date" Style="{StaticResource regular-text}" Grid.Row="3"/>
+                    <TextBlock Text="Payment Type" Style="{StaticResource regular-text}" Margin="0,0,0,20"/>
+                    <TextBlock Text="Cheque No" Style="{StaticResource regular-text}" Grid.Row="1" Margin="0,0,0,20"/>
+                    <TextBlock Text="Bank" Style="{StaticResource regular-text}" Grid.Row="2" Margin="0,0,0,20"/>
+                    <TextBlock Text="Date" Style="{StaticResource regular-text}" Grid.Row="3" Margin="0,0,0,20"/>
+                    <TextBlock Text="Comments" Style="{StaticResource regular-text}" Grid.Row="4" Margin="0,0,0,20"/>
 
                     <ComboBox Grid.Column="1" Height="32" 
                               Padding="6,0,6,0"
                               IsEditable="True"
                               SelectedItem="{Binding Payment.PaymentType}"
                               ItemsSource="{Binding PaymentTypes}"
-                              StaysOpenOnEdit="True">
+                              StaysOpenOnEdit="True"
+                              Margin="0,0,0,20">
                     </ComboBox>
 
                     <TextBox Text="{Binding Payment.ChequeNo, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ModalTextBox}"
                              Grid.Column="1"
-                             Grid.Row="1"/>
+                             Grid.Row="1"
+                             Margin="0,0,0,20"/>
 
                     <TextBox Text="{Binding Payment.Bank, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ModalTextBox}"
-                             Grid.Column="1" Grid.Row="2"/>
+                             Grid.Column="1" 
+                             Grid.Row="2"
+                             Margin="0,0,0,20"/>
 
                     <DatePicker SelectedDate="{Binding Payment.Date, UpdateSourceTrigger=PropertyChanged}"
                                 Height="30"
-                                Grid.Column="1" Grid.Row="3"/>
+                                Grid.Column="1" 
+                                Grid.Row="3"
+                                Margin="0,0,0,20"/>
+
+                    <TextBox Text="{Binding Payment.Comment, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource ModalTextBox}"
+                             Grid.Column="1" 
+                             Grid.Row="4"
+                             Height="100" 
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             Margin="0,0,0,20"/>
 
                 </Grid>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,20,0,0">
+
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
                     <Button Margin="0,0,12,0" 
                             Style="{StaticResource DiscardButton}"
                             Command="{Binding DiscardCommand}">
@@ -107,7 +132,8 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
+            
         </StackPanel>
     </Border>
 </Window>
