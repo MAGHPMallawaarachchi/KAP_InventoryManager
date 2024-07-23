@@ -77,9 +77,6 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 Console.WriteLine("Received null invoice");
             }
-
-            // Unregister the message handler after receiving the item
-            Messenger.Default.Unregister<InvoiceModel>(this, OnMessageReceived);
         }
 
         private void ExecuteDiscardCommand(object obj)
