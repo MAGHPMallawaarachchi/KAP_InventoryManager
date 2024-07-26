@@ -201,7 +201,9 @@ namespace KAP_InventoryManager.Utils
                                     table.Cell().Row(1).Column(2).Element(HeaderCellStyle).Text("DUE DATE");
 
                                     table.Cell().Row(2).Column(1).Element(CellStyle).Text(invoice.RepID);
-                                    table.Cell().Row(2).Column(2).Element(CellStyle).Text((invoice.DueDate).ToString("yyyy-MM-dd hh.mmtt"));
+                                    table.Cell().Row(2).Column(2).Element(CellStyle).Text(
+                                        invoice.Terms == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd hh.mmtt")
+                                    );
 
                                 });
                             });
