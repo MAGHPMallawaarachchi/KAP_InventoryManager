@@ -46,7 +46,7 @@ namespace KAP_InventoryManager.Repositories
             var customers = new List<CustomerModel>();
             try
             {
-                using (var reader = await ExecuteReaderAsync("SELECT CustomerID FROM Customer ORDER BY CustomerID DESC LIMIT 20", CommandType.Text))
+                using (var reader = await ExecuteReaderAsync("SELECT CustomerID, Name, City FROM Customer ORDER BY CustomerID DESC", CommandType.Text))
                 {
                     int counter = 0;
                     while (await reader.ReadAsync())
@@ -55,7 +55,9 @@ namespace KAP_InventoryManager.Repositories
                         customers.Add(new CustomerModel
                         {
                             Id = counter,
-                            CustomerID = reader["CustomerID"].ToString()
+                            CustomerID = reader["CustomerID"].ToString(),
+                            Name = reader["Name"].ToString(),
+                            City = reader["City"].ToString()
                         });
                     }
                 }
@@ -113,7 +115,9 @@ namespace KAP_InventoryManager.Repositories
                         customers.Add(new CustomerModel
                         {
                             Id = counter,
-                            CustomerID = reader["CustomerID"].ToString()
+                            CustomerID = reader["CustomerID"].ToString(),
+                            Name = reader["Name"].ToString(),
+                            City = reader["City"].ToString()
                         });
                     }
                 }
