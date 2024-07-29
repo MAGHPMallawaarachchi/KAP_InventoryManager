@@ -11,6 +11,7 @@ namespace KAP_InventoryManager.Model
         public string CustomerId { get; set; }
         public string InvoiceNo { get; set; }
         public string PaymentType { get; set; }
+        public string ReceiptNo { get; set; }
         public string ChequeNo { get; set; }
         public string Bank {  get; set; }
         public DateTime Date { get; set; }
