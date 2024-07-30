@@ -135,13 +135,26 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition Width="65"/>
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="{Binding CurrentSalesRep.Name}" 
                                         Style="{StaticResource card-header}"
                                         Margin="0,0,0,0"
                                         VerticalAlignment="Center"/>
+
+                            <Button Style="{StaticResource CustomButtonStyle}"
+                                    Background="{StaticResource Blue}"
+                                    Foreground="{StaticResource Color5}"
+                                    Height="20"
+                                    Grid.Column="2"
+                                    Click="DownloadButton_Click">
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="10,2,10,2">
+                                    <fa:IconImage Icon="Download" Style="{StaticResource AddButtonIcon}"/>
+                                    <TextBlock Text="Download" Style="{StaticResource AddButtontext}"/>
+                                </StackPanel>
+                            </Button>
 
                             <!--<customcontrols:Button ButtonText="Edit"
                                                    ButtonBackgroundColor="{StaticResource Color3}"

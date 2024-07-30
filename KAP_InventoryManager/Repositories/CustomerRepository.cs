@@ -232,5 +232,31 @@ namespace KAP_InventoryManager.Repositories
 
             return customers;
         }
+
+        public async Task<string> GetCustomerName(string customerID)
+        {
+            string name = null;
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@CustomerID", customerID)
+                };
+
+                using (var reader = await ExecuteReaderAsync("SELECT Name FROM Customer WHERE CustomerID = @CustomerID", CommandType.Text, parameters))
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        name = reader["Name"] is DBNull ? null : reader["Name"].ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get the name. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return name;
+        }
     }
 }

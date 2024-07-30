@@ -16,6 +16,8 @@ namespace KAP_InventoryManager.Model
         Task<decimal> CalculateLastMonthCommissionAsync(string repId);
         Task<decimal> CalculateTodayCommissionAsync(string repId);
         Task<decimal> CalculatePercentageChangeAsync(decimal currentMonthCommission, decimal lastMonthCommission);
+        Task<IEnumerable<string>> GetCustomersFromInovoiceByRep(string repId, DateTime startDate, DateTime endDate, string statusFilter);
+        Task<IEnumerable<PaymentModel>> GetRepReport(string customerId, string repId, DateTime startDate, DateTime endDate, string statusFilter);
 
     }
 }

@@ -194,7 +194,7 @@ namespace KAP_InventoryManager.ViewModel
             SalesReps = new ObservableCollection<SalesRepModel>();
             PopulateSalesRepsAsync();
 
-            //Messenger.Default.Register<string>(this, OnMessageReceived);
+            Messenger.Default.Register<string>(this, OnMessageReceived);
         }
 
         private void ExecuteGoToPreviousPageCommand(object obj)
@@ -305,12 +305,12 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        //private void OnMessageReceived(string message)
-        //{
-        //    if (message == "NewCustomerAdded")
-        //    {
-        //        PopulateCustomersAsync();
-        //    }
-        //}
+        private void OnMessageReceived(string message)
+        {
+            if (message == "RequestRep")
+            {
+                Messenger.Default.Send(CurrentSalesRep);
+            }
+        }
     }
 }

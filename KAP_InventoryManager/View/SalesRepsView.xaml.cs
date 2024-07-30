@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KAP_InventoryManager.View.Modals;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,12 @@ namespace KAP_InventoryManager.View
         public SalesRepsView()
         {
             InitializeComponent();
+        }
+
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            var download = new DownloadRepReportModalView();
+            download.ShowDialog();
         }
     }
 }

@@ -459,6 +459,7 @@
     <Compile Include="Model\ItemModel.cs" />
     <Compile Include="Model\IUserRepository.cs" />
     <Compile Include="Model\PaymentModel.cs" />
+    <Compile Include="Model\RepReportModel.cs" />
     <Compile Include="Model\ReturnItemModel.cs" />
     <Compile Include="Model\ReturnModel.cs" />
     <Compile Include="Model\SalesRepModel.cs" />
@@ -471,6 +472,7 @@
     <Compile Include="Repositories\SalesRepRepository.cs" />
     <Compile Include="Utils\CustomerReport.cs" />
     <Compile Include="Utils\InvoiceDocument.cs" />
+    <Compile Include="Utils\RepReport.cs" />
     <Compile Include="ViewModel\AddInvoiceViewModel.cs" />
     <Compile Include="ViewModel\AddReturnViewModel.cs" />
     <Compile Include="ViewModel\CustomersViewModel.cs" />
@@ -489,6 +491,7 @@
     <Compile Include="ViewModel\ModalViewModels\ConfirmPaymentModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\DownloadAllCustomerReportsModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\DownloadCustomerReportModalViewModel.cs" />
+    <Compile Include="ViewModel\ModalViewModels\DownloadRepReportModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\EditItemModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\NewCustomerModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\NewItemModalViewModel.cs" />
@@ -537,6 +540,9 @@
     </Compile>
     <Compile Include="View\Modals\DownloadCustomerReportModalView.xaml.cs">
       <DependentUpon>DownloadCustomerReportModalView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Modals\DownloadRepReportModalView.xaml.cs">
+      <DependentUpon>DownloadRepReportModalView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Modals\EditItemModalView.xaml.cs">
       <DependentUpon>EditItemModalView.xaml</DependentUpon>
@@ -658,6 +664,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Modals\DownloadCustomerReportModalView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Modals\DownloadRepReportModalView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
