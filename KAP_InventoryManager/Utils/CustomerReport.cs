@@ -112,6 +112,18 @@ namespace KAP_InventoryManager.Utils
                                 .PaddingHorizontal(4);
                             }
 
+                            IContainer TotalCellStyle(IContainer cont)
+                            {
+                                return cont
+                                .DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Calibri).Bold())
+                                .Border((float)0.6)
+                                .Background(Colors.Grey.Lighten2)
+                                .ShowOnce()
+                                .AlignRight()
+                                .AlignMiddle()
+                                .PaddingRight(4);
+                            }
+
                             table.ColumnsDefinition(columns =>
                             {
                                 columns.ConstantColumn(19);
@@ -145,6 +157,7 @@ namespace KAP_InventoryManager.Utils
                             });
 
                             int counter = 0;
+                            decimal totalAmount = 0;
                             foreach (var payment in payments) 
                             {
                                 counter++;
@@ -160,7 +173,13 @@ namespace KAP_InventoryManager.Utils
                                     table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentType ?? " ");
                                     table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentDate != default(DateTime) ? payment.PaymentDate.ToString("dd-MM-yyyy") : " ");
                                 }
+
+                                totalAmount += payment.TotalAmount;
                             }
+
+                            counter++;
+                            table.Cell().Row((uint)counter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
+                            table.Cell().Row((uint)counter).Column(7).Element(CellStyle).AlignRight().Text(totalAmount.ToString("N2")).Bold().FontSize(10);
                         });
                     });
                 });
