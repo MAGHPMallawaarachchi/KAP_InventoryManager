@@ -8,6 +8,7 @@ namespace KAP_InventoryManager.Repositories
     {
         Task AddAsync(ItemModel item);
         Task EditAsync(ItemModel item);
+        Task DeleteAsync(string partNo);
         Task<List<ItemModel>> GetAllAsync();
         Task<IEnumerable<ItemModel>> SearchItemListAsync(string partNo);
         Task<ItemModel> GetByPartNoAsync(string partNo);

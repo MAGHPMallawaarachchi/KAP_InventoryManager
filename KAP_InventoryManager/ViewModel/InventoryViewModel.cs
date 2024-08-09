@@ -200,8 +200,13 @@ namespace KAP_InventoryManager.ViewModel
 
         private void OnMessageReceived(string message)
         {
-            if (message == "NewCustomerAdded")
+            if (message == "NewItemAdded")
             {
+                PopulateItemsAsync();
+            }
+            else if (message == "ItemDeleted")
+            {
+                SearchItemText = string.Empty;
                 PopulateItemsAsync();
             }
             else if (message == "RequestSelectedItem")

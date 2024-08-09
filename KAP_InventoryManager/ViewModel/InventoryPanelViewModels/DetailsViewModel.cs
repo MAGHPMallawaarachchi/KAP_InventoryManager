@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
 {
@@ -94,9 +95,12 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
             }
         }
 
+        public ICommand DeleteItemCommand { get; }
+
         public DetailsViewModel()
         {
             _itemRepository = new ItemRepository();
+            DeleteItemCommand = new ViewModelCommand(ExecuteDeleteItemCommand);
 
             IsCurrentMonthRevenueHigh = false;
 
@@ -104,6 +108,20 @@ namespace KAP_InventoryManager.ViewModel.InventoryPanelViewModels
             Messenger.Default.Send(new object(), "RequestSelectedItem");
             Messenger.Default.Register<object>(this, "RequestSelectedItem", OnRequestSelectedItem);
             Messenger.Default.Register<string>(this, "ItemUpdated", OnItemUpdated);
+        }
+
+        private void ExecuteDeleteItemCommand(object obj)
+        {
+            if(Item != null)
+            {
+                MessageBoxResult result = MessageBox.Show("Are you sure you want to delete this item?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    _itemRepository.DeleteAsync(Item.PartNo);
+                    Messenger.Default.Send("ItemDeleted");
+                }
+            }
         }
 
         private void OnMessageReceived(ItemModel item)

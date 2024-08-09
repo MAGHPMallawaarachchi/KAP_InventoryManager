@@ -80,7 +80,7 @@
                             <fa:IconImage Icon="Search"
                                           Foreground="{StaticResource Color4}"
                                           Height="16"/>
-                            <TextBox Text="{Binding SearchItemText, UpdateSourceTrigger=PropertyChanged}"
+                            <TextBox Text="{Binding SearchItemText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                      Background="{StaticResource Color3}"
                                      BorderThickness="0"
                                      Grid.Column="1"

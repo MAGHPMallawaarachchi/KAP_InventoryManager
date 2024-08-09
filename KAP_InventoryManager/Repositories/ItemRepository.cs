@@ -86,6 +86,30 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
+        public async Task DeleteAsync(string partNo)
+        {
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_PartNo", partNo)
+                };
+
+                await ExecuteNonQueryAsync("DeleteItem", CommandType.StoredProcedure, parameters);
+
+                MessageBox.Show("Item deleted successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (MySqlException ex) when (ex.Number == 45000)
+            {
+                MessageBox.Show($"Failed to delete the item. Reason: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while deleting the item. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
         public async Task<List<ItemModel>> GetAllAsync()
         {
             var items = new List<ItemModel>();
