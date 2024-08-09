@@ -21,8 +21,9 @@ namespace KAP_InventoryManager.Repositories
                     new MySqlParameter("@p_OEMNo", item.OEMNo),
                     new MySqlParameter("@p_Description", item.Description),
                     new MySqlParameter("@p_BrandID", item.BrandID),
-                    new MySqlParameter("@p_Category", item.Category),
                     new MySqlParameter("@p_VehicleBrand", item.VehicleBrand),
+                    new MySqlParameter("@p_Category", item.Category),
+                    new MySqlParameter("@p_QtyInHand", item.QtyInHand),
                     new MySqlParameter("@p_BuyingPrice", item.BuyingPrice),
                     new MySqlParameter("@p_UnitPrice", item.UnitPrice),
                     new MySqlParameter("@p_ItemCount", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
@@ -30,7 +31,7 @@ namespace KAP_InventoryManager.Repositories
 
                 await ExecuteNonQueryAsync("AddItem", CommandType.StoredProcedure, parameters);
 
-                int itemCount = Convert.ToInt32(parameters[8].Value);
+                int itemCount = Convert.ToInt32(parameters[9].Value);
 
                 if (itemCount == 0)
                 {

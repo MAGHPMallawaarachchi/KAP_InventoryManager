@@ -20,6 +20,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private string _brandId;
         private string _category;
         private string _vehicleBrand;
+        private int _qtyInHand;
         private decimal _buyingPrice;
         private decimal _unitPrice;
         private List<string> _brands = new List<string> { "None"};
@@ -30,7 +31,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public string PartNo
         {
-            get { return _partNo; }
+            get => _partNo;
             set
             {
                 _partNo = value;
@@ -40,7 +41,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public string OEMNo
         {
-            get { return _oemNo; }
+            get => _oemNo;
             set
             {
                 _oemNo = value;
@@ -50,7 +51,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public string Description
         {
-            get { return _description; }
+            get => _description;
             set
             {
                 _description = value;
@@ -60,7 +61,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public string BrandID
         {
-            get { return _brandId; }
+            get => _brandId;
             set
             {
                 _brandId = value;
@@ -72,7 +73,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public string Category
         {
-            get { return _category; }
+            get => _category;
             set
             {
                 _category = value;
@@ -82,7 +83,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public string VehicleBrand
         {
-            get { return _vehicleBrand; }
+            get => _vehicleBrand; 
             set
             {
                 _vehicleBrand = value;
@@ -90,9 +91,19 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        public int QtyInHand
+        {
+            get => _qtyInHand;
+            set
+            {
+                _qtyInHand = value;
+                OnPropertyChanged(nameof(QtyInHand));
+            }
+        }
+
         public decimal BuyingPrice
         {
-            get { return _buyingPrice; }
+            get => _buyingPrice;
             set
             {
                 _buyingPrice = value;
@@ -102,7 +113,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public decimal UnitPrice
         {
-            get { return _unitPrice; }
+            get => _unitPrice;
             set
             {
                 _unitPrice = value;
@@ -112,7 +123,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public List<string> Brands
         {
-            get { return _brands; }
+            get => _brands;
             set
             {
                 _brands = value;
@@ -122,7 +133,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public List<string> Categories
         {
-            get { return _categories; }
+            get => _categories;
             set
             {
                 _categories = value;
@@ -132,7 +143,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         public List<string> VehicleBrands
         {
-            get { return _vehicleBrands; }
+            get => _vehicleBrands;
             set
             {
                 _vehicleBrands = value;
@@ -162,7 +173,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             bool validate;
 
-            if (string.IsNullOrEmpty(PartNo) || string.IsNullOrEmpty(Description) || BrandID == "None" || string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(Category) || UnitPrice == 0)
+            if (string.IsNullOrEmpty(PartNo) || string.IsNullOrEmpty(Description) || BrandID == "None" || string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(Category) || UnitPrice == 0 || QtyInHand == 0)
             {
                 validate = false;
             }
@@ -186,6 +197,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                     BrandID = BrandID,
                     Category = Category,
                     VehicleBrand = VehicleBrand,
+                    QtyInHand = QtyInHand,
                     BuyingPrice = BuyingPrice,
                     UnitPrice = UnitPrice,
                 };
@@ -218,6 +230,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             BrandID = Brands.FirstOrDefault();
             Category = string.Empty;
             VehicleBrand = string.Empty;
+            QtyInHand = 0;
             BuyingPrice = 0;
             UnitPrice = 0;
         }

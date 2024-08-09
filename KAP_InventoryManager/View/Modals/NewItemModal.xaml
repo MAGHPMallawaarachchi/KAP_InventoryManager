@@ -52,6 +52,7 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
 
                     <TextBlock Text="Part Number" Style="{StaticResource regular-text}"/>
@@ -60,8 +61,9 @@
                     <TextBlock Text="Brand" Style="{StaticResource regular-text}" Grid.Row="3"/>
                     <TextBlock Text="Category" Style="{StaticResource regular-text}" Grid.Row="4"/>
                     <TextBlock Text="Vehicle Brand" Style="{StaticResource regular-text}" Grid.Row="5"/>
-                    <TextBlock Text="Buying Price" Style="{StaticResource regular-text}" Grid.Row="6"/>
-                    <TextBlock Text="Unit Price" Style="{StaticResource regular-text}" Grid.Row="7"/>
+                    <TextBlock Text="Qty In Hand" Style="{StaticResource regular-text}" Grid.Row="6"/>
+                    <TextBlock Text="Buying Price" Style="{StaticResource regular-text}" Grid.Row="7"/>
+                    <TextBlock Text="Unit Price" Style="{StaticResource regular-text}" Grid.Row="8"/>
 
                     <TextBox Text="{Binding PartNo, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ModalTextBox}"
@@ -99,9 +101,18 @@
                               StaysOpenOnEdit="True">
                     </ComboBox>
 
+                    <TextBox Text="{Binding QtyInHand}"
+                             Style="{StaticResource ModalTextBox}"
+                             Grid.Column="4"
+                             Padding="6,0,6,0"
+                             GotFocus="TextBox_GotFocus"
+                             LostFocus="TextBox_LostFocus"
+                             Grid.Row="6"
+                             Height="32"/>
+
                     <xctk:DecimalUpDown FormatString="F2" 
                                         Value="{Binding BuyingPrice}"
-                                        Grid.Column="1" Grid.Row="6"
+                                        Grid.Column="1" Grid.Row="7"
                                         Style="{StaticResource DecimalUpDownStyle}"
                                         Foreground="{StaticResource Color4}"
                                         IsTabStop="True"
@@ -113,7 +124,7 @@
                                         Style="{StaticResource DecimalUpDownStyle}"
                                         Foreground="{StaticResource Color4}"
                                         IsTabStop="True"
-                                        Grid.Column="1" Grid.Row="7"/>
+                                        Grid.Column="1" Grid.Row="8"/>
 
                 </Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,20,0,0">
@@ -126,8 +137,7 @@
                                    Margin="10,0,10,0"
                                    Foreground="{StaticResource Color4}"/>
                     </Button>
-                    <Button x:Name="AddItemButton"
-                            Style="{StaticResource AddButton}"
+                    <Button Style="{StaticResource AddButton}"
                             Command="{Binding AddItemCommand}">
                         <StackPanel Orientation="Horizontal"
                                     Margin="10,2,10,2">

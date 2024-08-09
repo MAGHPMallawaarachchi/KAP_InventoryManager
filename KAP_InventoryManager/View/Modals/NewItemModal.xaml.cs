@@ -40,5 +40,23 @@ namespace KAP_InventoryManager.View.Modals
         {
            this.Close();
         }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null && textBox.Text == "0")
+            {
+                textBox.Text = string.Empty;
+            }
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null && string.IsNullOrEmpty(textBox.Text))
+            {
+                textBox.Text = "0";
+            }
+        }
     }
 }
