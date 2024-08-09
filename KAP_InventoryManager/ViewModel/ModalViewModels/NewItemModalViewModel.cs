@@ -146,7 +146,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         public NewItemModalViewModel()
         {
             ItemRepository = new ItemRepository();
-            AddItemCommand = new ViewModelCommand(ExecuteAddItemCommand, CanExecuteAddItemCommand);
+            AddItemCommand = new ViewModelCommand(ExecuteAddItemCommand);
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
 
             GetBrands();
@@ -158,7 +158,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             ClearTextBoxes();
         }
 
-        private bool CanExecuteAddItemCommand(object obj)
+        private bool CanExecuteAddItemCommand()
         {
             bool validate;
 
@@ -176,21 +176,24 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private void ExecuteAddItemCommand(object obj)
         {
-            ItemModel newItem = new ItemModel
+            if(CanExecuteAddItemCommand())
             {
-                PartNo = PartNo,
-                OEMNo = OEMNo,
-                Description = Description,
-                BrandID = BrandID,
-                Category = Category,
-                VehicleBrand = VehicleBrand,
-                BuyingPrice = BuyingPrice,
-                UnitPrice = UnitPrice,
-            };
+                ItemModel newItem = new ItemModel
+                {
+                    PartNo = PartNo,
+                    OEMNo = OEMNo,
+                    Description = Description,
+                    BrandID = BrandID,
+                    Category = Category,
+                    VehicleBrand = VehicleBrand,
+                    BuyingPrice = BuyingPrice,
+                    UnitPrice = UnitPrice,
+                };
 
-            ItemRepository.AddAsync(newItem);
-            ClearTextBoxes();
-            Messenger.Default.Send("NewItemAdded");
+                ItemRepository.AddAsync(newItem);
+                ClearTextBoxes();
+                Messenger.Default.Send("NewItemAdded");
+            }
         }
 
         private async void GetBrands()
