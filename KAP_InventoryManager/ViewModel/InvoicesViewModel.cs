@@ -175,7 +175,7 @@ namespace KAP_InventoryManager.ViewModel
             {
 
                 var invoices = (string.IsNullOrEmpty(InvoiceSearchText)
-                    ? await _invoiceRepository.GetAllInvoicesAsync()
+                    ? await _invoiceRepository.GetPastTwoDaysInvoicesAsync()
                     : await _invoiceRepository.SearchInvoiceListAsync(InvoiceSearchText));
 
                 var invoicesList = new List<InvoiceModel>(invoices);

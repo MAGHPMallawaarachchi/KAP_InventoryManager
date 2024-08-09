@@ -572,5 +572,34 @@ namespace KAP_InventoryManager.Repositories
                 return null;
             }
         }
+
+        public async Task<IEnumerable<InvoiceModel>> GetPastTwoDaysInvoicesAsync()
+        {
+            try
+            {
+                using (var reader = await ExecuteReaderAsync("GetPastTwoDaysInvoices", CommandType.StoredProcedure))
+                {
+                    var invoices = new List<InvoiceModel>();
+                    int counter = 0;
+                    while (await reader.ReadAsync())
+                    {
+                        counter++;
+                        invoices.Add(new InvoiceModel
+                        {
+                            Id = counter,
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            CustomerID = reader["CustomerID"].ToString(),
+                            Status = reader["Status"].ToString()
+                        });
+                    }
+                    return invoices;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get the invoices. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
     }
 }
