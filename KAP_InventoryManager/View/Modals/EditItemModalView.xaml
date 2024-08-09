@@ -52,6 +52,7 @@
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
 
                     <TextBlock Text="Part Number" Style="{StaticResource regular-text}"/>
@@ -62,6 +63,7 @@
                     <TextBlock Text="Vehicle Brand" Style="{StaticResource regular-text}" Grid.Row="5"/>
                     <TextBlock Text="Buying Price" Style="{StaticResource regular-text}" Grid.Row="6"/>
                     <TextBlock Text="Unit Price" Style="{StaticResource regular-text}" Grid.Row="7"/>
+                    <TextBlock Text="Add Stock" Style="{StaticResource regular-text}" Grid.Row="8"/>
 
                     <TextBox Text="{Binding PartNo, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ModalTextBox}"
@@ -115,6 +117,15 @@
                                         Foreground="{StaticResource Color4}"
                                         IsTabStop="True"
                                         Grid.Column="1" Grid.Row="7"/>
+                    
+                    <TextBox Text="{Binding NewQty}"
+                             Style="{StaticResource ModalTextBox}"
+                             Grid.Column="4"
+                             Padding="6,0,6,0"
+                             GotFocus="TextBox_GotFocus"
+                             LostFocus="TextBox_LostFocus"
+                             Grid.Row="8"
+                             Height="32"/>                    
 
                 </Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Height="30" Margin="0,20,0,0">

@@ -62,12 +62,14 @@ namespace KAP_InventoryManager.Repositories
                     new MySqlParameter("@p_VehicleBrand", item.VehicleBrand),
                     new MySqlParameter("@p_BuyingPrice", item.BuyingPrice),
                     new MySqlParameter("@p_UnitPrice", item.UnitPrice),
+                    new MySqlParameter("@p_QtyInHand", item.QtyInHand),
+                    new MySqlParameter("@p_TotalQty", item.TotalQty),
                     new MySqlParameter("@p_AffectedRows", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
                 };
 
                 await ExecuteNonQueryAsync("EditItem", CommandType.StoredProcedure, parameters);
 
-                int affectedRows = Convert.ToInt32(parameters[9].Value);
+                int affectedRows = Convert.ToInt32(parameters[10].Value);
 
                 if (affectedRows > 0)
                 {
