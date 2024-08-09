@@ -97,7 +97,7 @@ namespace KAP_InventoryManager.Utils
 
                         foreach(var repReport in repReports)
                         {
-                            c.Item().PaddingTop(10).Text(repReport.CustomrName).FontSize(10).FontFamily(Fonts.Calibri).Bold();
+                            c.Item().PaddingTop(10).Text(repReport.CustomrName+" - "+repReport.CustomerCity).FontSize(10).FontFamily(Fonts.Calibri).Bold();
 
                             c.Item().PaddingTop(5).PaddingBottom(10)
                             .Table(table =>

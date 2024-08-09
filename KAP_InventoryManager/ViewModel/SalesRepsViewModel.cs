@@ -193,6 +193,7 @@ namespace KAP_InventoryManager.ViewModel
 
             SalesReps = new ObservableCollection<SalesRepModel>();
             PopulateSalesRepsAsync();
+            PopulateRevenue(); 
 
             Messenger.Default.Register<string>(this, OnMessageReceived);
         }

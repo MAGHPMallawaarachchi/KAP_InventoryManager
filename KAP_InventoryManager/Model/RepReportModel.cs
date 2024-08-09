@@ -9,6 +9,7 @@ namespace KAP_InventoryManager.Model
     public class RepReportModel
     {
         public string CustomrName { get; set; }
+        public string CustomerCity {  get; set; }
         public IEnumerable<PaymentModel> Payments { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal CommissionAmount { get; set; }

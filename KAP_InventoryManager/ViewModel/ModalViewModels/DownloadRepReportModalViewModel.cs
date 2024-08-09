@@ -20,6 +20,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private DateTime _startDate;
         private DateTime _endDate;
         private SalesRepModel _rep;
+        private CustomerModel _customer;
 
         private readonly ISalesRepRepository _salesRepRepository;
         private readonly ICustomerRepository _customerRepository;
@@ -72,6 +73,16 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 _rep = value;
                 OnPropertyChanged(nameof(Rep));
+            }
+        }
+
+        public CustomerModel Customer
+        {
+            get => _customer;
+            set
+            {
+                _customer = value;
+                OnPropertyChanged(nameof(Customer));
             }
         }
 
@@ -148,11 +159,12 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                         var payments = await _salesRepRepository.GetRepReport(customer, Rep.RepID, StartDate, EndDate, ReportType);
                         decimal totalAmount = payments.Sum(payment => payment.TotalAmount);
                         decimal commissionAmount = totalAmount * Rep.CommissionPercentage / 100;
-                        string customerName = await _customerRepository.GetCustomerName(customer);
+                        Customer = await _customerRepository.GetByCustomerIDAsync(customer);
 
                         repReports.Add(new RepReportModel
                         {
-                            CustomrName = customerName,
+                            CustomrName = Customer.Name,
+                            CustomerCity = Customer.City,
                             Payments = payments,
                             TotalAmount = totalAmount,
                             CommissionAmount = commissionAmount
