@@ -24,38 +24,147 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        
+        <!-- Manual Rotate Animation -->
+        <Storyboard x:Key="SpinnerRotateStoryboard" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                             Storyboard.TargetName="SpinnerIcon"
+                             From="0" To="360" Duration="0:0:1" />
+        </Storyboard>
     </Window.Resources>
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="50"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal"
-                    Margin="0,0,0,20">
-            <Border Background="{StaticResource Color2}"
-                    CornerRadius="8"
-                    Padding="20">
-                <StackPanel>
-                    <TextBlock Text="INVOICE"
-                               Style="{StaticResource numbers}"/>
-                    
-                    <TextBlock Text="{Binding InvoiceNo}"
-                               Style="{StaticResource card-header}"
-                               FontWeight="Regular"/>
+            <StackPanel Orientation="Horizontal"
+                Margin="0,0,0,20">
+                <Border Background="{StaticResource Color2}"
+                CornerRadius="8"
+                Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="INVOICE"
+                           Style="{StaticResource numbers}"/>
+
+                        <TextBlock Text="{Binding InvoiceNo}"
+                           Style="{StaticResource card-header}"
+                           FontWeight="Regular"/>
 
                         <Border BorderThickness="1.5" 
-                            BorderBrush="{StaticResource Color3}"
-                            CornerRadius="8"
-                            Margin="0,10,0,0"
-                            Padding="20">
+                        BorderBrush="{StaticResource Color3}"
+                        CornerRadius="8"
+                        Margin="0,10,0,0"
+                        Padding="20">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="200"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Date &amp; Time"
+                                   Style="{StaticResource regular-text}"/>
+                                <TextBlock Text=":" Grid.Column="1"
+                                   Style="{StaticResource regular-text}"/>
+                                <StackPanel Orientation="Horizontal"
+                                    Grid.Column="2"
+                                    Margin="0,4">
+                                    <TextBlock Text="{Binding CurrentDate}" 
+                                       Style="{StaticResource regular-text}"
+                                       Margin="0,0,5,0"/>
+
+                                    <TextBlock Text="{Binding CurrentTime}" 
+                                       Style="{StaticResource regular-text}"/>
+                                </StackPanel>
+
+                                <TextBlock Text="Terms" Grid.Row="1"
+                                   Style="{StaticResource regular-text}"/>
+                                <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
+                                   Style="{StaticResource regular-text}"/>
+                                <ComboBox Grid.Column="2" Grid.Row="1" Height="25" 
+                                  Padding="6,0,6,0"
+                                  Margin="0,4"
+                                  SelectedValue="{Binding SelectedPaymentType, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValuePath="Content">
+                                    <ComboBoxItem >CASH</ComboBoxItem>
+                                    <ComboBoxItem >CREDIT</ComboBoxItem>
+                                </ComboBox>
+
+                                <TextBlock Text="Discount" Grid.Row="2"
+                                   Style="{StaticResource regular-text}"/>
+                                <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
+                                   Style="{StaticResource regular-text}"/>
+                                <TextBox Text="{Binding CustomerDiscount, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource ModalTextBox}"
+                                 Grid.Column="2" Grid.Row="2"
+                                 Height="25"
+                                 Margin="0,4"/>
+
+                                <TextBlock Text="Sales Rep" Grid.Row="3"
+                                   Style="{StaticResource regular-text}"/>
+                                <TextBlock Text=":" Grid.Column="1" Grid.Row="3"
+                                   Style="{StaticResource regular-text}"/>
+                                <ComboBox Grid.Column="2" Grid.Row="3" Height="25" 
+                                  Padding="6,0,6,0"
+                                  Margin="0,4"
+                                  SelectedValue="{Binding SelectedRepId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  ItemsSource="{Binding SalesReps}"/>
+
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+                <Border Background="{StaticResource Color2}"
+                CornerRadius="8"
+                Padding="20"
+                Margin="20,0,0,0"
+                MinWidth="500">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
                         <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="Customer"
+                               Style="{StaticResource card-header}"/>
+
+                            <ComboBox Grid.Column="1"
+                              Padding="6,0,6,0"
+                              ItemsSource="{Binding Customers}"
+                              SelectedItem="{Binding SelectedCustomerId, UpdateSourceTrigger=PropertyChanged}"
+                              IsEditable="True"
+                              StaysOpenOnEdit="True"
+                              IsTextSearchEnabled="False"
+                              Loaded="ComboBox_Loaded">
+                                <ComboBox.Text>
+                                    <Binding Path="CustomerSearchText" UpdateSourceTrigger="PropertyChanged" />
+                                </ComboBox.Text>
+                            </ComboBox>
+
+                        </Grid>
+
+                        <Grid Margin="0,20,0,0"
+                      Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="150"/>
                                 <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -64,176 +173,113 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Date &amp; Time"
-                                       Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="Messrs"
+                               Style="{StaticResource regular-text}"/>
                             <TextBlock Text=":" Grid.Column="1"
-                                       Style="{StaticResource regular-text}"/>
-                            <StackPanel Orientation="Horizontal"
-                                        Grid.Column="2"
-                                        Margin="0,4">
-                                <TextBlock Text="{Binding CurrentDate}" 
-                                           Style="{StaticResource regular-text}"
-                                           Margin="0,0,5,0"/>
-                                
-                                <TextBlock Text="{Binding CurrentTime}" 
-                                           Style="{StaticResource regular-text}"/>
-                            </StackPanel>
+                               Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="{Binding SelectedCustomer.Name}" 
+                               Grid.Column="2"
+                               Style="{StaticResource regular-text}"/>
 
-                            <TextBlock Text="Terms" Grid.Row="1"
-                                       Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="Address" Grid.Row="1"
+                               Style="{StaticResource regular-text}"/>
                             <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
-                                       Style="{StaticResource regular-text}"/>
-                            <ComboBox Grid.Column="2" Grid.Row="1" Height="25" 
-                                      Padding="6,0,6,0"
-                                      Margin="0,4"
-                                      SelectedValue="{Binding SelectedPaymentType, UpdateSourceTrigger=PropertyChanged}"
-                                      SelectedValuePath="Content">
-                                <ComboBoxItem >CASH</ComboBoxItem>
-                                <ComboBoxItem >CREDIT</ComboBoxItem>
-                            </ComboBox>
-                            
-                            <TextBlock Text="Discount" Grid.Row="2"
-                                       Style="{StaticResource regular-text}"/>
-                            <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
-                                       Style="{StaticResource regular-text}"/>
-                            <TextBox Text="{Binding CustomerDiscount, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource ModalTextBox}"
-                                     Grid.Column="2" Grid.Row="2"
-                                     Height="25"
-                                     Margin="0,4"/>
+                               Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="{Binding SelectedCustomer.Address}" 
+                               Grid.Column="2" Grid.Row="1"
+                               Style="{StaticResource regular-text}"/>
 
-                            <TextBlock Text="Sales Rep" Grid.Row="3"
-                                       Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="City" Grid.Row="2"
+                               Style="{StaticResource regular-text}"/>
+                            <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
+                               Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="{Binding SelectedCustomer.City}" 
+                               Grid.Column="2" Grid.Row="2"
+                               Style="{StaticResource regular-text}"/>
+
+                            <TextBlock Text="Phone No." Grid.Row="3"
+                               Style="{StaticResource regular-text}"/>
                             <TextBlock Text=":" Grid.Column="1" Grid.Row="3"
-                                       Style="{StaticResource regular-text}"/>
-                            <ComboBox Grid.Column="2" Grid.Row="3" Height="25" 
-                                      Padding="6,0,6,0"
-                                      Margin="0,4"
-                                      SelectedValue="{Binding SelectedRepId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                                      ItemsSource="{Binding SalesReps}"/>
+                               Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="{Binding SelectedCustomer.ContactNo}" 
+                               Grid.Column="2" Grid.Row="3"
+                               Style="{StaticResource regular-text}"/>
 
                         </Grid>
-                    </Border>
-                </StackPanel>
-            </Border>
+                    </Grid>
+                </Border>
+
+                <TextBox Text="{Binding ShopName, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{StaticResource ModalTextBox}"
+                 Visibility="{Binding IsJaneesh, Converter={StaticResource BooleanToVisibilityConverter}}"
+                 Height="25"
+                 Width="250"
+                 Margin="20"
+                 VerticalAlignment="Top"/>
+
+            </StackPanel>
+
             <Border Background="{StaticResource Color2}"
-                    CornerRadius="8"
-                    Padding="20"
-                    Margin="20,0,0,0"
-                    MinWidth="500">
+            Grid.Row="1"
+            CornerRadius="8"
+            Padding="20">
+
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Customer"
-                                   Style="{StaticResource card-header}"/>
+                    <TextBlock Text="Items"
+                           Style="{StaticResource card-header}"/>
 
-                        <ComboBox Grid.Column="1"
-                                  Padding="6,0,6,0"
-                                  ItemsSource="{Binding Customers}"
-                                  SelectedItem="{Binding SelectedCustomerId, UpdateSourceTrigger=PropertyChanged}"
-                                  IsEditable="True"
-                                  StaysOpenOnEdit="True"
-                                  IsTextSearchEnabled="False"
-                                  Loaded="ComboBox_Loaded">
-                            <ComboBox.Text>
-                                <Binding Path="CustomerSearchText" UpdateSourceTrigger="PropertyChanged" />
-                            </ComboBox.Text>
-                        </ComboBox>
 
-                    </Grid>
-                    
+                    <Border BorderBrush="{StaticResource Color3}" 
+                    BorderThickness="0,0,0,1.5" 
+                    Margin="0,20,0,6"
+                    Grid.Row="1">
+                        <Grid  Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="5*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2.7*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="No."
+                                       Style="{StaticResource regular-text}"/>
+                            <TextBlock Text="Part No."
+                                       Style="{StaticResource regular-text}"
+                                       Grid.Column="1"/>
+                            <TextBlock Text="Brand"
+                                       Style="{StaticResource regular-text}"
+                                       Grid.Column="2"/>
+                            <TextBlock Text="Description"
+                                       Style="{StaticResource regular-text}"
+                                       Grid.Column="3"/>
+                            <TextBlock Text="Qty"
+                                       Style="{StaticResource regular-text}"
+                                       Grid.Column="4"/>
+                            <TextBlock Text="Unit Price"
+                                       Style="{StaticResource regular-text}"
+                                       Grid.Column="5"/>
+                            <TextBlock Text="Dis%"
+                                       Style="{StaticResource regular-text}"
+                                       Grid.Column="6"/>
+                            <TextBlock Text="Amount (Rs.)"
+                                       Style="{StaticResource regular-text}"
+                                       Grid.Column="7"/>
+                        </Grid>
+                    </Border>
+
                     <Grid Margin="0,20,0,0"
-                          Grid.Row="1">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Text="Messrs"
-                                   Style="{StaticResource regular-text}"/>
-                        <TextBlock Text=":" Grid.Column="1"
-                                   Style="{StaticResource regular-text}"/>
-                        <TextBlock Text="{Binding SelectedCustomer.Name}" 
-                                   Grid.Column="2"
-                                   Style="{StaticResource regular-text}"/>
-
-                        <TextBlock Text="Address" Grid.Row="1"
-                                   Style="{StaticResource regular-text}"/>
-                        <TextBlock Text=":" Grid.Column="1" Grid.Row="1"
-                                   Style="{StaticResource regular-text}"/>
-                        <TextBlock Text="{Binding SelectedCustomer.Address}" 
-                                   Grid.Column="2" Grid.Row="1"
-                                   Style="{StaticResource regular-text}"/>
-
-                        <TextBlock Text="City" Grid.Row="2"
-                                   Style="{StaticResource regular-text}"/>
-                        <TextBlock Text=":" Grid.Column="1" Grid.Row="2"
-                                   Style="{StaticResource regular-text}"/>
-                        <TextBlock Text="{Binding SelectedCustomer.City}" 
-                                   Grid.Column="2" Grid.Row="2"
-                                   Style="{StaticResource regular-text}"/>
-                        
-                        <TextBlock Text="Phone No." Grid.Row="3"
-                                   Style="{StaticResource regular-text}"/>
-                        <TextBlock Text=":" Grid.Column="1" Grid.Row="3"
-                                   Style="{StaticResource regular-text}"/>
-                        <TextBlock Text="{Binding SelectedCustomer.ContactNo}" 
-                                   Grid.Column="2" Grid.Row="3"
-                                   Style="{StaticResource regular-text}"/>
-
-                    </Grid>
-                </Grid>
-            </Border>
-
-            <TextBox Text="{Binding ShopName, UpdateSourceTrigger=PropertyChanged}"
-                     Style="{StaticResource ModalTextBox}"
-                     Visibility="{Binding IsJaneesh, Converter={StaticResource BooleanToVisibilityConverter}}"
-                     Height="25"
-                     Width="250"
-                     Margin="20"
-                     VerticalAlignment="Top"/>
-
-        </StackPanel>
-
-        <Border Background="{StaticResource Color2}"
-                Grid.Row="1"
-                CornerRadius="8"
-                Padding="20">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                
-                <TextBlock Text="Items"
-                               Style="{StaticResource card-header}"/>
-
-
-                <Border BorderBrush="{StaticResource Color3}" 
-                        BorderThickness="0,0,0,1.5" 
-                        Margin="0,20,0,6"
-                        Grid.Row="1">
-                    <Grid  Margin="0,0,0,6">
+                  Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="2*"/>
@@ -242,272 +288,254 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="2.7*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="0.4*"/>
+                            <ColumnDefinition Width="0.4*"/>
+                            <ColumnDefinition Width="0.4*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="No."
-                                           Style="{StaticResource regular-text}"/>
-                        <TextBlock Text="Part No."
-                                           Style="{StaticResource regular-text}"
-                                           Grid.Column="1"/>
-                        <TextBlock Text="Brand"
-                                           Style="{StaticResource regular-text}"
-                                           Grid.Column="2"/>
-                        <TextBlock Text="Description"
-                                           Style="{StaticResource regular-text}"
-                                           Grid.Column="3"/>
-                        <TextBlock Text="Qty"
-                                           Style="{StaticResource regular-text}"
-                                           Grid.Column="4"/>
-                        <TextBlock Text="Unit Price"
-                                           Style="{StaticResource regular-text}"
-                                           Grid.Column="5"/>
-                        <TextBlock Text="Dis%"
-                                           Style="{StaticResource regular-text}"
-                                           Grid.Column="6"/>
-                        <TextBlock Text="Amount (Rs.)"
-                                           Style="{StaticResource regular-text}"
-                                           Grid.Column="7"/>
-                    </Grid>
-                </Border>
 
-                <Grid Margin="0,20,0,0"
-                      Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="5*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1.5*"/>
-                        <ColumnDefinition Width="0.4*"/>
-                        <ColumnDefinition Width="0.4*"/>
-                        <ColumnDefinition Width="0.4*"/>
-                    </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Number}"                   
+                           Style="{StaticResource regular-text}"/>
 
-                    <TextBlock Text="{Binding Number}"                   
-                               Style="{StaticResource regular-text}"/>
+                        <ComboBox x:Name="PartNumberComboBox"
+                          Grid.Column="1"
+                          Padding="0,0,20,0"
+                          Margin="0,0,20,0"
+                          ItemsSource="{Binding PartNumbers}"
+                          SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
+                          IsEditable="True"
+                          StaysOpenOnEdit="True"
+                          IsEnabled="{Binding IsComboboxEnabled}"
+                          PreviewTextInput="ComboBox_PreviewTextInput">
+                            <ComboBox.Text>
+                                <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged"/>
+                            </ComboBox.Text>
+                        </ComboBox>
 
-                    <ComboBox x:Name="PartNumberComboBox"
-                              Grid.Column="1"
-                              Padding="0,0,20,0"
-                              Margin="0,0,20,0"
-                              ItemsSource="{Binding PartNumbers}"
-                              SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
-                              IsEditable="True"
-                              StaysOpenOnEdit="True"
-                              IsEnabled="{Binding IsComboboxEnabled}"
-                              PreviewTextInput="ComboBox_PreviewTextInput">
-                        <ComboBox.Text>
-                            <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged"/>
-                        </ComboBox.Text>
-                    </ComboBox>
+                        <Border Grid.Column="1"
+                        Background="{StaticResource Color3}"
+                        CornerRadius="3"
+                        Padding="8,2,8,2"
+                        Margin="0,0,20,0"
+                        Height="30"
+                        Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="{Binding SelectedPartNo}"
+                               Style="{StaticResource button-text}"
+                               HorizontalAlignment="Center"/>
+                        </Border>
 
-                    <Border Grid.Column="1"
-                            Background="{StaticResource Color3}"
-                            CornerRadius="3"
-                            Padding="8,2,8,2"
-                            Margin="0,0,20,0"
-                            Height="30"
-                            Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <TextBlock Text="{Binding SelectedPartNo}"
-                                   Style="{StaticResource button-text}"
-                                   HorizontalAlignment="Center"/>
-                    </Border>
+                        <TextBlock Text="{Binding SelectedItem.BrandID}"                   
+                           Style="{StaticResource regular-text}"
+                           Grid.Column="2"/>
 
-                    <TextBlock Text="{Binding SelectedItem.BrandID}"                   
-                               Style="{StaticResource regular-text}"
-                               Grid.Column="2"/>
+                        <TextBlock Text="{Binding SelectedItem.Description}"                   
+                           Style="{StaticResource regular-text}"
+                           Grid.Column="3"/>
 
-                    <TextBlock Text="{Binding SelectedItem.Description}"                   
-                               Style="{StaticResource regular-text}"
-                               Grid.Column="3"/>
+                        <TextBox Text="{Binding Quantity}"
+                         Style="{StaticResource ModalTextBox}"
+                         Grid.Column="4"
+                         Margin="0,0,20,0"
+                         GotFocus="TextBox_GotFocus"
+                         LostFocus="TextBox_LostFocus"/>
 
-                    <TextBox Text="{Binding Quantity}"
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="4"
-                             Margin="0,0,20,0"
-                             GotFocus="TextBox_GotFocus"
-                             LostFocus="TextBox_LostFocus"/>
+                        <TextBlock Text="{Binding SelectedItem.UnitPrice, StringFormat=N2}"                   
+                           Style="{StaticResource regular-text}"
+                           Grid.Column="5"/>
 
-                    <TextBlock Text="{Binding SelectedItem.UnitPrice, StringFormat=N2}"                   
-                               Style="{StaticResource regular-text}"
-                               Grid.Column="5"/>
+                        <TextBox Text="{Binding Discount, Mode=TwoWay}"
+                         Style="{StaticResource ModalTextBox}"
+                         Grid.Column="6"
+                         Margin="0,0,20,0"/>
 
-                    <TextBox Text="{Binding Discount, Mode=TwoWay}"
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="6"
-                             Margin="0,0,20,0"/>
-
-                    <TextBlock Text="{Binding Amount, StringFormat=N2}"                   
-                               Style="{StaticResource regular-text}"
-                               Grid.Column="7"/>
+                        <TextBlock Text="{Binding Amount, StringFormat=N2}"                   
+                           Style="{StaticResource regular-text}"
+                           Grid.Column="7"/>
 
 
-                    <Button Command="{Binding AddInvoiceItemCommand}"
-                            Grid.Column="8"
-                            Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Click="AddButton_Click">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
-                                <Setter Property="Background" Value="{StaticResource Blue}"/>
-                                <Style.Triggers>
-                                    <Trigger Property="IsFocused" Value="True">
-                                        <Setter Property="Background" Value="{StaticResource Red}"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <TextBlock Style="{StaticResource button-text}" Text="Add"/>
-                    </Button>
+                        <Button Command="{Binding AddInvoiceItemCommand}"
+                        Grid.Column="8"
+                        Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Click="AddButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
+                                    <Setter Property="Background" Value="{StaticResource Blue}"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsFocused" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource Red}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            <TextBlock Style="{StaticResource button-text}" Text="Add"/>
+                        </Button>
 
-                    <Button Style="{StaticResource IconButtonStyle}"
-                            Grid.Column="8"
-                            Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Command="{Binding DeleteInvoiceItemCommand}">
-                        <fa:IconImage Icon="Trash"
-                                        Foreground="{StaticResource Color5}"
-                                        Height="20"/>
-                    </Button>
-
-                    <Button Style="{StaticResource IconButtonStyle}"
-                            Grid.Column="9"
-                            Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Command="{Binding EditInvoiceItemCommand}">
-                        <fa:IconImage Icon="Pen"
+                        <Button Style="{StaticResource IconButtonStyle}"
+                        Grid.Column="8"
+                        Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Command="{Binding DeleteInvoiceItemCommand}">
+                            <fa:IconImage Icon="Trash"
                                     Foreground="{StaticResource Color5}"
                                     Height="20"/>
-                    </Button>
+                        </Button>
 
-                    <Button Style="{StaticResource IconButtonStyle}"
-                            Grid.Column="10"
-                            Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Command="{Binding CancelInvoiceItemCommand}">
-                        <fa:IconImage Icon="Cancel"
+                        <Button Style="{StaticResource IconButtonStyle}"
+                        Grid.Column="9"
+                        Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Command="{Binding EditInvoiceItemCommand}">
+                            <fa:IconImage Icon="Pen"
                                 Foreground="{StaticResource Color5}"
                                 Height="20"/>
-                    </Button>
+                        </Button>
 
-                </Grid>
+                        <Button Style="{StaticResource IconButtonStyle}"
+                        Grid.Column="10"
+                        Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Command="{Binding CancelInvoiceItemCommand}">
+                            <fa:IconImage Icon="Cancel"
+                            Foreground="{StaticResource Color5}"
+                            Height="20"/>
+                        </Button>
 
-                <ListBox ItemsSource="{Binding InvoiceItems, Mode=TwoWay}" 
-                         SelectedItem="{Binding SelectedInvoiceItem}"
-                         Background="Transparent"
-                         BorderThickness="0"
-                         BorderBrush="Transparent"
-                         HorizontalContentAlignment="Stretch"
-                         Cursor="Hand"
-                         SelectionMode="Single"
-                         Margin="0,30,0,0"
-                         IsHitTestVisible="True"
-                         Grid.Row="3">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="5*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="2.7*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="{Binding No, Mode=TwoWay}"                   
-                                               Style="{StaticResource regular-text}"/>
-
-                                <Border Grid.Column="1"
-                                            Background="{StaticResource Color3}"
-                                            CornerRadius="3"
-                                            Padding="8,2,8,2"
-                                            Margin="0,0,20,0"
-                                            Height="30">
-                                    <TextBlock Text="{Binding PartNo}"
-                                                    Style="{StaticResource button-text}"
-                                                    HorizontalAlignment="Center"/>
-                                </Border>
-
-                                <TextBlock Text="{Binding BrandID}"                   
-                                               Style="{StaticResource regular-text}"
-                                               Grid.Column="2"/>
-
-                                <TextBlock Text="{Binding Description}"                   
-                                               Style="{StaticResource regular-text}"
-                                               Grid.Column="3"/>
-
-                                <TextBlock Text="{Binding Quantity}"                   
-                                               Style="{StaticResource regular-text}"
-                                               Grid.Column="4"/>
-
-                                <TextBlock Text="{Binding UnitPrice}"                   
-                                               Style="{StaticResource regular-text}"
-                                               Grid.Column="5"/>
-
-                                <TextBlock Text="{Binding Discount}"                   
-                                               Style="{StaticResource regular-text}"
-                                               Grid.Column="6"/>
-
-                                <TextBlock Text="{Binding Amount}"                   
-                                               Style="{StaticResource regular-text}"
-                                               Grid.Column="7"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
-
-                <Border BorderBrush="{StaticResource Color3}" 
-                        BorderThickness="0,0,0,1.5" 
-                        Margin="0,20,0,6"
-                        Grid.Row="4">
-                    <Grid  Margin="0,0,0,6">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="11*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="2.7*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Total"
-                                   Style="{StaticResource card-header}"
-                                   Grid.Column="1"/>
-                        <TextBlock Text="{Binding Total, StringFormat=N2}"
-                                       Style="{StaticResource regular-text}"
-                                       Grid.Column="2"/>
                     </Grid>
-                </Border>
-            </Grid>
-        </Border>
 
-        <StackPanel Grid.Row="2" 
-                    HorizontalAlignment="Right" 
-                    Orientation="Horizontal"
-                    Margin="0,20,0,0">
+                    <ListBox ItemsSource="{Binding InvoiceItems, Mode=TwoWay}" 
+                     SelectedItem="{Binding SelectedInvoiceItem}"
+                     Background="Transparent"
+                     BorderThickness="0"
+                     BorderBrush="Transparent"
+                     HorizontalContentAlignment="Stretch"
+                     Cursor="Hand"
+                     SelectionMode="Single"
+                     Margin="0,30,0,0"
+                     IsHitTestVisible="True"
+                     Grid.Row="3">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="5*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="2.7*"/>
+                                    </Grid.ColumnDefinitions>
 
-            <Button Margin="0,0,12,0" 
-                    Style="{StaticResource DiscardButton}"
-                    Command="{Binding ClearInvoiceCommand}">
-                <TextBlock Text="Clear"
-                           FontFamily="Inter"
-                           FontSize="12"
-                           Margin="10,0,10,0"
-                           Foreground="{StaticResource Color4}"/>
-            </Button>
+                                    <TextBlock Text="{Binding No, Mode=TwoWay}"                   
+                                           Style="{StaticResource regular-text}"/>
 
-            <Button Style="{StaticResource CustomButtonStyle}"
-                    Background="{StaticResource Blue}"
-                    Command="{Binding SaveInvoiceCommand}">
-                <StackPanel Orientation="Horizontal"
-                            Margin="8">
-                    <fa:IconImage Icon="Download"
-                                  Height="13"
-                                  Margin="0,0,6,0"
-                                  Foreground="{StaticResource Color5}"/>
-                    <TextBlock Text="Save Invoice"
-                               Style="{StaticResource button-text}"/>
-                </StackPanel>
-            </Button>
-        </StackPanel>
+                                    <Border Grid.Column="1"
+                                        Background="{StaticResource Color3}"
+                                        CornerRadius="3"
+                                        Padding="8,2,8,2"
+                                        Margin="0,0,20,0"
+                                        Height="30">
+                                        <TextBlock Text="{Binding PartNo}"
+                                                Style="{StaticResource button-text}"
+                                                HorizontalAlignment="Center"/>
+                                    </Border>
+
+                                    <TextBlock Text="{Binding BrandID}"                   
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="2"/>
+
+                                    <TextBlock Text="{Binding Description}"                   
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="3"/>
+
+                                    <TextBlock Text="{Binding Quantity}"                   
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="4"/>
+
+                                    <TextBlock Text="{Binding UnitPrice}"                   
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="5"/>
+
+                                    <TextBlock Text="{Binding Discount}"                   
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="6"/>
+
+                                    <TextBlock Text="{Binding Amount}"                   
+                                           Style="{StaticResource regular-text}"
+                                           Grid.Column="7"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+
+                    <Border BorderBrush="{StaticResource Color3}" 
+                    BorderThickness="0,0,0,1.5" 
+                    Margin="0,20,0,6"
+                    Grid.Row="4">
+                        <Grid  Margin="0,0,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="11*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2.7*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Total"
+                               Style="{StaticResource card-header}"
+                               Grid.Column="1"/>
+                            <TextBlock Text="{Binding Total, StringFormat=N2}"
+                                   Style="{StaticResource regular-text}"
+                                   Grid.Column="2"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Row="2" 
+                HorizontalAlignment="Right" 
+                Orientation="Horizontal"
+                Margin="0,20,0,0">
+
+                <Button Margin="0,0,12,0" 
+                Style="{StaticResource DiscardButton}"
+                Command="{Binding ClearInvoiceCommand}">
+                    <TextBlock Text="Clear"
+                       FontFamily="Inter"
+                       FontSize="12"
+                       Margin="10,0,10,0"
+                       Foreground="{StaticResource Color4}"/>
+                </Button>
+
+                <Button Style="{StaticResource CustomButtonStyle}"
+                Background="{StaticResource Blue}"
+                Command="{Binding SaveInvoiceCommand}">
+                    <StackPanel Orientation="Horizontal"
+                        Margin="8">
+                        <fa:IconImage Icon="Download"
+                              Height="13"
+                              Margin="0,0,6,0"
+                              Foreground="{StaticResource Color5}"/>
+                        <TextBlock Text="Save Invoice"
+                           Style="{StaticResource button-text}"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="LoadingOverlay"
+              Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Background="#80000000"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              Panel.ZIndex="1">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- Loading Animation or Message -->
+                <fa:IconImage x:Name="SpinnerIcon" 
+                              Icon="Spinner" 
+                              Height="48" Width="48" 
+                              Foreground="White">
+                    <fa:IconImage.RenderTransform>
+                        <RotateTransform CenterX="24" CenterY="24" />
+                    </fa:IconImage.RenderTransform>
+                </fa:IconImage>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>

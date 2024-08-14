@@ -55,6 +55,7 @@ namespace KAP_InventoryManager.ViewModel
         private string _shopName = "";
         private bool _isJaneesh = false;
         private bool _isComboboxEnabled;
+        private bool _isLoading;
 
         private readonly ICustomerRepository _customerRepository;
         private readonly ISalesRepRepository _salesRepRepository;
@@ -360,6 +361,16 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _isJaneesh = value;
                 OnPropertyChanged(nameof(IsJaneesh));
+            }
+        }
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                OnPropertyChanged(nameof(IsLoading));
             }
         }
 
@@ -831,6 +842,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 if (CanExecuteSaveInvoiceCommand())
                 {
+                    IsLoading = true;
                     var invoice = new InvoiceModel
                     {
                         InvoiceNo = InvoiceNo,
@@ -875,6 +887,10 @@ namespace KAP_InventoryManager.ViewModel
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to save the invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false; 
             }
         }
 

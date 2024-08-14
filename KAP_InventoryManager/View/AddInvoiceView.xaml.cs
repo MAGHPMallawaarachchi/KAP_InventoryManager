@@ -2,6 +2,7 @@
 using KAP_InventoryManager.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
@@ -26,9 +28,42 @@ namespace KAP_InventoryManager.View
         public AddInvoiceView()
         {
             InitializeComponent();
-            viewModel = new AddInvoiceViewModel();
-            DataContext = viewModel;
+      
             Messenger.Default.Register<NotificationMessage>(this, Notify);
+
+            var viewModel = DataContext as AddInvoiceViewModel;
+            if (viewModel != null)
+            {
+                viewModel.PropertyChanged += ViewModel_PropertyChanged;
+            }
+        }
+
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(AddInvoiceViewModel.IsLoading))
+            {
+                var viewModel = (AddInvoiceViewModel)sender;
+                if (viewModel.IsLoading)
+                {
+                    StartSpinnerAnimation();
+                }
+                else
+                {
+                    StopSpinnerAnimation();
+                }
+            }
+        }
+
+        private void StartSpinnerAnimation()
+        {
+            var storyboard = (Storyboard)FindResource("SpinnerRotateStoryboard");
+            storyboard.Begin(LoadingOverlay, true); // Begin the animation
+        }
+
+        private void StopSpinnerAnimation()
+        {
+            var storyboard = (Storyboard)FindResource("SpinnerRotateStoryboard");
+            storyboard.Stop(LoadingOverlay); // Stop the animation
         }
 
         private void ComboBox_Loaded(object sender, RoutedEventArgs e)
