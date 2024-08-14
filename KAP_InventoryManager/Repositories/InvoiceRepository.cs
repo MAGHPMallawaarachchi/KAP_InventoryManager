@@ -279,6 +279,8 @@ namespace KAP_InventoryManager.Repositories
                             Id = counter,
                             InvoiceNo = reader["InvoiceNo"].ToString(),
                             CustomerID = reader["CustomerID"].ToString(),
+                            CustomerName = reader["Name"].ToString(),
+                            CustomerCity = reader["City"].ToString(),
                             Status = reader["Status"].ToString()
                         });
                     }
@@ -589,6 +591,8 @@ namespace KAP_InventoryManager.Repositories
                             Id = counter,
                             InvoiceNo = reader["InvoiceNo"].ToString(),
                             CustomerID = reader["CustomerID"].ToString(),
+                            CustomerName = reader["Name"].ToString(),
+                            CustomerCity = reader["City"].ToString(),
                             Status = reader["Status"].ToString()
                         });
                     }
@@ -598,6 +602,42 @@ namespace KAP_InventoryManager.Repositories
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to get the invoices. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<SalesReportModel>> GetSalesReportAsync(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_StartDate", MySqlDbType.DateTime) { Value = startDate },
+                    new MySqlParameter("@p_EndDate", MySqlDbType.DateTime) { Value = endDate },
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetSalesReport", CommandType.StoredProcedure, parameters))
+                {
+                    var invoices = new List<SalesReportModel>();
+                    while (await reader.ReadAsync())
+                    {
+                        invoices.Add(new SalesReportModel
+                        {
+                            Date = (DateTime)reader["Date"],
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            PaymentTerm = reader["PaymentTerm"].ToString(),
+                            CustomerName = reader["Name"].ToString(),
+                            CustomerCity = reader["City"].ToString(),
+                            DueDate = (DateTime)reader["DueDate"],
+                            Amount = (Decimal)reader["TotalAmount"]
+                        });
+                    }
+                    return invoices;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get the sales report. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }

@@ -19,5 +19,7 @@ namespace KAP_InventoryManager.Model
         public string Status { get; set; }
         public string CustomerID { get; set; }
         public string RepID { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerCity { get; set; }
     }
 }

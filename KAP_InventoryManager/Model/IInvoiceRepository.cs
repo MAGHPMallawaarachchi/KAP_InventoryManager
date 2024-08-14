@@ -28,5 +28,6 @@ namespace KAP_InventoryManager.Model
         Task<InvoiceItemModel> GetInvoiceItemAsync(string invoiceNo, string partNo);
         Task<IEnumerable<InvoiceItemModel>> GetInvoiceItemsAsync(string invoiceNo, int pageSize, int page);
         Task<IEnumerable<InvoiceModel>> GetPastTwoDaysInvoicesAsync();
+        Task<IEnumerable<SalesReportModel>> GetSalesReportAsync(DateTime startDate, DateTime endDate);
     }
 }
