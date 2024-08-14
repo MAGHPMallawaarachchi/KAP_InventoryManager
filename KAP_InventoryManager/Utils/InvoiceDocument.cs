@@ -241,7 +241,7 @@ namespace KAP_InventoryManager.Utils
                             {
                                 columns.ConstantColumn(19);
                                 columns.ConstantColumn(75);
-                                columns.ConstantColumn(56);
+                                columns.ConstantColumn(58);
                                 columns.RelativeColumn();
                                 columns.ConstantColumn(24);
                                 columns.ConstantColumn(48);
