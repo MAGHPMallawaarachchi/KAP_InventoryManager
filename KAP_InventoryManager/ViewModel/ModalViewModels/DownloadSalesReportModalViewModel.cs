@@ -17,6 +17,8 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
     {
         private DateTime _startDate;
         private DateTime _endDate;
+        private List<string> _fileTypes;
+        private string _fileType;
 
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IUserRepository _userRepository;
@@ -41,6 +43,26 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        public List<string> FileTypes
+        {
+            get => _fileTypes;
+            set
+            {
+                _fileTypes = value;
+                OnPropertyChanged(nameof(FileTypes));
+            }
+        }
+
+        public string FileType
+        {
+            get => _fileType;
+            set
+            {
+                _fileType = value;
+                OnPropertyChanged(nameof(FileType));
+            }
+        }
+
         public ICommand DownloadReportCommand { get; }
         public ICommand DiscardCommand { get; }
 
@@ -49,6 +71,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             _invoiceRepository = new InvoiceRepository();
             _userRepository = new UserRepository();
 
+            FileTypes = new List<string> { "PDF", "Excel" };
             Initialize();
 
             DownloadReportCommand = new ViewModelCommand(ExecuteDownloadReportCommand);
@@ -84,14 +107,17 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             try
             {
-                if (StartDate != null && EndDate != null)
+                if (StartDate != null && EndDate != null && FileType != null)
                 {
                     var SalesReport = new SalesReport();
                     string path = await GetPathAsync();
                     string month = EndDate.ToString("MMMM yyyy");
                     var invoices = await _invoiceRepository.GetSalesReportAsync(StartDate, EndDate);
-                   
-                    SalesReport.GenerateSalesReportPDF(invoices, path, month);
+
+                    if (FileType == "PDF")
+                        SalesReport.GenerateSalesReportPDF(invoices, path, month);
+                    else
+                        SalesReport.GenerateSalesReportExcel(invoices, path, month);
 
                     Initialize();
                     Messenger.Default.Send(new NotificationMessage("CloseDialog"));
