@@ -258,5 +258,73 @@ namespace KAP_InventoryManager.Repositories
 
             return name;
         }
+
+        public async Task<IEnumerable<PaymentModel>> GetCustomerInvoiceSummary(string customerId, DateTime startDate, DateTime endDate, string statusFilter)
+        {
+            var payments = new List<PaymentModel>();
+
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_CustomerID", MySqlDbType.VarChar) { Value = customerId },
+                    new MySqlParameter("@p_StartDate", MySqlDbType.DateTime) { Value = startDate },
+                    new MySqlParameter("@p_EndDate", MySqlDbType.DateTime) { Value = endDate },
+                    new MySqlParameter("@statusFilter", MySqlDbType.VarChar) { Value = statusFilter }
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetCustomerInvoiceSummary", CommandType.StoredProcedure, parameters))
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        payments.Add(new PaymentModel
+                        {
+                            Date = reader["Date"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["Date"]),
+                            InvoiceNo = reader["InvoiceNo"] is DBNull ? " " : reader["InvoiceNo"].ToString(),
+                            PaymentTerm = reader["PaymentTerm"] is DBNull ? " " : reader["PaymentTerm"].ToString(),
+                            Status = reader["Status"] is DBNull ? " " : reader["Status"].ToString(),
+                            DueDate = reader["DueDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["DueDate"]),
+                            TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                            PaymentType = reader["PaymentType"] is DBNull ? " " : reader["PaymentType"].ToString(),
+                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"])
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get payments. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return payments;
+        }
+
+        public async Task<IEnumerable<string>> GetCustomersWithoutReps(DateTime startDate, DateTime endDate, string statusFilter)
+        {
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_StartDate", startDate),
+                    new MySqlParameter("@p_EndDate", endDate),
+                    new MySqlParameter("statusFilter", statusFilter)
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetCustomersWithoutReps", CommandType.StoredProcedure, parameters))
+                {
+                    var customers = new List<string>();
+                    while (await reader.ReadAsync())
+                    {
+                        customers.Add(reader["CustomerID"].ToString());
+                    }
+
+                    return customers;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get customer ids. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
     }
 }
