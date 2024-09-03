@@ -21,6 +21,8 @@ namespace KAP_InventoryManager.View
     /// </summary>
     public partial class InvoicesView : UserControl
     {
+        private AddInvoiceView addInvoiceWindow;
+
         public InvoicesView()
         {
             InitializeComponent();
@@ -28,8 +30,15 @@ namespace KAP_InventoryManager.View
 
         private void AddInvoiceButton_Click(object sender, RoutedEventArgs e)
         {
-            var addInvoiceWindow = new AddInvoiceView();
-            addInvoiceWindow.Show();
+            if (addInvoiceWindow == null || !addInvoiceWindow.IsLoaded)
+            {
+                addInvoiceWindow = new AddInvoiceView();
+                addInvoiceWindow.Show();
+            }
+            else
+            {
+                addInvoiceWindow.Focus();
+            }
         }
 
         private void ConfirmPaymentButton_Click(object sender, RoutedEventArgs e)
