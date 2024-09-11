@@ -30,7 +30,7 @@ namespace KAP_InventoryManager.Utils
                 Directory.CreateDirectory(directoryPath);
             }
 
-            var filePath = $@"{directoryPath}\{customer.Name}-{date}.pdf";
+            var filePath = $@"{directoryPath}\{customer.Name}, {customer.City}-{date}.pdf";
             bool showPaymentColumns = reportType != "only pending or overdue";
 
             Document.Create(container =>
@@ -126,15 +126,16 @@ namespace KAP_InventoryManager.Utils
 
                             table.ColumnsDefinition(columns =>
                             {
-                                columns.ConstantColumn(19);
+                                columns.ConstantColumn(18);
+                                columns.ConstantColumn(55);
+                                columns.ConstantColumn(70);
                                 columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.ConstantColumn(50);
-                                columns.RelativeColumn();
+                                columns.ConstantColumn(40);
+                                columns.ConstantColumn(55);
                                 columns.RelativeColumn();
                                 if (showPaymentColumns)
                                 {
+                                    columns.ConstantColumn(50);
                                     columns.RelativeColumn();
                                     columns.RelativeColumn();
                                 }
@@ -151,6 +152,7 @@ namespace KAP_InventoryManager.Utils
                                 header.Cell().Element(HeaderCellStyle).Text("TOTAL AMOUNT");
                                 if (showPaymentColumns)
                                 {
+                                    header.Cell().Element(HeaderCellStyle).Text("RECEIPT NO");
                                     header.Cell().Element(HeaderCellStyle).Text("PAYMENT TYPE");
                                     header.Cell().Element(HeaderCellStyle).Text("PAYMENT DATE");
                                 }
@@ -170,6 +172,7 @@ namespace KAP_InventoryManager.Utils
                                 table.Cell().Element(CellStyle).AlignRight().Text(payment.TotalAmount.ToString("N2"));
                                 if (showPaymentColumns)
                                 {
+                                    table.Cell().Element(CellStyle).AlignCenter().Text(payment.ReceiptNo ?? " ");
                                     table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentType ?? " ");
                                     table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentDate != default(DateTime) ? payment.PaymentDate.ToString("dd-MM-yyyy") : " ");
                                 }

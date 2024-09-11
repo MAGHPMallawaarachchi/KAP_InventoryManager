@@ -193,6 +193,7 @@ namespace KAP_InventoryManager.Repositories
                             Status = reader["Status"] is DBNull ? " " : reader["Status"].ToString(),
                             DueDate = reader["DueDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["DueDate"]),
                             TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                            ReceiptNo = reader["ReceiptNo"] is DBNull ? " " : reader["ReceiptNo"].ToString(),
                             PaymentType = reader["PaymentType"] is DBNull ? " " : reader["PaymentType"].ToString(),
                             PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"])
                         });
