@@ -87,15 +87,16 @@ namespace KAP_InventoryManager.Utils
 
                                 table.ColumnsDefinition(columns =>
                                 {
-                                    columns.ConstantColumn(19);
+                                    columns.ConstantColumn(18);
+                                    columns.ConstantColumn(55);
+                                    columns.ConstantColumn(70);
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.ConstantColumn(50);
-                                    columns.RelativeColumn();
+                                    columns.ConstantColumn(40);
+                                    columns.ConstantColumn(55);
                                     columns.RelativeColumn();
                                     if (showPaymentColumns)
                                     {
+                                        columns.ConstantColumn(50);
                                         columns.RelativeColumn();
                                         columns.RelativeColumn();
                                     }
@@ -112,6 +113,7 @@ namespace KAP_InventoryManager.Utils
                                     header.Cell().Element(HeaderCellStyle).Text("TOTAL AMOUNT");
                                     if (showPaymentColumns)
                                     {
+                                        header.Cell().Element(HeaderCellStyle).Text("RECEIPT NO");
                                         header.Cell().Element(HeaderCellStyle).Text("PAYMENT TYPE");
                                         header.Cell().Element(HeaderCellStyle).Text("PAYMENT DATE");
                                     }
@@ -130,6 +132,7 @@ namespace KAP_InventoryManager.Utils
                                     table.Cell().Element(CellStyle).AlignRight().Text(invoice.TotalAmount.ToString("N2"));
                                     if (showPaymentColumns)
                                     {
+                                        table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReceiptNo ?? " ");
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentType ?? " ");
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentDate != default(DateTime) ? invoice.PaymentDate.ToString("dd-MM-yyyy") : " ");
                                     }
