@@ -128,7 +128,9 @@ namespace KAP_InventoryManager.Utils
                                     table.Cell().Element(CellStyle).AlignCenter().Text(invoice.InvoiceNo);
                                     table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentTerm);
                                     table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Status);
-                                    table.Cell().Element(CellStyle).AlignCenter().Text(invoice.DueDate.ToString("dd-MM-yyyy"));
+                                    table.Cell().Element(CellStyle).AlignLeft().Text(
+                                        invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd")
+                                    );
                                     table.Cell().Element(CellStyle).AlignRight().Text(invoice.TotalAmount.ToString("N2"));
                                     if (showPaymentColumns)
                                     {
