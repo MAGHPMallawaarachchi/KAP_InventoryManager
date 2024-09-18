@@ -23,13 +23,10 @@ namespace KAP_InventoryManager.View
     /// </summary>
     public partial class AddInvoiceView : Window
     {
-        private readonly AddInvoiceViewModel viewModel;
 
         public AddInvoiceView()
         {
-            InitializeComponent();
-      
-            Messenger.Default.Register<NotificationMessage>(this, Notify);
+            InitializeComponent();     
 
             var viewModel = DataContext as AddInvoiceViewModel;
             if (viewModel != null)
@@ -104,14 +101,6 @@ namespace KAP_InventoryManager.View
             if (textBox != null && string.IsNullOrEmpty(textBox.Text))
             {
                 textBox.Text = "0";
-            }
-        }
-
-        private void Notify(NotificationMessage message)
-        {
-            if (message.Notification == "CloseDialog")
-            {
-                this.Close();
             }
         }
 
