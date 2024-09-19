@@ -177,11 +177,11 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
             CustomerRepository.EditAsync(updatedCustomer);
 
+            Messenger.Default.Send("CustomerUpdated");
+
             //close the dialog view
             Messenger.Default.Send(new NotificationMessage("CloseDialog"));
 
-            //send the edited customer back to the customer view
-            Messenger.Default.Send(Customer.CustomerID, "CustomerUpdated");
         }
 
         private void ResetTextBoxes()
