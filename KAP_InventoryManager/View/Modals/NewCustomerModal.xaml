@@ -117,6 +117,7 @@
                               Padding="6,0,6,0"
                               SelectedValue="{Binding RepID, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Content">
+                        <ComboBoxItem >NONE</ComboBoxItem>
                         <ComboBoxItem >SUGITH</ComboBoxItem>
                         <ComboBoxItem >HARSHA</ComboBoxItem>
                         <ComboBoxItem >SHASHIKA</ComboBoxItem>

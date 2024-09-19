@@ -114,6 +114,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             CustomerRepository = new CustomerRepository();
             AddCustomerCommand = new ViewModelCommand(ExecuteAddCustomerCommand, CanExecuteAddCustomerCommand);
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
+            ClearTextBoxes();
         }
 
         private void ExecuteDiscardCommand(object obj)
@@ -165,7 +166,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             ContactNo = string.Empty;
             Email = string.Empty;
             PaymentType = string.Empty;
-            RepID = string.Empty;
+            RepID = "NONE";
         }
     }
 }
