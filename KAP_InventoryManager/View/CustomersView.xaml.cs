@@ -64,5 +64,10 @@ namespace KAP_InventoryManager.View
             DebtChart.Series[0].Values = new ChartValues<double>(chartValues);
         }
 
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            var editCustomerModalWindow = new EditCustomerModalView();
+            editCustomerModalWindow.ShowDialog();
+        }
     }
 }

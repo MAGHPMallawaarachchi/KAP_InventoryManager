@@ -158,7 +158,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
-        public ICommand AddItemCommand { get; }
+        public ICommand UpdateItemCommand { get; }
         public ICommand DiscardCommand { get; }
 
         public EditItemModalViewModel()
@@ -168,7 +168,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             Messenger.Default.Register<ItemModel>(this, OnMessageReceived);
             Messenger.Default.Send("RequestSelectedItem");
 
-            AddItemCommand = new ViewModelCommand(ExecuteEditItemCommand, CanExecuteEditItemCommand);
+            UpdateItemCommand = new ViewModelCommand(ExecuteEditItemCommand, CanExecuteEditItemCommand);
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
         }
 

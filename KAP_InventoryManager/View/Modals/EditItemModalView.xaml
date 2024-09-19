@@ -140,7 +140,7 @@
                     </Button>
                     <Button x:Name="AddItemButton"
                             Style="{StaticResource AddButton}"
-                            Command="{Binding AddItemCommand}">
+                            Command="{Binding UpdateItemCommand}">
                         <StackPanel Orientation="Horizontal"
                                     Margin="10,2,10,2">
                             <fa:IconImage Icon="Edit" Style="{StaticResource AddButtonIcon}"/>

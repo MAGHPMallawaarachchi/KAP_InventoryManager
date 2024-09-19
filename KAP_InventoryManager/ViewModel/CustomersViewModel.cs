@@ -188,6 +188,20 @@ namespace KAP_InventoryManager.ViewModel
             PopulateCustomersAsync();
 
             Messenger.Default.Register<string>(this, OnMessageReceived);
+
+            Messenger.Default.Register<string>(this, "CustomerUpdated", OnCustomerUpdated);
+        }
+
+        private async void OnCustomerUpdated(string obj)
+        {
+            try
+            {
+                CurrentCustomer = await _customerRepository.GetByCustomerIDAsync(obj);
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show($"Failed to update item details. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ExecuteGoToPreviousPageCommand(object obj)

@@ -513,6 +513,7 @@
     <Compile Include="ViewModel\ModalViewModels\DownloadCustomerReportModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\DownloadRepReportModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\DownloadSalesReportModalViewModel.cs" />
+    <Compile Include="ViewModel\ModalViewModels\EditCustomerModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\EditItemModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\NewCustomerModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\NewItemModalViewModel.cs" />
@@ -570,6 +571,9 @@
     </Compile>
     <Compile Include="View\Modals\DownloadSalesReportModalView.xaml.cs">
       <DependentUpon>DownloadSalesReportModalView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Modals\EditCustomerModalView.xaml.cs">
+      <DependentUpon>EditCustomerModalView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Modals\EditItemModalView.xaml.cs">
       <DependentUpon>EditItemModalView.xaml</DependentUpon>
@@ -703,6 +707,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Modals\DownloadSalesReportModalView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Modals\EditCustomerModalView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

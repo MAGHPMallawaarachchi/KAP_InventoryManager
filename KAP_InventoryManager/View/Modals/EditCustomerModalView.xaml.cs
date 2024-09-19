@@ -1,0 +1,81 @@
+﻿using GalaSoft.MvvmLight.Messaging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Interop;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace KAP_InventoryManager.View.Modals
+{
+    /// <summary>
+    /// Interaction logic for EditCustomerModalView.xaml
+    /// </summary>
+    public partial class EditCustomerModalView : Window
+    {
+        private ViewModel.ModalViewModels.EditCustomerModalViewModel _viewModel;
+
+        public EditCustomerModalView()
+        {
+            InitializeComponent();
+            _viewModel = new ViewModel.ModalViewModels.EditCustomerModalViewModel();
+            DataContext = _viewModel;
+            Messenger.Default.Register<NotificationMessage>(this, Notify);
+        }
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int wMsg, int wParam, int lParam);
+
+        private void pnlControlBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            WindowInteropHelper helper = new WindowInteropHelper(this);
+            SendMessage(helper.Handle, 161, 2, 0);
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Notify(NotificationMessage message)
+        {
+            if (message.Notification == "CloseDialog")
+            {
+                this.Close();
+            }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            Messenger.Default.Unregister(this);
+            base.OnClosed(e);
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null && textBox.Text == "0")
+            {
+                textBox.Text = string.Empty;
+            }
+        }
+
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null && string.IsNullOrEmpty(textBox.Text))
+            {
+                textBox.Text = "0";
+            }
+        }
+    }
+}

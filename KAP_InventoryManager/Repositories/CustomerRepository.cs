@@ -41,6 +41,42 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
+        public async Task EditAsync(CustomerModel customer)
+        {
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_CustomerID", customer.CustomerID),
+                    new MySqlParameter("@p_Name", customer.Name),
+                    new MySqlParameter("@p_Address", customer.Address),
+                    new MySqlParameter("@p_Email", customer.Email),
+                    new MySqlParameter("@p_City", customer.City),
+                    new MySqlParameter("@p_ContactNo", customer.ContactNo),
+                    new MySqlParameter("@p_PaymentType", customer.PaymentType),
+                    new MySqlParameter("@p_RepID", string.IsNullOrEmpty(customer.RepID) ? (object)DBNull.Value : customer.RepID),
+                    new MySqlParameter("@p_AffectedRows", MySqlDbType.Int32) { Direction = ParameterDirection.Output }
+                };
+
+                await ExecuteNonQueryAsync("EditCustomer", CommandType.StoredProcedure, parameters);
+
+                int affectedRows = Convert.ToInt32(parameters[8].Value);
+
+                if (affectedRows > 0)
+                {
+                    MessageBox.Show("Customer updated successfully.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Customer does not exist or no changes were made.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to update the Customer. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         public async Task<IEnumerable<CustomerModel>> GetAllAsync()
         {
             var customers = new List<CustomerModel>();

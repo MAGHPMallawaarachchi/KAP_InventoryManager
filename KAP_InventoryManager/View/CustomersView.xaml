@@ -200,9 +200,9 @@
                                 <Button Style="{StaticResource CustomButtonStyle}"
                                         Background="{StaticResource Blue}"
                                         Foreground="{StaticResource Color5}"
-                                        Height="20"
                                         Grid.Column="2"
-                                        Click="DownloadButton_Click">
+                                        Click="DownloadButton_Click"
+                                        Margin="0,0,10,0">
                                     <StackPanel Orientation="Horizontal"
                                                 Margin="10,2,10,2">
                                         <fa:IconImage Icon="Download" Style="{StaticResource AddButtonIcon}"/>
@@ -210,9 +210,11 @@
                                     </StackPanel>
                                 </Button>
 
-                                <!--<customcontrols:Button ButtonText="Edit"
-                                                    ButtonBackgroundColor="{StaticResource Color3}"
-                                                    ButtonIcon="Edit"/>-->
+                                <customcontrols:Button
+                                    ButtonText="Edit"
+                                    ButtonBackgroundColor="{StaticResource Color3}"
+                                    ButtonIcon="PenToSquare"
+                                    ButtonClickHandler="EditButton_Click"/>
                                 
                             </StackPanel>
                         </Grid>
