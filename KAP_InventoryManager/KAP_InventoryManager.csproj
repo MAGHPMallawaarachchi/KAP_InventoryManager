@@ -517,6 +517,7 @@
     <Compile Include="ViewModel\ModalViewModels\EditItemModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\NewCustomerModalViewModel.cs" />
     <Compile Include="ViewModel\ModalViewModels\NewItemModalViewModel.cs" />
+    <Compile Include="ViewModel\ModalViewModels\ViewPaymentModalViewModel.cs" />
     <Compile Include="ViewModel\ReturnsViewModel.cs" />
     <Compile Include="ViewModel\SalesRepsViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
@@ -583,6 +584,9 @@
     </Compile>
     <Compile Include="View\Modals\NewItemModal.xaml.cs">
       <DependentUpon>NewItemModal.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Modals\ViewPaymentModalView.xaml.cs">
+      <DependentUpon>ViewPaymentModalView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ReturnsView.xaml.cs">
       <DependentUpon>ReturnsView.xaml</DependentUpon>
@@ -723,6 +727,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Modals\NewItemModal.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Modals\ViewPaymentModalView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

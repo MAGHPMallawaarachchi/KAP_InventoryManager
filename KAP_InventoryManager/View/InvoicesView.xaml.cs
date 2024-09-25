@@ -47,6 +47,12 @@ namespace KAP_InventoryManager.View
             confirmPaymentWindow.Show();
         }
 
+        private void ViewPaymentButton_Click(object sender, RoutedEventArgs e)
+        {
+            var viewPaymentWindow = new ViewPaymentModalView();
+            viewPaymentWindow.Show();
+        }
+
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
             var download = new DownloadSalesReportModalView();

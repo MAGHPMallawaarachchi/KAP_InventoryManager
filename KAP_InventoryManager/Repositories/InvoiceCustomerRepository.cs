@@ -47,5 +47,43 @@ namespace KAP_InventoryManager.Repositories
                 MessageBox.Show($"Failed to confirm the payment. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        public async Task<InvoiceCustomerModel> GetAsync(string invoiceNo, string customerId)
+        {
+            InvoiceCustomerModel payment = null;
+
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_InvoiceNo", invoiceNo),
+                    new MySqlParameter("@p_CustomerID", customerId)
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetPaymentByInvoice", CommandType.StoredProcedure, parameters))
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        payment = new InvoiceCustomerModel
+                        {
+                            CustomerId = reader["CustomerID"].ToString(),
+                            InvoiceNo = reader["InvoiceNo"].ToString(),
+                            PaymentType = reader["PaymentType"].ToString(),
+                            ReceiptNo = reader["ReceiptNo"].ToString(),
+                            ChequeNo = reader["ChequeNo"].ToString(),
+                            Bank = reader["Bank"].ToString(),
+                            Date = (DateTime)reader["Date"],
+                            Comment = reader["Comment"].ToString(),
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get payment. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            return payment;
+        }
     }
 }

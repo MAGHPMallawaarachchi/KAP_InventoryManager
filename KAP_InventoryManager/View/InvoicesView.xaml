@@ -256,17 +256,16 @@
                                         HorizontalAlignment="Right">
 
                                 <Button Background="{StaticResource Red}"
-                                        Command="{Binding CancelInvoiceCommand}"
-                                        Margin="0,0,8,0">
+                                        Command="{Binding CancelInvoiceCommand}">
                                     <Button.Style>
                                         <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
                                             <Setter Property="Visibility" Value="Visible"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Paid">
-                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Cancelled">
-                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Pending">
                                                     <Setter Property="Visibility" Value="Visible"/>
@@ -286,16 +285,17 @@
                                 </Button>
                                 
                                 <Button Background="{StaticResource Blue}"
-                                        Click="ConfirmPaymentButton_Click">
+                                        Click="ConfirmPaymentButton_Click"
+                                        Margin="8,0,0,0">
                                     <Button.Style>
                                         <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
                                             <Setter Property="Visibility" Value="Visible"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Paid">
-                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Cancelled">
-                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Pending">
                                                     <Setter Property="Visibility" Value="Visible"/>
@@ -312,7 +312,38 @@
                                         <TextBlock Text="Confirm Payment"
                                                    Style="{StaticResource button-text}"/>
                                     </StackPanel>
-                                </Button>                                
+                                </Button>
+
+                                <Button Background="{StaticResource Green}"
+                                        Click="ViewPaymentButton_Click"
+                                        Margin="8,0,0,0">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Paid">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Cancelled">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CurrentInvoice.Status}" Value="Pending">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <StackPanel Orientation="Horizontal"
+                                                Margin="8">
+                                        <fa:IconImage Icon="CircleCheck"
+                                                      Height="13"
+                                                      Margin="0,0,6,0"
+                                                      Foreground="{StaticResource Color5}"/>
+                                        <TextBlock Text="View Payment"
+                                                   Style="{StaticResource button-text}"/>
+                                    </StackPanel>
+                                </Button>
+                                
                             </StackPanel>
                         </Grid>
 

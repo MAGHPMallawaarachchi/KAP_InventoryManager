@@ -9,5 +9,6 @@ namespace KAP_InventoryManager.Model
     internal interface IInvoiceCustomerRepository
     {
         Task ConfirmPaymentAsync(InvoiceCustomerModel payment);
+        Task<InvoiceCustomerModel> GetAsync(string invoiceNo, string customerId);
     }
 }
