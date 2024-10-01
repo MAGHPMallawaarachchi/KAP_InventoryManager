@@ -129,6 +129,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 {
                     var payments = await _customerRepository.GetCustomerInvoiceSummary(customer, StartDate, EndDate, ReportType);
                     decimal totalAmount = payments.Sum(payment => payment.TotalAmount);
+                    decimal totalReturnAmount = payments.Sum(payment => payment.ReturnAmount);
                     Customer = await _customerRepository.GetByCustomerIDAsync(customer);
 
                     customerInvoiceSummaryReports.Add(new CustomerInvoiceSummaryModel
@@ -137,6 +138,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                         CustomerCity = Customer.City,
                         Payments = payments,
                         TotalAmount = totalAmount,
+                        TotalReturnAmount = totalReturnAmount
                     });
                 }
 

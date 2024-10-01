@@ -221,6 +221,7 @@ namespace KAP_InventoryManager.Utils
                             });
 
                             int counter = 0;
+                            int returnCounter = 0;
                             decimal totalAmount = 0;
                             foreach (var invoice in invoices)
                             {
@@ -236,10 +237,23 @@ namespace KAP_InventoryManager.Utils
                                 );
                                 table.Cell().Element(CellStyle).AlignRight().Text(invoice.Amount.ToString("N2"));
 
-                                totalAmount += invoice.Amount;
+                                if (invoice.ReturnAmount != 0)
+                                {
+                                    returnCounter++;
+                                    table.Cell().Element(CellStyle).Text("");
+                                    table.Cell().Element(CellStyle).Text("");
+                                    table.Cell().Element(CellStyle).Text("");
+                                    table.Cell().Element(CellStyle).Text("");
+                                    table.Cell().Element(CellStyle).Text("");
+                                    table.Cell().Element(CellStyle).Text("");
+                                    table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReturnNo);
+                                    table.Cell().Element(CellStyle).AlignRight().Text("-" + invoice.ReturnAmount.ToString("N2"));
+                                }
+
+                                totalAmount = totalAmount + invoice.Amount - invoice.ReturnAmount;
                             }
 
-                            counter++;
+                            counter = counter + returnCounter + 1;
                             table.Cell().Row((uint)counter).Column(7).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
                             table.Cell().Row((uint)counter).Column(8).Element(CellStyle).AlignRight().Text(totalAmount.ToString("N2")).Bold().FontSize(10);
                         });

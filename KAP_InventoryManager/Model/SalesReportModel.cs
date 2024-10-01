@@ -15,5 +15,7 @@ namespace KAP_InventoryManager.Model
         public string CustomerCity { get; set; }
         public DateTime DueDate { get; set; }
         public decimal Amount { get; set; }
+        public string ReturnNo { get; set; }
+        public decimal ReturnAmount { get; set; }
     }
 }

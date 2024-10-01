@@ -231,7 +231,9 @@ namespace KAP_InventoryManager.Repositories
                             TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
                             ReceiptNo = reader["ReceiptNo"] is DBNull ? " " : reader["ReceiptNo"].ToString(),
                             PaymentType = reader["PaymentType"] is DBNull ? " " : reader["PaymentType"].ToString(),
-                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"])
+                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"]),
+                            ReturnNo = reader["ReturnNo"] is DBNull ? "" : reader["ReturnNo"].ToString(),
+                            ReturnAmount = reader["ReturnAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["ReturnAmount"])
                         });
                     }
                 }
@@ -324,7 +326,9 @@ namespace KAP_InventoryManager.Repositories
                             TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
                             ReceiptNo = reader["ReceiptNo"] is DBNull ? " " : reader["ReceiptNo"].ToString(),
                             PaymentType = reader["PaymentType"] is DBNull ? " " : reader["PaymentType"].ToString(),
-                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"])
+                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"]),
+                            ReturnNo = reader["ReturnNo"] is DBNull ? "" : reader["ReturnNo"].ToString(),
+                            ReturnAmount = reader["ReturnAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["ReturnAmount"])
                         });
                     }
                 }

@@ -17,5 +17,7 @@ namespace KAP_InventoryManager.Model
         public string ReceiptNo { get; set; }
         public string PaymentType { get; set; }
         public DateTime PaymentDate { get; set; }
+        public string ReturnNo { get; set; }
+        public decimal ReturnAmount { get; set; }
     }
 }

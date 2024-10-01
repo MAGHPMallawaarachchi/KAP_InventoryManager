@@ -12,5 +12,6 @@ namespace KAP_InventoryManager.Model
         public string CustomerCity { get; set; }
         public IEnumerable<PaymentModel> Payments { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal TotalReturnAmount { get; set; }
     }
 }

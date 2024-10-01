@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using KAP_InventoryManager.Model;
+using KAP_InventoryManager.Repositories;
 using PdfiumViewer;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
@@ -43,13 +45,13 @@ namespace KAP_InventoryManager.Utils
                     IContainer HeaderCellStyle(IContainer cont)
                     {
                         return cont
-                        .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri).Bold())
-                        .Border((float)0.6)
-                        .Background(Colors.Grey.Lighten2)
-                        .ShowOnce()
-                        .MinHeight(16)
-                        .AlignCenter()
-                        .AlignMiddle();
+                            .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri).Bold())
+                            .Border((float)0.6)
+                            .Background(Colors.Grey.Lighten2)
+                            .ShowOnce()
+                            .MinHeight(16)
+                            .AlignCenter()
+                            .AlignMiddle();
                     }
 
                     page.Content()
@@ -91,13 +93,12 @@ namespace KAP_InventoryManager.Utils
                                         .AlignMiddle()
                                         .PaddingLeft(4);
                                 }
-
                             });
                         });
 
-                        foreach(var repReport in repReports)
+                        foreach (var repReport in repReports)
                         {
-                            c.Item().PaddingTop(10).Text(repReport.CustomrName+" - "+repReport.CustomerCity).FontSize(10).FontFamily(Fonts.Calibri).Bold();
+                            c.Item().PaddingTop(10).Text(repReport.CustomrName + " - " + repReport.CustomerCity).FontSize(10).FontFamily(Fonts.Calibri).Bold();
 
                             c.Item().PaddingTop(5).PaddingBottom(10)
                             .Table(table =>
@@ -105,24 +106,24 @@ namespace KAP_InventoryManager.Utils
                                 IContainer CellStyle(IContainer cont)
                                 {
                                     return cont
-                                    .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri))
-                                    .BorderVertical((float)0.6)
-                                    .BorderBottom((float)0.6)
-                                    .ShowOnce()
-                                    .AlignMiddle()
-                                    .PaddingHorizontal(4);
+                                        .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri))
+                                        .BorderVertical((float)0.6)
+                                        .BorderBottom((float)0.6)
+                                        .ShowOnce()
+                                        .AlignMiddle()
+                                        .PaddingHorizontal(4);
                                 }
 
                                 IContainer TotalCellStyle(IContainer cont)
                                 {
                                     return cont
-                                    .DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Calibri).Bold())
-                                    .Border((float)0.6)
-                                    .Background(Colors.Grey.Lighten2)
-                                    .ShowOnce()
-                                    .AlignRight()
-                                    .AlignMiddle()
-                                    .PaddingRight(4);
+                                        .DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Calibri).Bold())
+                                        .Border((float)0.6)
+                                        .Background(Colors.Grey.Lighten2)
+                                        .ShowOnce()
+                                        .AlignRight()
+                                        .AlignMiddle()
+                                        .PaddingRight(4);
                                 }
 
                                 table.ColumnsDefinition(columns =>
@@ -159,11 +160,13 @@ namespace KAP_InventoryManager.Utils
                                     }
                                 });
 
-                                int counter = 0;
+                                int invoiceCounter = 0;
+                                int returnCounter = 0;
+
                                 foreach (var invoice in repReport.Payments)
                                 {
-                                    counter++;
-                                    table.Cell().Element(CellStyle).Text(counter.ToString());
+                                    invoiceCounter++;
+                                    table.Cell().Element(CellStyle).Text(invoiceCounter.ToString());
                                     table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Date.ToString("dd-MM-yyyy"));
                                     table.Cell().Element(CellStyle).AlignCenter().Text(invoice.InvoiceNo);
                                     table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentTerm);
@@ -172,18 +175,37 @@ namespace KAP_InventoryManager.Utils
                                         invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd")
                                     );
                                     table.Cell().Element(CellStyle).AlignRight().Text(invoice.TotalAmount.ToString("N2"));
+
                                     if (showPaymentColumns)
                                     {
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReceiptNo ?? " ");
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentType ?? " ");
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentDate != default(DateTime) ? invoice.PaymentDate.ToString("dd-MM-yyyy") : " ");
                                     }
+
+                                    if (invoice.ReturnAmount != 0)
+                                    {
+                                        returnCounter++;
+                                        table.Cell().Element(CellStyle).Text("");  // Empty row for ReturnNo
+                                        table.Cell().Element(CellStyle).Text("");
+                                        table.Cell().Element(CellStyle).Text("");
+                                        table.Cell().Element(CellStyle).Text("");
+                                        table.Cell().Element(CellStyle).Text("");
+                                        table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReturnNo);
+                                        table.Cell().Element(CellStyle).AlignRight().Text("-" + invoice.ReturnAmount.ToString("N2"));
+
+                                        if (showPaymentColumns)
+                                        {
+                                            table.Cell().Element(CellStyle).AlignCenter().Text("");
+                                            table.Cell().Element(CellStyle).AlignCenter().Text("");
+                                            table.Cell().Element(CellStyle).AlignCenter().Text("");
+                                        }
+                                    }
                                 }
 
-                                counter++;
-                                table.Cell().Row((uint)counter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
-                                table.Cell().Row((uint)counter).Column(7).Element(CellStyle).AlignRight().Text(repReport.TotalAmount.ToString("N2")).Bold().FontSize(10);
-
+                                invoiceCounter = invoiceCounter + returnCounter + 1;
+                                table.Cell().Row((uint)invoiceCounter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
+                                table.Cell().Row((uint)invoiceCounter).Column(7).Element(CellStyle).AlignRight().Text((repReport.TotalAmount - repReport.TotalReturnAmount).ToString("N2")).Bold().FontSize(10);
                             });
                         }
 
@@ -193,24 +215,24 @@ namespace KAP_InventoryManager.Utils
                             IContainer CellStyle(IContainer cont)
                             {
                                 return cont
-                                .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri))
-                                .BorderVertical((float)0.6)
-                                .BorderBottom((float)0.6)
-                                .ShowOnce()
-                                .AlignMiddle()
-                                .PaddingHorizontal(4);
+                                    .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri))
+                                    .BorderVertical((float)0.6)
+                                    .BorderBottom((float)0.6)
+                                    .ShowOnce()
+                                    .AlignMiddle()
+                                    .PaddingHorizontal(4);
                             }
 
                             IContainer TotalCellStyle(IContainer cont)
                             {
                                 return cont
-                                .DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Calibri).Bold())
-                                .Border((float)0.6)
-                                .Background(Colors.Grey.Lighten2)
-                                .ShowOnce()
-                                .AlignRight()
-                                .AlignMiddle()
-                                .PaddingRight(4);
+                                    .DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Calibri).Bold())
+                                    .Border((float)0.6)
+                                    .Background(Colors.Grey.Lighten2)
+                                    .ShowOnce()
+                                    .AlignRight()
+                                    .AlignMiddle()
+                                    .PaddingRight(4);
                             }
 
                             table.ColumnsDefinition(columns =>
@@ -229,29 +251,31 @@ namespace KAP_InventoryManager.Utils
                                 header.Cell().Element(HeaderCellStyle).Text("COMMISSION AMOUNT");
                             });
 
-                            int counter = 0;
+                            int summaryCounter = 0;
                             decimal totalAmount = 0;
                             decimal totalCommissionAmount = 0;
+
                             foreach (var repReport in repReports)
-                            { 
-                                counter++;
-                                table.Cell().Element(CellStyle).Text(counter.ToString());
+                            {
+                                summaryCounter++;
+                                table.Cell().Element(CellStyle).Text(summaryCounter.ToString());
                                 table.Cell().Element(CellStyle).AlignLeft().Text(repReport.CustomrName);
-                                table.Cell().Element(CellStyle).AlignRight().Text(repReport.TotalAmount.ToString("N2"));
+                                table.Cell().Element(CellStyle).AlignRight().Text((repReport.TotalAmount - repReport.TotalReturnAmount).ToString("N2"));
                                 table.Cell().Element(CellStyle).AlignRight().Text(repReport.CommissionAmount.ToString("N2"));
 
-                                totalAmount += repReport.TotalAmount;
+                                totalAmount += (repReport.TotalAmount - repReport.TotalReturnAmount);
                                 totalCommissionAmount += repReport.CommissionAmount;
                             }
 
-                            counter++;
-                            table.Cell().Row((uint)counter).Column(2).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
-                            table.Cell().Row((uint)counter).Column(3).Element(CellStyle).AlignRight().Text(totalAmount.ToString("N2")).Bold().FontSize(10);
-                            table.Cell().Row((uint)counter).Column(4).Element(CellStyle).AlignRight().Text(totalCommissionAmount.ToString("N2")).Bold().FontSize(10);
+                            summaryCounter++;
+                            table.Cell().Row((uint)summaryCounter).Column(2).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
+                            table.Cell().Row((uint)summaryCounter).Column(3).Element(CellStyle).AlignRight().Text(totalAmount.ToString("N2")).Bold().FontSize(10);
+                            table.Cell().Row((uint)summaryCounter).Column(4).Element(CellStyle).AlignRight().Text(totalCommissionAmount.ToString("N2")).Bold().FontSize(10);
                         });
                     });
                 });
             }).GeneratePdf(filePath);
         }
     }
+
 }

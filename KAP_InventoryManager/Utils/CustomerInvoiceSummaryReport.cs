@@ -119,11 +119,12 @@ namespace KAP_InventoryManager.Utils
                                     }
                                 });
 
-                                int counter = 0;
+                                int invoiceCounter = 0;
+                                int returnCounter = 0;
                                 foreach (var invoice in summary.Payments)
                                 {
-                                    counter++;
-                                    table.Cell().Element(CellStyle).Text(counter.ToString());
+                                    invoiceCounter++;
+                                    table.Cell().Element(CellStyle).Text(invoiceCounter.ToString());
                                     table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Date.ToString("dd-MM-yyyy"));
                                     table.Cell().Element(CellStyle).AlignCenter().Text(invoice.InvoiceNo);
                                     table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentTerm);
@@ -138,11 +139,30 @@ namespace KAP_InventoryManager.Utils
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentType ?? " ");
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentDate != default(DateTime) ? invoice.PaymentDate.ToString("dd-MM-yyyy") : " ");
                                     }
+
+                                    if (invoice.ReturnAmount != 0)
+                                    {
+                                        returnCounter++;
+                                        table.Cell().Element(CellStyle).Text("");
+                                        table.Cell().Element(CellStyle).Text("");
+                                        table.Cell().Element(CellStyle).Text("");
+                                        table.Cell().Element(CellStyle).Text("");
+                                        table.Cell().Element(CellStyle).Text("");
+                                        table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReturnNo);
+                                        table.Cell().Element(CellStyle).AlignRight().Text("-" + invoice.ReturnAmount.ToString("N2"));
+
+                                        if (showPaymentColumns)
+                                        {
+                                            table.Cell().Element(CellStyle).AlignCenter().Text("");
+                                            table.Cell().Element(CellStyle).AlignCenter().Text("");
+                                            table.Cell().Element(CellStyle).AlignCenter().Text("");
+                                        }
+                                    }
                                 }
 
-                                counter++;
-                                table.Cell().Row((uint)counter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
-                                table.Cell().Row((uint)counter).Column(7).Element(CellStyle).AlignRight().Text(summary.TotalAmount.ToString("N2")).Bold().FontSize(10);
+                                invoiceCounter = invoiceCounter + returnCounter + 1;
+                                table.Cell().Row((uint)invoiceCounter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
+                                table.Cell().Row((uint)invoiceCounter).Column(7).Element(CellStyle).AlignRight().Text((summary.TotalAmount - summary.TotalReturnAmount).ToString("N2")).Bold().FontSize(10);
 
                             });
                         }

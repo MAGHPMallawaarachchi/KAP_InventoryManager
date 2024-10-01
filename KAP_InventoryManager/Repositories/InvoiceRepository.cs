@@ -629,7 +629,9 @@ namespace KAP_InventoryManager.Repositories
                             CustomerName = reader["Name"].ToString(),
                             CustomerCity = reader["City"].ToString(),
                             DueDate = (DateTime)reader["DueDate"],
-                            Amount = (Decimal)reader["TotalAmount"]
+                            Amount = (Decimal)reader["TotalAmount"],
+                            ReturnNo = reader["ReturnNo"] is DBNull ? "" : reader["ReturnNo"].ToString(),
+                            ReturnAmount = reader["ReturnAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["ReturnAmount"])
                         });
                     }
                     return invoices;
