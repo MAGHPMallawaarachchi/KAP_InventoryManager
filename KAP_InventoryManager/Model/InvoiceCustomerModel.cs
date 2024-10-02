@@ -15,6 +15,7 @@ namespace KAP_InventoryManager.Model
         public string ChequeNo { get; set; }
         public string Bank {  get; set; }
         public DateTime Date { get; set; }
+        public decimal Amount { get; set; }
         public string Comment { get; set; }
     }
 }

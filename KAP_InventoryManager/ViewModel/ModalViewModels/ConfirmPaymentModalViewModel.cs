@@ -102,6 +102,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                             ReceiptNo = Payment.ReceiptNo,
                             ChequeNo = Payment.ChequeNo,
                             Bank = Payment.Bank,
+                            Amount = Payment.Amount,
                             Date = Payment.Date,
                             Comment = Payment.Comment,
                         };
@@ -133,6 +134,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             Payment.Date = DateTime.Now;
             Payment.Comment = string.Empty;
             Payment.ReceiptNo = string.Empty;
+            Payment.Amount = 0;
         }
     }
 }
