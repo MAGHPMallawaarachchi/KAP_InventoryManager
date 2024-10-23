@@ -88,7 +88,8 @@
                     <ComboBox Grid.Column="1" Grid.Row="4" Height="32" 
                               Padding="6,0,6,0"
                               IsEditable="True"
-                              SelectedItem="{Binding Category}"
+                              Text="{Binding NewCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              SelectedItem="{Binding Category, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               ItemsSource="{Binding Categories}"
                               StaysOpenOnEdit="True">
                     </ComboBox>

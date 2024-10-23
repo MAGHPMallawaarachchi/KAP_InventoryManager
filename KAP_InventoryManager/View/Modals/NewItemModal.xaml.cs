@@ -58,5 +58,6 @@ namespace KAP_InventoryManager.View.Modals
                 textBox.Text = "0";
             }
         }
+
     }
 }

@@ -23,6 +23,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private int _qtyInHand;
         private decimal _buyingPrice;
         private decimal _unitPrice;
+        private string _newCategory;
         private List<string> _brands = new List<string> { "None"};
         private List<string> _categories;
         private List<string> _vehicleBrands;
@@ -77,7 +78,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             set
             {
                 _category = value;
-                OnPropertyChanged(nameof(Category));
+                OnPropertyChanged(nameof(Category));               
             }
         }
 
@@ -121,6 +122,16 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        public string NewCategory
+        {
+            get => _newCategory;
+            set
+            {
+                _newCategory = value;
+                OnPropertyChanged(nameof(NewCategory));
+            }
+        }
+
         public List<string> Brands
         {
             get => _brands;
@@ -161,7 +172,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
 
             GetBrands();
-            VehicleBrands = new List<string> { "TOYOTA", "NISSAN", "SUZUKI", "MITSUBISHI", "PERODUA", "ISUZU", "MAZDA", "DIHATSU", "HONDA"};
+            VehicleBrands = new List<string> { "", "TOYOTA", "NISSAN", "SUZUKI", "MITSUBISHI", "PERODUA", "ISUZU", "MAZDA", "DAIHATSU", "HONDA"};
         }
 
         private void ExecuteDiscardCommand(object obj)
@@ -173,12 +184,17 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             bool validate;
 
-            if (string.IsNullOrEmpty(PartNo) || string.IsNullOrEmpty(Description) || BrandID == "None" || string.IsNullOrEmpty(BrandID) || string.IsNullOrEmpty(Category) || UnitPrice == 0 || QtyInHand == 0)
+            if (string.IsNullOrEmpty(PartNo) || string.IsNullOrEmpty(Description) || BrandID == "None" || string.IsNullOrEmpty(BrandID) || UnitPrice == 0 || QtyInHand == 0 || (string.IsNullOrEmpty(Category) && string.IsNullOrEmpty(NewCategory)))
             {
                 validate = false;
             }
             else
             {
+                if(string.IsNullOrEmpty(Category) && !string.IsNullOrEmpty(NewCategory))
+                {
+                    Category = NewCategory;
+                }
+
                 validate = true;
             }
 
@@ -229,7 +245,8 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             Description = string.Empty;
             BrandID = Brands.FirstOrDefault();
             Category = string.Empty;
-            VehicleBrand = string.Empty;
+            NewCategory = string.Empty;
+            VehicleBrand = "";
             QtyInHand = 0;
             BuyingPrice = 0;
             UnitPrice = 0;
