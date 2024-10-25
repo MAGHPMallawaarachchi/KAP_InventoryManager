@@ -174,7 +174,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 {
                     var repReport = new RepReport();
                     string path = await GetPathAsync();
-                    string month = EndDate.ToString("MMMM yyyy");
+                    string month = StartDate.ToString("MMMM yyyy");
                     var repReports = new List<RepReportModel>();
                     var customers = await _salesRepRepository.GetCustomersFromInovoiceByRep(Rep.RepID, StartDate, EndDate, ReportType);
 
@@ -198,9 +198,9 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                     }
 
                     if(FileType == "PDF")
-                        repReport.GenerateRepReportPDF(Rep, repReports, path, month, ReportType);
+                        repReport.GenerateRepReportPDF(Rep, repReports, path, month, ReportType, StartDate, EndDate);
                     else
-                        repReport.GenerateRepReportExcel(Rep, repReports, path, month, ReportType);
+                        repReport.GenerateRepReportExcel(Rep, repReports, path, month, ReportType, StartDate, EndDate);
 
                     Initialize();
                     Messenger.Default.Send(new NotificationMessage("CloseDialog"));
