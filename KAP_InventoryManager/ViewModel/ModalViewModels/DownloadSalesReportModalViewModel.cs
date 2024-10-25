@@ -111,7 +111,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 {
                     var SalesReport = new SalesReport();
                     string path = await GetPathAsync();
-                    string month = EndDate.ToString("MMMM yyyy");
+                    string month = StartDate.ToString("MMMM yyyy");
                     var invoices = await _invoiceRepository.GetSalesReportAsync(StartDate, EndDate);
 
                     if (FileType == "PDF")

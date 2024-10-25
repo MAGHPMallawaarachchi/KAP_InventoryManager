@@ -111,7 +111,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 var customerReport = new CustomerReport();
                 string path = await GetPathAsync();
-                string month = EndDate.ToString("MMMM yyyy");
+                string month = StartDate.ToString("MMMM yyyy");
 
                 // Fetch the list of customers
                 var customers = await _customerRepository.GetCustomersFromInvoice(StartDate, EndDate);
