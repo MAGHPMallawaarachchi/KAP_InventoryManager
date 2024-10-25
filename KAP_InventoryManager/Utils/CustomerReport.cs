@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using KAP_InventoryManager.Model;
+using OfficeOpenXml.Style;
+using OfficeOpenXml;
 using PdfiumViewer;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
@@ -18,7 +20,7 @@ namespace KAP_InventoryManager.Utils
 {
     public class CustomerReport
     {
-        public void GenerateCustomerReportPDF(CustomerModel customer, IEnumerable<PaymentModel> payments, string path, string month, string reportType)
+        public void GenerateCustomerReportPDF(CustomerModel customer, IEnumerable<PaymentModel> payments, string path, string month, string reportType, DateTime start, DateTime end)
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -64,14 +66,14 @@ namespace KAP_InventoryManager.Utils
                                 table.ColumnsDefinition(columns =>
                                 {
                                     columns.ConstantColumn(55);
-                                    columns.ConstantColumn(230);
+                                    columns.ConstantColumn(290);
                                 });
 
                                 table.Cell().Row(2).Column(1).Element(HeaderBlock).Text("MESSRS");
-                                table.Cell().Row(3).Column(1).Element(HeaderBlock).Text("CITY");
+                                table.Cell().Row(3).Column(1).Element(HeaderBlock).Text("MONTH");
 
-                                table.Cell().Row(2).Column(2).Element(Block).Text(customer.Name);
-                                table.Cell().Row(3).Column(2).Element(Block).Text(customer.City);
+                                table.Cell().Row(2).Column(2).Element(Block).Text(customer.Name+ " - " +customer.City);
+                                table.Cell().Row(3).Column(2).Element(Block).Text(month + " (" + start.ToString("yyyy-MM-dd") + " - " + end.ToString("yyyy-MM-dd") + ")");
 
                                 IContainer HeaderBlock(IContainer cont)
                                 {
@@ -165,7 +167,7 @@ namespace KAP_InventoryManager.Utils
                             {
                                 invoiceCounter++;
                                 table.Cell().Element(CellStyle).Text(invoiceCounter.ToString());
-                                table.Cell().Element(CellStyle).AlignCenter().Text(payment.Date.ToString("dd-MM-yyyy"));
+                                table.Cell().Element(CellStyle).AlignCenter().Text(payment.Date.ToString("yyyy-MM-dd"));
                                 table.Cell().Element(CellStyle).AlignCenter().Text(payment.InvoiceNo);
                                 table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentTerm);
                                 table.Cell().Element(CellStyle).AlignCenter().Text(payment.Status);
@@ -177,7 +179,7 @@ namespace KAP_InventoryManager.Utils
                                 {
                                     table.Cell().Element(CellStyle).AlignCenter().Text(payment.ReceiptNo ?? " ");
                                     table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentType ?? " ");
-                                    table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentDate != default(DateTime) ? payment.PaymentDate.ToString("dd-MM-yyyy") : " ");
+                                    table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentDate != default(DateTime) ? payment.PaymentDate.ToString("yyyy-MM-dd") : " ");
                                 }
 
                                 if (payment.ReturnAmount != 0)
@@ -209,6 +211,173 @@ namespace KAP_InventoryManager.Utils
                     });
                 });
             }).GeneratePdf(filePath);
+        }
+
+        public void GenerateCustomerReportExcel(CustomerModel customer, IEnumerable<PaymentModel> payments, string path, string month, string reportType, DateTime start, DateTime end)
+        {
+            // Ensure EPPlus license is set
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+
+            string date = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            var directoryPath = $@"{path}customer-reports\{month}\{reportType}";
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            var filePath = $@"{directoryPath}\{customer.Name}, {customer.City}-{date}.xlsx";
+            bool showPaymentColumns = reportType != "only pending or overdue";
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Customer Report");
+
+                worksheet.DefaultRowHeight = 18;
+
+                // Header for the Rep Information
+                worksheet.Cells[1, 1].Value = "MESSRS";
+                worksheet.Cells[2, 1].Value = "MONTH";
+                worksheet.Cells[1, 2].Value = customer.Name+ " - " +customer.City;
+                worksheet.Cells[2, 2].Value = month+ " (" +start.ToString("yyyy-MM-dd")+ " - "+end.ToString("yyyy-MM-dd")+ ")";
+
+                worksheet.Cells[1, 1, 2, 1].Style.Font.Bold = true;
+                worksheet.Cells[1, 1, 2, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[1, 1, 2, 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+
+                worksheet.Cells[1, 1, 2, 1].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 1, 2, 1].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 1, 2, 1].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 1, 2, 1].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                worksheet.Cells[1, 2, 2, 2].Style.Font.Bold = true;
+
+                worksheet.Cells[1, 2, 2, 2].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 2, 2, 2].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 2, 2, 2].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 2, 2, 2].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+
+                int rowCounter = 4; // Starting row for the reports
+
+                // Header for Invoices
+                worksheet.Cells[rowCounter, 1].Value = "NO";
+                worksheet.Cells[rowCounter, 2].Value = "DATE";
+                worksheet.Cells[rowCounter, 3].Value = "INVOICE NO";
+                worksheet.Cells[rowCounter, 4].Value = "PAYMENT TERM";
+                worksheet.Cells[rowCounter, 5].Value = "STATUS";
+                worksheet.Cells[rowCounter, 6].Value = "DUE DATE";
+                worksheet.Cells[rowCounter, 7].Value = "TOTAL AMOUNT (Rs)";
+                if (showPaymentColumns)
+                {
+                    worksheet.Cells[rowCounter, 8].Value = "RECEIPT NO";
+                    worksheet.Cells[rowCounter, 9].Value = "PAYMENT TYPE";
+                    worksheet.Cells[rowCounter, 10].Value = "CHEQUE NO";
+                    worksheet.Cells[rowCounter, 11].Value = "BANK";
+                    worksheet.Cells[rowCounter, 12].Value = "PAYMENT DATE";
+                    worksheet.Cells[rowCounter, 13].Value = "PAYMENT AMOUNT";
+                    worksheet.Cells[rowCounter, 14].Value = "COMMENT";
+                }
+                worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Font.Bold = true;
+                worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                rowCounter++;
+
+                int invoiceCounter = 0;
+                int returnCounter = 0;
+                decimal totalAmount = 0;
+
+                foreach (var invoice in payments)
+                {
+                    invoiceCounter++;
+                    worksheet.Cells[rowCounter, 1].Value = invoiceCounter;
+
+                    worksheet.Cells[rowCounter, 2].Value = invoice.Date;
+                    worksheet.Cells[rowCounter, 2].Style.Numberformat.Format = "yyyy-MM-dd";
+
+                    worksheet.Cells[rowCounter, 3].Value = invoice.InvoiceNo;
+
+                    worksheet.Cells[rowCounter, 4].Value = invoice.PaymentTerm;
+
+                    worksheet.Cells[rowCounter, 5].Value = invoice.Status;
+
+                    worksheet.Cells[rowCounter, 6].Value = invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd");
+
+                    worksheet.Cells[rowCounter, 7].Value = invoice.TotalAmount;
+                    worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
+
+                    if (showPaymentColumns)
+                    {
+                        worksheet.Cells[rowCounter, 8].Value = invoice.ReceiptNo ?? " ";
+                        worksheet.Cells[rowCounter, 9].Value = invoice.PaymentType ?? " ";
+                        worksheet.Cells[rowCounter, 10].Value = invoice.ChequeNo ?? " ";
+                        worksheet.Cells[rowCounter, 11].Value = invoice.Bank ?? " ";
+                        worksheet.Cells[rowCounter, 12].Value = invoice.PaymentDate != default(DateTime) ? invoice.PaymentDate.ToString("yyyy-MM-dd") : " ";
+                        worksheet.Cells[rowCounter, 13].Value = invoice.PaymentAmount;
+                        worksheet.Cells[rowCounter, 13].Style.Numberformat.Format = "#,##0.00";
+                        worksheet.Cells[rowCounter, 14].Value = invoice.Comment ?? " ";
+                    }
+
+                    worksheet.Cells[rowCounter, 1, rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 14].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                    rowCounter++;
+
+                    // If there's a return, add return information as a separate row
+                    if (invoice.ReturnAmount != 0)
+                    {
+                        returnCounter++;
+                        worksheet.Cells[rowCounter, 6].Value = invoice.ReturnNo;
+                        worksheet.Cells[rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                        worksheet.Cells[rowCounter, 7].Value = invoice.ReturnAmount * (-1);
+                        worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
+
+                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                        rowCounter++;
+                    }
+
+                    totalAmount = totalAmount + invoice.TotalAmount - invoice.ReturnAmount;
+                }
+
+                worksheet.Cells[rowCounter, 6].Value = "TOTAL";
+                worksheet.Cells[rowCounter, 6].Style.Font.Bold = true;
+                worksheet.Cells[rowCounter, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[rowCounter, 6].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                worksheet.Cells[rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                worksheet.Cells[rowCounter, 7].Value = totalAmount;
+                worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
+                worksheet.Cells[rowCounter, 7].Style.Font.Bold = true;
+
+                worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+               
+                // AutoFit Columns
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                // Save the file
+                FileInfo fileInfo = new FileInfo(filePath);
+                package.SaveAs(fileInfo);
+            }
         }
     }
 }

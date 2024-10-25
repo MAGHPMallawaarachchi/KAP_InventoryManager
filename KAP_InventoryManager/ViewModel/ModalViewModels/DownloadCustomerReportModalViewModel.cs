@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows;
 using System.Threading;
 using KAP_InventoryManager.Utils;
+using System.Windows.Forms.VisualStyles;
 
 namespace KAP_InventoryManager.ViewModel.ModalViewModels
 {
@@ -20,6 +21,8 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private DateTime _startDate;
         private DateTime _endDate;
         private CustomerModel _customer;
+        private List<string> _fileTypes;
+        private string _fileType;
 
         private readonly ICustomerRepository _customerRepository;
         private readonly IUserRepository _userRepository;
@@ -74,6 +77,26 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        public List<string> FileTypes
+        {
+            get => _fileTypes;
+            set
+            {
+                _fileTypes = value;
+                OnPropertyChanged(nameof(FileTypes));
+            }
+        }
+
+        public string FileType
+        {
+            get => _fileType;
+            set
+            {
+                _fileType = value;
+                OnPropertyChanged(nameof(FileType));
+            }
+        }
+
         public ICommand DownloadReportCommand { get; }
         public ICommand DiscardCommand { get; }
 
@@ -83,6 +106,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             _userRepository = new UserRepository();
 
             ReportTypes = new List<string> { "all", "only paid", "only pending or overdue" };
+            FileTypes = new List<string> { "PDF", "Excel" };
             Initialize();
 
             // Register to receive the CustomerModel
@@ -98,6 +122,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private void Initialize()
         {
             ReportType = ReportTypes[0];
+            FileType = FileTypes[0];
             StartDate = DateTime.Now.AddMonths(-1);
             EndDate = DateTime.Now;
         }
@@ -138,11 +163,14 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 {
                     var customerReport = new CustomerReport();
                     string path = await GetPathAsync();
-                    string month = EndDate.ToString("MMMM yyyy");
+                    string month = StartDate.ToString("MMMM yyyy");
 
                     var payments = await _customerRepository.GetCustomerReport(Customer.CustomerID, StartDate, EndDate, ReportType);
 
-                    customerReport.GenerateCustomerReportPDF(Customer, payments, path, month, ReportType);
+                    if (FileType == "PDF")
+                        customerReport.GenerateCustomerReportPDF(Customer, payments, path, month, ReportType, StartDate, EndDate);
+                    else
+                        customerReport.GenerateCustomerReportExcel(Customer, payments, path, month, ReportType, StartDate, EndDate);
 
                     Initialize();
                     Messenger.Default.Send(new NotificationMessage("CloseDialog"));

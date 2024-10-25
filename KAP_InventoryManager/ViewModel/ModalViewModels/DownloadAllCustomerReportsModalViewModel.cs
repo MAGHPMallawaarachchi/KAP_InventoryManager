@@ -123,7 +123,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                     {
                         var customerModel = await _customerRepository.GetByCustomerIDAsync(customer);
                         var payments = await _customerRepository.GetCustomerReport(customer, StartDate, EndDate, ReportType);
-                        customerReport.GenerateCustomerReportPDF(customerModel, payments, path, month, ReportType);
+                        customerReport.GenerateCustomerReportPDF(customerModel, payments, path, month, ReportType, StartDate, EndDate);
                     });
 
                     await Task.WhenAll(tasks);
