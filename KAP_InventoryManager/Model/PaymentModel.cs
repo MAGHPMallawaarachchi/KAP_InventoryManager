@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,10 +14,14 @@ namespace KAP_InventoryManager.Model
         public string PaymentTerm { get; set;}
         public string Status { get; set; }
         public DateTime DueDate { get; set; }
-        public Decimal TotalAmount { get; set; }
-        public string ReceiptNo { get; set; }
+        public decimal TotalAmount { get; set; }
         public string PaymentType { get; set; }
+        public string ReceiptNo { get; set; }
+        public string ChequeNo { get; set; }
+        public string Bank { get; set; }
         public DateTime PaymentDate { get; set; }
+        public decimal PaymentAmount { get; set; }
+        public string Comment { get; set; }
         public string ReturnNo { get; set; }
         public decimal ReturnAmount { get; set; }
     }

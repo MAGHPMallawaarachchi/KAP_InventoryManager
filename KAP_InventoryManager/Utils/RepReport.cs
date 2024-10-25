@@ -9,6 +9,8 @@ using System.Linq;
 using System.Windows;
 using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
+using OfficeOpenXml.Style;
+using OfficeOpenXml;
 using PdfiumViewer;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
@@ -69,8 +71,10 @@ namespace KAP_InventoryManager.Utils
                                     columns.ConstantColumn(230);
                                 });
 
-                                table.Cell().Row(2).Column(1).Element(HeaderBlock).Text("NAME");
-                                table.Cell().Row(2).Column(2).Element(Block).Text(rep.Name);
+                                table.Cell().Row(1).Column(1).Element(HeaderBlock).Text("NAME");
+                                table.Cell().Row(2).Column(1).Element(HeaderBlock).Text("MONTH");
+                                table.Cell().Row(1).Column(2).Element(Block).Text(rep.Name);
+                                table.Cell().Row(2).Column(2).Element(Block).Text(month);
 
                                 IContainer HeaderBlock(IContainer cont)
                                 {
@@ -276,6 +280,251 @@ namespace KAP_InventoryManager.Utils
                 });
             }).GeneratePdf(filePath);
         }
-    }
 
+        public void GenerateRepReportExcel(SalesRepModel rep, IEnumerable<RepReportModel> repReports, string path, string month, string reportType)
+        {
+            // Ensure EPPlus license is set
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+
+            string date = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            var directoryPath = $@"{path}rep-reports\{month}\{reportType}";
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            var filePath = $@"{directoryPath}\{rep.Name}-{date}.xlsx";
+            bool showPaymentColumns = reportType != "only pending or overdue";
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Rep Report");
+
+                worksheet.DefaultRowHeight = 18;
+
+                // Header for the Rep Information
+                worksheet.Cells[1, 1].Value = "NAME";
+                worksheet.Cells[2, 1].Value = "MONTH";
+                worksheet.Cells[1, 2].Value = rep.Name;
+                worksheet.Cells[2, 2].Value = month;
+
+                worksheet.Cells[1, 1, 2, 1].Style.Font.Bold = true;
+                worksheet.Cells[1, 1, 2, 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[1, 1, 2, 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+
+                worksheet.Cells[1, 1, 2, 1].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 1, 2, 1].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 1, 2, 1].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 1, 2, 1].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                worksheet.Cells[1, 2, 2, 2].Style.Font.Bold = true;
+
+                worksheet.Cells[1, 2, 2, 2].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 2, 2, 2].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 2, 2, 2].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[1, 2, 2, 2].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+
+                int rowCounter = 4; // Starting row for the reports
+
+                foreach (var repReport in repReports)
+                {
+                    // Customer Info Section
+                    worksheet.Cells[rowCounter, 2].Value = repReport.CustomrName + " - " + repReport.CustomerCity;
+                    worksheet.Cells[rowCounter, 2].Style.Font.Bold = true;
+                    rowCounter++;
+
+                    // Header for Invoices
+                    worksheet.Cells[rowCounter, 1].Value = "NO";
+                    worksheet.Cells[rowCounter, 2].Value = "DATE";
+                    worksheet.Cells[rowCounter, 3].Value = "INVOICE NO";
+                    worksheet.Cells[rowCounter, 4].Value = "PAYMENT TERM";
+                    worksheet.Cells[rowCounter, 5].Value = "STATUS";
+                    worksheet.Cells[rowCounter, 6].Value = "DUE DATE";
+                    worksheet.Cells[rowCounter, 7].Value = "TOTAL AMOUNT (Rs)";
+                    if (showPaymentColumns)
+                    {
+                        worksheet.Cells[rowCounter, 8].Value = "RECEIPT NO";
+                        worksheet.Cells[rowCounter, 9].Value = "PAYMENT TYPE";
+                        worksheet.Cells[rowCounter, 10].Value = "CHEQUE NO";
+                        worksheet.Cells[rowCounter, 11].Value = "BANK";
+                        worksheet.Cells[rowCounter, 12].Value = "PAYMENT DATE";
+                        worksheet.Cells[rowCounter, 13].Value = "PAYMENT AMOUNT";
+                        worksheet.Cells[rowCounter, 14].Value = "COMMENT";
+                    }
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                    rowCounter++;
+
+                    int invoiceCounter = 0;
+                    int returnCounter = 0;
+
+                    // Invoices Data
+                    foreach (var invoice in repReport.Payments)
+                    {
+                        invoiceCounter++;
+                        worksheet.Cells[rowCounter, 1].Value = invoiceCounter;
+
+                        worksheet.Cells[rowCounter, 2].Value = invoice.Date;
+                        worksheet.Cells[rowCounter, 2].Style.Numberformat.Format = "yyyy-MM-dd";
+
+                        worksheet.Cells[rowCounter, 3].Value = invoice.InvoiceNo;
+
+                        worksheet.Cells[rowCounter, 4].Value = invoice.PaymentTerm;
+
+                        worksheet.Cells[rowCounter, 5].Value = invoice.Status;
+
+                        worksheet.Cells[rowCounter, 6].Value = invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd");
+
+                        worksheet.Cells[rowCounter, 7].Value = invoice.TotalAmount;
+                        worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
+
+                        if (showPaymentColumns)
+                        {
+                            worksheet.Cells[rowCounter, 8].Value = invoice.ReceiptNo ?? " ";
+                            worksheet.Cells[rowCounter, 9].Value = invoice.PaymentType ?? " ";
+                            worksheet.Cells[rowCounter, 10].Value = invoice.ChequeNo ?? " ";
+                            worksheet.Cells[rowCounter, 11].Value = invoice.Bank ?? " ";
+                            worksheet.Cells[rowCounter, 12].Value = invoice.PaymentDate != default(DateTime) ? invoice.PaymentDate.ToString("yyyy-MM-dd") : " ";
+                            worksheet.Cells[rowCounter, 13].Value = invoice.PaymentAmount;
+                            worksheet.Cells[rowCounter, 13].Style.Numberformat.Format = "#,##0.00";
+                            worksheet.Cells[rowCounter, 14].Value = invoice.Comment ?? " ";
+                        }
+
+                        worksheet.Cells[rowCounter, 1, rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        worksheet.Cells[rowCounter, 8, rowCounter, 14].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                        rowCounter++;
+
+                        // If there's a return, add return information as a separate row
+                        if (invoice.ReturnAmount != 0)
+                        {
+                            returnCounter++;
+                            worksheet.Cells[rowCounter, 6].Value = invoice.ReturnNo;
+                            worksheet.Cells[rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                            worksheet.Cells[rowCounter, 7].Value = invoice.ReturnAmount * (-1);
+                            worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
+
+                            worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                            worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                            worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                            worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                            rowCounter++;
+                        }
+                    }
+
+                    worksheet.Cells[rowCounter, 6].Value = "TOTAL";
+                    worksheet.Cells[rowCounter, 6].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[rowCounter, 6].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    worksheet.Cells[rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                    worksheet.Cells[rowCounter, 7].Value = repReport.TotalAmount - repReport.TotalReturnAmount;
+                    worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
+                    worksheet.Cells[rowCounter, 7].Style.Font.Bold = true;
+
+                    worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                    rowCounter++;
+                    rowCounter++;
+                }
+
+                // Summary Table for Total Amount and Commission
+
+                // Header for Invoices
+                worksheet.Cells[rowCounter, 1].Value = "NO";
+                worksheet.Cells[rowCounter, 2].Value = "CUSTOMER NAME";
+                worksheet.Cells[rowCounter, 3].Value = "TOTAL AMOUNT (Rs)";
+                worksheet.Cells[rowCounter, 4].Value = "COMMISSION AMOUNT (Rs)";
+
+                worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Font.Bold = true;
+                worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                int summaryCounter = 0;
+                decimal totalAmount = 0;
+                decimal totalCommissionAmount = 0;
+
+                rowCounter++;
+
+                foreach (var repReport in repReports)
+                {
+                    summaryCounter++;
+                    worksheet.Cells[rowCounter, 1].Value = summaryCounter;
+                    worksheet.Cells[rowCounter, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                    worksheet.Cells[rowCounter, 2].Value = repReport.CustomrName+ " - " +repReport.CustomerCity;
+                    worksheet.Cells[rowCounter, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                    worksheet.Cells[rowCounter, 3].Value = repReport.TotalAmount - repReport.TotalReturnAmount;
+                    worksheet.Cells[rowCounter, 3].Style.Numberformat.Format = "#,##0.00";
+
+                    worksheet.Cells[rowCounter, 4].Value = repReport.CommissionAmount;
+                    worksheet.Cells[rowCounter, 4].Style.Numberformat.Format = "#,##0.00";
+
+                    worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 4].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                    rowCounter++;
+
+                    totalAmount += (repReport.TotalAmount - repReport.TotalReturnAmount);
+                    totalCommissionAmount += repReport.CommissionAmount;
+                }
+
+                worksheet.Cells[rowCounter, 2].Value = "TOTAL";
+                worksheet.Cells[rowCounter, 2].Style.Font.Bold = true;
+                worksheet.Cells[rowCounter, 2].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                worksheet.Cells[rowCounter, 2].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                worksheet.Cells[rowCounter, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+
+                worksheet.Cells[rowCounter, 3].Value = totalAmount;
+                worksheet.Cells[rowCounter, 3].Style.Numberformat.Format = "#,##0.00";
+                worksheet.Cells[rowCounter, 3].Style.Font.Bold = true;
+
+                worksheet.Cells[rowCounter, 4].Value = totalCommissionAmount;
+                worksheet.Cells[rowCounter, 4].Style.Numberformat.Format = "#,##0.00";
+                worksheet.Cells[rowCounter, 4].Style.Font.Bold = true;
+
+                worksheet.Cells[rowCounter, 2, rowCounter, 4].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 2, rowCounter, 4].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 2, rowCounter, 4].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                worksheet.Cells[rowCounter, 2, rowCounter, 4].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                // AutoFit Columns
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                // Save the file
+                FileInfo fileInfo = new FileInfo(filePath);
+                package.SaveAs(fileInfo);
+            }
+        }
+    }
 }

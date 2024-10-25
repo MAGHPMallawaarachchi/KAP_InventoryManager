@@ -21,6 +21,8 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private DateTime _endDate;
         private SalesRepModel _rep;
         private CustomerModel _customer;
+        private List<string> _fileTypes;
+        private string _fileType;
 
         private readonly ISalesRepRepository _salesRepRepository;
         private readonly ICustomerRepository _customerRepository;
@@ -86,6 +88,26 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        public List<string> FileTypes
+        {
+            get => _fileTypes;
+            set
+            {
+                _fileTypes = value;
+                OnPropertyChanged(nameof(FileTypes));
+            }
+        }
+
+        public string FileType
+        {
+            get => _fileType;
+            set
+            {
+                _fileType = value;
+                OnPropertyChanged(nameof(FileType));
+            }
+        }
+
         public ICommand DownloadReportCommand { get; }
         public ICommand DiscardCommand { get; }
 
@@ -96,6 +118,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             _customerRepository = new CustomerRepository();
 
             ReportTypes = new List<string> { "all", "only paid", "only pending or overdue" };
+            FileTypes = new List<string> { "PDF", "Excel" };
             Initialize();
 
             // Register to receive the RepModel
@@ -111,6 +134,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private void Initialize()
         {
             ReportType = ReportTypes[0];
+            FileType = FileTypes[0];
             StartDate = DateTime.Now.AddMonths(-1);
             EndDate = DateTime.Now;
         }
@@ -173,7 +197,10 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                         });
                     }
 
-                    repReport.GenerateRepReportPDF(Rep, repReports, path, month, ReportType);
+                    if(FileType == "PDF")
+                        repReport.GenerateRepReportPDF(Rep, repReports, path, month, ReportType);
+                    else
+                        repReport.GenerateRepReportExcel(Rep, repReports, path, month, ReportType);
 
                     Initialize();
                     Messenger.Default.Send(new NotificationMessage("CloseDialog"));
