@@ -606,7 +606,7 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public async Task<IEnumerable<SalesReportModel>> GetSalesReportAsync(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<SalesReportModel>> GetSalesReportAsync(DateTime startDate, DateTime endDate, string statusFilter)
         {
             try
             {
@@ -614,6 +614,7 @@ namespace KAP_InventoryManager.Repositories
                 {
                     new MySqlParameter("@p_StartDate", MySqlDbType.DateTime) { Value = startDate },
                     new MySqlParameter("@p_EndDate", MySqlDbType.DateTime) { Value = endDate },
+                    new MySqlParameter("@statusFilter", MySqlDbType.VarChar) { Value = statusFilter }
                 };
 
                 using (var reader = await ExecuteReaderAsync("GetSalesReport", CommandType.StoredProcedure, parameters))
@@ -623,13 +624,21 @@ namespace KAP_InventoryManager.Repositories
                     {
                         invoices.Add(new SalesReportModel
                         {
-                            Date = (DateTime)reader["Date"],
-                            InvoiceNo = reader["InvoiceNo"].ToString(),
-                            PaymentTerm = reader["PaymentTerm"].ToString(),
-                            CustomerName = reader["Name"].ToString(),
-                            CustomerCity = reader["City"].ToString(),
-                            DueDate = (DateTime)reader["DueDate"],
-                            Amount = (Decimal)reader["TotalAmount"],
+                            CustomerName = reader["Name"] is DBNull ? " " : reader["Name"].ToString(),
+                            CustomerCity = reader["City"] is DBNull ? " " : reader["City"].ToString(),
+                            Date = reader["Date"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["Date"]),
+                            InvoiceNo = reader["InvoiceNo"] is DBNull ? " " : reader["InvoiceNo"].ToString(),
+                            PaymentTerm = reader["PaymentTerm"] is DBNull ? " " : reader["PaymentTerm"].ToString(),
+                            Status = reader["Status"] is DBNull ? " " : reader["Status"].ToString(),
+                            DueDate = reader["DueDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["DueDate"]),
+                            Amount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                            PaymentType = reader["PaymentType"] is DBNull ? " " : reader["PaymentType"].ToString(),
+                            ReceiptNo = reader["ReceiptNo"] is DBNull ? " " : reader["ReceiptNo"].ToString(),
+                            ChequeNo = reader["ChequeNo"] is DBNull ? " " : reader["ChequeNo"].ToString(),
+                            Bank = reader["Bank"] is DBNull ? " " : reader["Bank"].ToString(),
+                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"]),
+                            PaymentAmount = reader["PaymentAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["PaymentAmount"]),
+                            Comment = reader["Comment"] is DBNull ? "" : reader["Comment"].ToString(),
                             ReturnNo = reader["ReturnNo"] is DBNull ? "" : reader["ReturnNo"].ToString(),
                             ReturnAmount = reader["ReturnAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["ReturnAmount"])
                         });

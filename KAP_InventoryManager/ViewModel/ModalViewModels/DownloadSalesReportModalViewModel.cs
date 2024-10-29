@@ -17,6 +17,8 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
     {
         private DateTime _startDate;
         private DateTime _endDate;
+        private List<string> _reportTypes;
+        private string _reportType;
         private List<string> _fileTypes;
         private string _fileType;
 
@@ -40,6 +42,26 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 _endDate = value;
                 OnPropertyChanged(nameof(EndDate));
+            }
+        }
+
+        public List<string> ReportTypes
+        {
+            get => _reportTypes;
+            set
+            {
+                _reportTypes = value;
+                OnPropertyChanged(nameof(ReportTypes));
+            }
+        }
+
+        public string ReportType
+        {
+            get => _reportType;
+            set
+            {
+                _reportType = value;
+                OnPropertyChanged(nameof(ReportType));
             }
         }
 
@@ -71,6 +93,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             _invoiceRepository = new InvoiceRepository();
             _userRepository = new UserRepository();
 
+            ReportTypes = new List<string> { "all", "only paid", "only pending or overdue" };
             FileTypes = new List<string> { "PDF", "Excel" };
             Initialize();
 
@@ -82,6 +105,8 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             StartDate = DateTime.Now.AddMonths(-1);
             EndDate = DateTime.Now;
+            ReportType = ReportTypes[0];
+            FileType = FileTypes[0];
         }
 
         private async Task<string> GetPathAsync()
@@ -112,12 +137,12 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                     var SalesReport = new SalesReport();
                     string path = await GetPathAsync();
                     string month = StartDate.ToString("MMMM yyyy");
-                    var invoices = await _invoiceRepository.GetSalesReportAsync(StartDate, EndDate);
+                    var invoices = await _invoiceRepository.GetSalesReportAsync(StartDate, EndDate, ReportType);
 
                     if (FileType == "PDF")
-                        SalesReport.GenerateSalesReportPDF(invoices, path, month);
+                        SalesReport.GenerateSalesReportPDF(invoices, path, month, ReportType, StartDate, EndDate);
                     else
-                        SalesReport.GenerateSalesReportExcel(invoices, path, month);
+                        SalesReport.GenerateSalesReportExcel(invoices, path, month, ReportType, StartDate, EndDate);
 
                     Initialize();
                     Messenger.Default.Send(new NotificationMessage("CloseDialog"));
