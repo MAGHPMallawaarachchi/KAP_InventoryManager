@@ -15,6 +15,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
+using MySqlX.XDevAPI.Relational;
 
 namespace KAP_InventoryManager.Utils
 {
@@ -56,14 +57,14 @@ namespace KAP_InventoryManager.Utils
 
                     page.Content()
                     .Column(c =>
-                    {                       
+                    {
+                        c.Item().PaddingTop(10).Text(month + " (" + start.ToString("yyyy-MM-dd") + " - " + end.ToString("yyyy-MM-dd") + ")").FontSize(14).FontFamily(Fonts.Calibri).Bold();
+
                         foreach (var summary in customerInvoiceSummaryReports)
                         {
                             c.Item().EnsureSpace()
                             .Column(column =>
                             {
-                                column.Item().PaddingTop(10).Text(month + " (" + start.ToString("yyyy-MM-dd") + " - " + end.ToString("yyyy-MM-dd") + ")").FontSize(14).FontFamily(Fonts.Calibri).Bold();
-
                                 column.Item().PaddingTop(10).Text(summary.CustomrName + " - " + summary.CustomerCity).FontSize(10).FontFamily(Fonts.Calibri).Bold();
 
                                 column.Item().PaddingTop(5).PaddingBottom(10)
