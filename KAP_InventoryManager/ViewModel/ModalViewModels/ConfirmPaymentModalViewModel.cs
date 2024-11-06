@@ -88,7 +88,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             try
             {
-                if (Invoice != null && Invoice.Status == "Pending")
+                if (Invoice != null)
                 {
                     MessageBoxResult result = MessageBox.Show("Are you sure you want to confirm payment?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
