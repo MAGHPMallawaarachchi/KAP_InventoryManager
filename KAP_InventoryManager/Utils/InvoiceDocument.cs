@@ -71,10 +71,10 @@ namespace KAP_InventoryManager.Utils
                                     r.RelativeItem().Text("KAMAL AUTO PARTS (PVT) LTD").Bold().FontSize(18).FontFamily(Fonts.Calibri);
                                 });
 
-                                c.Item().Text("NO. 101/50, ANIYAKANDA WATTA, NAGODA,").FontSize(9).FontFamily(Fonts.Calibri).Bold();
-                                c.Item().Text("KANDANA 11320.").FontSize(9).FontFamily(Fonts.Calibri).Bold();
+                                c.Item().Text("NO. 101/50, ANIYAKANDA WATTA, NAGODA, KANDANA 11320.").FontSize(9).FontFamily(Fonts.Calibri).Bold();
                                 c.Item().Text("PHONE: 011-2248131 / 071-9509700").FontSize(9).FontFamily(Fonts.Calibri).Bold();
                                 c.Item().Text("EMAIL: kamalautoparts19@gmail.com").FontSize(9).FontFamily(Fonts.Calibri).Bold();
+                                c.Item().Text("VAT. REG. NO.: 103621399 - 7000").FontSize(9).FontFamily(Fonts.Calibri).Bold();
                             });
 
                             row.AutoItem().PaddingHorizontal(10).LineVertical((float)0.6);
