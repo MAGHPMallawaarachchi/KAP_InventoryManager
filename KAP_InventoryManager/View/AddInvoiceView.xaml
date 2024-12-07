@@ -298,27 +298,28 @@
                            Style="{StaticResource regular-text}"/>
 
                         <ComboBox x:Name="PartNumberComboBox"
-                          Grid.Column="1"
-                          Padding="0,0,20,0"
-                          Margin="0,0,20,0"
-                          ItemsSource="{Binding PartNumbers}"
-                          SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
-                          IsEditable="True"
-                          StaysOpenOnEdit="True"
-                          IsEnabled="{Binding IsComboboxEnabled}"
-                          PreviewTextInput="ComboBox_PreviewTextInput">
+                                  Grid.Column="1"
+                                  Padding="0,0,20,0"
+                                  Margin="0,0,20,0"
+                                  ItemsSource="{Binding PartNumbers}"
+                                  SelectedItem="{Binding SelectedPartNo, UpdateSourceTrigger=PropertyChanged}"
+                                  IsEditable="True"
+                                  StaysOpenOnEdit="True"
+                                  IsEnabled="{Binding IsComboboxEnabled}"
+                                  PreviewTextInput="ComboBox_PreviewTextInput"
+                                  KeyboardNavigation.TabIndex="1">
                             <ComboBox.Text>
                                 <Binding Path="PartNoSearchText" UpdateSourceTrigger="PropertyChanged"/>
                             </ComboBox.Text>
                         </ComboBox>
 
                         <Border Grid.Column="1"
-                        Background="{StaticResource Color3}"
-                        CornerRadius="3"
-                        Padding="8,2,8,2"
-                        Margin="0,0,20,0"
-                        Height="30"
-                        Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                Background="{StaticResource Color3}"
+                                CornerRadius="3"
+                                Padding="8,2,8,2"
+                                Margin="0,0,20,0"
+                                Height="30"
+                                Visibility="{Binding IsSelectedInvoiceItem, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="{Binding SelectedPartNo}"
                                Style="{StaticResource button-text}"
                                HorizontalAlignment="Center"/>
@@ -333,30 +334,33 @@
                            Grid.Column="3"/>
 
                         <TextBox Text="{Binding Quantity}"
-                         Style="{StaticResource ModalTextBox}"
-                         Grid.Column="4"
-                         Margin="0,0,20,0"
-                         GotFocus="TextBox_GotFocus"
-                         LostFocus="TextBox_LostFocus"/>
+                                 Style="{StaticResource ModalTextBox}"
+                                 Grid.Column="4"
+                                 Margin="0,0,20,0"
+                                 GotFocus="TextBox_GotFocus"
+                                 LostFocus="TextBox_LostFocus"
+                                 KeyboardNavigation.TabIndex="2"/>
 
-                        <TextBlock Text="{Binding SelectedItem.UnitPrice, StringFormat=N2}"                   
-                           Style="{StaticResource regular-text}"
-                           Grid.Column="5"/>
+                        <TextBlock Text="{Binding SelectedItem.UnitPrice, StringFormat=N2}"
+                                   Style="{StaticResource regular-text}"
+                                   Grid.Column="5"/>
 
                         <TextBox Text="{Binding Discount, Mode=TwoWay}"
-                         Style="{StaticResource ModalTextBox}"
-                         Grid.Column="6"
-                         Margin="0,0,20,0"/>
+                                 Style="{StaticResource ModalTextBox}"
+                                 Grid.Column="6"
+                                 Margin="0,0,20,0"
+                                 KeyboardNavigation.IsTabStop="False"/>
 
                         <TextBlock Text="{Binding Amount, StringFormat=N2}"                   
-                           Style="{StaticResource regular-text}"
-                           Grid.Column="7"/>
+                                   Style="{StaticResource regular-text}"
+                                   Grid.Column="7"/>
 
 
                         <Button Command="{Binding AddInvoiceItemCommand}"
-                        Grid.Column="8"
-                        Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Click="AddButton_Click">
+                                Grid.Column="8"
+                                Visibility="{Binding IsAddingNewItem, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Click="AddButton_Click"
+                                KeyboardNavigation.TabIndex="3">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource CustomButtonStyle}">
                                     <Setter Property="Background" Value="{StaticResource Blue}"/>
