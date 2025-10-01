@@ -22,11 +22,29 @@ namespace KAP_InventoryManager.View.Modals
     /// </summary>
     public partial class DownloadCustomerReportModalView : Window
     {
+        private ViewModel.ModalViewModels.DownloadCustomerReportModalViewModel _viewModel;
         public DownloadCustomerReportModalView()
         {
             InitializeComponent();
-            DataContext = new ViewModel.ModalViewModels.DownloadCustomerReportModalViewModel();
+            _viewModel = new ViewModel.ModalViewModels.DownloadCustomerReportModalViewModel();
+            DataContext = _viewModel;
+            _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             Messenger.Default.Register<NotificationMessage>(this, Notify);
+        }
+
+        private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_viewModel.IsLoading))
+            {
+                if (_viewModel.IsLoading)
+                {
+                    Mouse.OverrideCursor = Cursors.Wait;
+                }
+                else
+                {
+                    Mouse.OverrideCursor = null;
+                }
+            }
         }
 
         [DllImport("user32.dll")]
@@ -53,6 +71,11 @@ namespace KAP_InventoryManager.View.Modals
 
         protected override void OnClosed(EventArgs e)
         {
+            if (_viewModel != null)
+            {
+                _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            }
+            Mouse.OverrideCursor = null;
             Messenger.Default.Unregister(this);
             base.OnClosed(e);
         }
