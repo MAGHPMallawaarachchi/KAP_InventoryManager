@@ -223,9 +223,9 @@ namespace KAP_InventoryManager.Utils
                                 counter++;
                                 table.Cell().Element(CellStyle).Text(counter.ToString());
                                 table.Cell().Element(CellStyle).AlignLeft().Text(summary.CustomrName);
-                                table.Cell().Element(CellStyle).AlignRight().Text(summary.TotalAmount.ToString("N2"));
+                                table.Cell().Element(CellStyle).AlignRight().Text((summary.TotalAmount - summary.TotalReturnAmount).ToString("N2"));
 
-                                totalAmount += summary.TotalAmount;
+                                totalAmount += summary.TotalAmount - summary.TotalReturnAmount;
                             }
 
                             counter++;
