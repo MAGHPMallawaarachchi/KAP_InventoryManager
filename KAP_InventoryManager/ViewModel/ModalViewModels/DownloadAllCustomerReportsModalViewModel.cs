@@ -20,6 +20,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private string _reportType;
         private DateTime _startDate;
         private DateTime _endDate;
+        private bool _isLoading;
 
         private readonly ICustomerRepository _customerRepository;
         private readonly IUserRepository _userRepository;
@@ -61,6 +62,16 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 _endDate = value;
                 OnPropertyChanged(nameof(EndDate));
+            }
+        }
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                OnPropertyChanged(nameof(IsLoading));
             }
         }
 
@@ -107,6 +118,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private async void ExecuteDownloadReportsCommand(object obj)
         {
+            IsLoading = true;
             try
             {
                 var customerReport = new CustomerReport();
@@ -137,6 +149,10 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Failed to download all customer reports. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 

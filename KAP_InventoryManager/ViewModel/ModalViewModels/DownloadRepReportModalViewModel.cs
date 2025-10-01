@@ -23,6 +23,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         private CustomerModel _customer;
         private List<string> _fileTypes;
         private string _fileType;
+        private bool _isLoading;
 
         private readonly ISalesRepRepository _salesRepRepository;
         private readonly ICustomerRepository _customerRepository;
@@ -108,6 +109,16 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                OnPropertyChanged(nameof(IsLoading));
+            }
+        }
+
         public ICommand DownloadReportCommand { get; }
         public ICommand DiscardCommand { get; }
 
@@ -168,6 +179,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private async void ExecuteDownloadReportCommand(object obj)
         {
+            IsLoading = true;
             try
             {
                 if (Rep != null && ReportType != null && StartDate != null && EndDate != null)
@@ -215,6 +227,10 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
     }
