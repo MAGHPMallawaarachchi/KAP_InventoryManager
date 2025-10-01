@@ -257,9 +257,9 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public async Task<IEnumerable<PaymentModel>> GetRepReport(string customerId, string repId, DateTime startDate, DateTime endDate, string statusFilter)
+        public async Task<IEnumerable<PaymentModel>> GetRepInvoices(string customerId, string repId, DateTime startDate, DateTime endDate, string statusFilter)
         {
-            var payments = new List<PaymentModel>();
+            var invoices = new List<PaymentModel>();
 
             try
             {
@@ -272,11 +272,11 @@ namespace KAP_InventoryManager.Repositories
                     new MySqlParameter("@statusFilter", MySqlDbType.VarChar) { Value = statusFilter }
                 };
 
-                using (var reader = await ExecuteReaderAsync("GetRepReport", CommandType.StoredProcedure, parameters))
+                using (var reader = await ExecuteReaderAsync("GetRepInvoices", CommandType.StoredProcedure, parameters))
                 {
                     while (await reader.ReadAsync())
                     {
-                        payments.Add(new PaymentModel
+                        invoices.Add(new PaymentModel
                         {
                             Date = reader["Date"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["Date"]),
                             InvoiceNo = reader["InvoiceNo"] is DBNull ? " " : reader["InvoiceNo"].ToString(),
@@ -291,17 +291,50 @@ namespace KAP_InventoryManager.Repositories
                             PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"]),
                             PaymentAmount = reader["PaymentAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["PaymentAmount"]),
                             Comment = reader["Comment"] is DBNull ? "" : reader["Comment"].ToString(),
-                            ReturnNo = reader["ReturnNo"] is DBNull ? "" : reader["ReturnNo"].ToString(),
-                            ReturnAmount = reader["ReturnAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["ReturnAmount"])
                         });
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to get payments. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Failed to get invoices. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            return payments;
+            return invoices;
+        }
+
+        public async Task<IEnumerable<ReturnModel>> GetRepReturns(string customerId, string repId, DateTime startDate, DateTime endDate)
+        {
+            var returns = new List<ReturnModel>();
+
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_CustomerID", MySqlDbType.VarChar) { Value = customerId },
+                    new MySqlParameter("@p_RepID", MySqlDbType.VarChar) { Value = repId },
+                    new MySqlParameter("@p_StartDate", MySqlDbType.DateTime) { Value = startDate },
+                    new MySqlParameter("@p_EndDate", MySqlDbType.DateTime) { Value = endDate }
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetRepReturns", CommandType.StoredProcedure, parameters))
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        returns.Add(new ReturnModel
+                        {
+                            Date = reader["Date"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["Date"]),
+                            ReturnNo = reader["ReturnNo"] is DBNull ? "" : reader["ReturnNo"].ToString(),
+                            TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                            InvoiceNo = reader["InvoiceNo"] is DBNull ? "" : reader["InvoiceNo"].ToString()
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get returns. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return returns;
         }
     }
 }

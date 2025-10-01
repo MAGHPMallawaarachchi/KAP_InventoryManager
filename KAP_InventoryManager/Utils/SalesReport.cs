@@ -16,7 +16,7 @@ namespace KAP_InventoryManager.Utils
 {
     public class SalesReport
     {
-        public void GenerateSalesReportExcel(IEnumerable<SalesReportModel> invoices, string path, string month, string reportType, DateTime start, DateTime end)
+        public void GenerateSalesReportExcel(IEnumerable<SalesReportModel> invoices, IEnumerable<ReturnModel> returns, string path, string month, string reportType, DateTime start, DateTime end)
         {
             // Ensure EPPlus license is set
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
@@ -38,8 +38,9 @@ namespace KAP_InventoryManager.Utils
 
                 worksheet.DefaultRowHeight = 18;
 
-                worksheet.Cells[1, 2].Value = month + " (" + start.ToString("yyyy-MM-dd") + " - " + end.ToString("yyyy-MM-dd") + ")";
-                worksheet.Cells[1, 2].Style.Font.Bold = true;
+                worksheet.Cells[1, 1, 1, 3].Merge = true;
+                worksheet.Cells[1, 1].Value = month + " (" + start.ToString("yyyy-MM-dd") + " - " + end.ToString("yyyy-MM-dd") + ")";
+                worksheet.Cells[1, 1, 1, 3].Style.Font.Bold = true;
 
                 // Header for Invoices
                 worksheet.Cells[3, 1].Value = "NO";
@@ -75,7 +76,7 @@ namespace KAP_InventoryManager.Utils
                 int counter = 0;
                 decimal totalAmount = 0;
 
-                // Data Rows
+                // Data Rows - Only invoices (not returns)
                 foreach (var invoice in invoices)
                 {
                     counter++;
@@ -127,28 +128,11 @@ namespace KAP_InventoryManager.Utils
 
                     rowCounter++;
 
-                    // If there's a return, add return information as a separate row
-                    if (invoice.ReturnAmount != 0)
-                    {
-                        worksheet.Cells[rowCounter, 8].Value = invoice.ReturnNo;
-                        worksheet.Cells[rowCounter, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-
-                        worksheet.Cells[rowCounter, 9].Value = invoice.ReturnAmount * (-1);
-                        worksheet.Cells[rowCounter, 9].Style.Numberformat.Format = "#,##0.00";
-
-                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 16 : 9].Style.Border.Top.Style = ExcelBorderStyle.Thin;
-                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 16 : 9].Style.Border.Right.Style = ExcelBorderStyle.Thin;
-                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 16 : 9].Style.Border.Left.Style = ExcelBorderStyle.Thin;
-                        worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 16 : 9].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-
-                        rowCounter++;
-                    }
-
-                    totalAmount = totalAmount + invoice.Amount - invoice.ReturnAmount;
+                    totalAmount = totalAmount + invoice.Amount;
                 }
 
-                // Total Row
-                worksheet.Cells[rowCounter, 8].Value = "TOTAL";
+                // Invoice Total Row
+                worksheet.Cells[rowCounter, 8].Value = "INVOICE TOTAL";
                 worksheet.Cells[rowCounter, 8].Style.Font.Bold = true;
                 worksheet.Cells[rowCounter, 8].Style.Fill.PatternType = ExcelFillStyle.Solid;
                 worksheet.Cells[rowCounter, 8].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
@@ -163,6 +147,129 @@ namespace KAP_InventoryManager.Utils
                 worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
+                rowCounter += 3; // Add some space
+
+                if (returns.Any())
+                {
+                    // Returns Header
+                    worksheet.Cells[rowCounter, 1].Value = "RETURNS";
+                    worksheet.Cells[rowCounter, 1].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 1].Style.Font.Size = 12;
+                    rowCounter += 2;
+
+                    // Returns Table Headers
+                    worksheet.Cells[rowCounter, 1].Value = "NO";
+                    worksheet.Cells[rowCounter, 2].Value = "DATE";
+                    worksheet.Cells[rowCounter, 3, rowCounter, 4].Merge = true;
+                    worksheet.Cells[rowCounter, 3].Value = "RETURN NO";
+                    worksheet.Cells[rowCounter, 5, rowCounter, 6].Merge = true;
+                    worksheet.Cells[rowCounter, 5].Value = "INVOICE NO";
+                    worksheet.Cells[rowCounter, 7].Value = "CUSTOMER";
+                    worksheet.Cells[rowCounter, 8].Value = "CITY";
+                    worksheet.Cells[rowCounter, 9].Value = "AMOUNT (Rs)";
+
+                    worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                    rowCounter++;
+
+                    // Returns Data
+                    int returnCounter = 0;
+                    decimal totalReturnAmount = 0;
+
+                    foreach (var returnItem in returns)
+                    {
+                        returnCounter++;
+
+                        worksheet.Cells[rowCounter, 1].Value = returnCounter;
+                        worksheet.Cells[rowCounter, 2].Value = returnItem.Date;
+                        worksheet.Cells[rowCounter, 2].Style.Numberformat.Format = "yyyy-MM-dd";
+                        worksheet.Cells[rowCounter, 3, rowCounter, 4].Merge = true;
+                        worksheet.Cells[rowCounter, 3].Value = returnItem.ReturnNo;
+                        worksheet.Cells[rowCounter, 5, rowCounter, 6].Merge = true;
+                        worksheet.Cells[rowCounter, 5].Value = returnItem.InvoiceNo;
+                        worksheet.Cells[rowCounter, 7].Value = returnItem.CustomerName;
+                        worksheet.Cells[rowCounter, 8].Value = returnItem.CustomerCity;
+                        worksheet.Cells[rowCounter, 9].Value = returnItem.TotalAmount;
+                        worksheet.Cells[rowCounter, 9].Style.Numberformat.Format = "#,##0.00";
+
+                        worksheet.Cells[rowCounter, 1, rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        worksheet.Cells[rowCounter, 9].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                        worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                        worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                        worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                        worksheet.Cells[rowCounter, 1, rowCounter, 9].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                        rowCounter++;
+                        totalReturnAmount += returnItem.TotalAmount;
+                    }
+
+                    // Returns Total Row
+                    worksheet.Cells[rowCounter, 8].Value = "RETURNS TOTAL";
+                    worksheet.Cells[rowCounter, 8].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 8].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[rowCounter, 8].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    worksheet.Cells[rowCounter, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                    worksheet.Cells[rowCounter, 9].Value = totalReturnAmount;
+                    worksheet.Cells[rowCounter, 9].Style.Numberformat.Format = "#,##0.00";
+                    worksheet.Cells[rowCounter, 9].Style.Font.Bold = true;
+
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+
+                    rowCounter += 2;
+
+                    // Net Total Row
+                    worksheet.Cells[rowCounter, 8].Value = "NET TOTAL";
+                    worksheet.Cells[rowCounter, 8].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 8].Style.Font.Size = 12;
+                    worksheet.Cells[rowCounter, 8].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[rowCounter, 8].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    worksheet.Cells[rowCounter, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                    worksheet.Cells[rowCounter, 9].Value = totalAmount - totalReturnAmount;
+                    worksheet.Cells[rowCounter, 9].Style.Numberformat.Format = "#,##0.00";
+                    worksheet.Cells[rowCounter, 9].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 9].Style.Font.Size = 12;
+
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+                else
+                {
+                    rowCounter += 2;
+
+                    // Net Total Row (same as invoice total when no returns)
+                    worksheet.Cells[rowCounter, 8].Value = "NET TOTAL";
+                    worksheet.Cells[rowCounter, 8].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 8].Style.Font.Size = 12;
+                    worksheet.Cells[rowCounter, 8].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    worksheet.Cells[rowCounter, 8].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    worksheet.Cells[rowCounter, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
+
+                    worksheet.Cells[rowCounter, 9].Value = totalAmount;
+                    worksheet.Cells[rowCounter, 9].Style.Numberformat.Format = "#,##0.00";
+                    worksheet.Cells[rowCounter, 9].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 9].Style.Font.Size = 12;
+
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[rowCounter, 8, rowCounter, 9].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                }
+
                 // AutoFit Columns
                 worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
@@ -172,7 +279,7 @@ namespace KAP_InventoryManager.Utils
             }
         }
 
-        public void GenerateSalesReportPDF(IEnumerable<SalesReportModel> invoices, string path, string month, string reportType, DateTime start, DateTime end)
+        public void GenerateSalesReportPDF(IEnumerable<SalesReportModel> invoices, IEnumerable<ReturnModel> returns, string path, string month, string reportType, DateTime start, DateTime end)
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -186,6 +293,8 @@ namespace KAP_InventoryManager.Utils
 
             var filePath = $@"{directoryPath}\{date}.pdf";
             bool showPaymentColumns = reportType != "only pending or overdue";
+            decimal totalAmount = 0;
+            decimal totalReturnAmount = 0;
 
             Document.Create(container =>
             {
@@ -229,7 +338,7 @@ namespace KAP_InventoryManager.Utils
                             QuestPDF.Infrastructure.IContainer TotalCellStyle(QuestPDF.Infrastructure.IContainer cont)
                             {
                                 return cont
-                                .DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Calibri).Bold())
+                                .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri).Bold())
                                 .Border((float)0.6)
                                 .Background(Colors.Grey.Lighten2)
                                 .ShowOnce()
@@ -263,8 +372,7 @@ namespace KAP_InventoryManager.Utils
                             });
 
                             int counter = 0;
-                            int returnCounter = 0;
-                            decimal totalAmount = 0;
+
                             foreach (var invoice in invoices)
                             {
                                 counter++;
@@ -279,26 +387,166 @@ namespace KAP_InventoryManager.Utils
                                 );
                                 table.Cell().Element(CellStyle).AlignRight().Text(invoice.Amount.ToString("N2"));
 
-                                if (invoice.ReturnAmount != 0)
-                                {
-                                    returnCounter++;
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReturnNo);
-                                    table.Cell().Element(CellStyle).AlignRight().Text("-" + invoice.ReturnAmount.ToString("N2"));
-                                }
-
-                                totalAmount = totalAmount + invoice.Amount - invoice.ReturnAmount;
+                                totalAmount = totalAmount + invoice.Amount;
                             }
 
-                            counter = counter + returnCounter + 1;
-                            table.Cell().Row((uint)counter).Column(7).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
+                            counter++;
+                            table.Cell().Row((uint)counter).Column(7).ColumnSpan(1).Element(TotalCellStyle).Text("INVOICE TOTAL");
                             table.Cell().Row((uint)counter).Column(8).Element(CellStyle).AlignRight().Text(totalAmount.ToString("N2")).Bold().FontSize(10);
                         });
+
+                        // Returns Section                        
+                        if (returns.Any())
+                        {
+                            c.Item().PaddingTop(20).Text("RETURNS").FontSize(12).FontFamily(Fonts.Calibri).Bold();
+
+                            c.Item().PaddingTop(10)
+                            .Table(returnsTable =>
+                            {
+                                QuestPDF.Infrastructure.IContainer CellStyle(QuestPDF.Infrastructure.IContainer cont)
+                                {
+                                    return cont
+                                    .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri))
+                                    .BorderVertical((float)0.6)
+                                    .BorderBottom((float)0.6)
+                                    .ShowOnce()
+                                    .AlignMiddle()
+                                    .PaddingHorizontal(4)
+                                    .PaddingVertical(4);
+                                }
+
+                                QuestPDF.Infrastructure.IContainer TotalCellStyle(QuestPDF.Infrastructure.IContainer cont)
+                                {
+                                    return cont
+                                    .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri).Bold())
+                                    .Border((float)0.6)
+                                    .Background(Colors.Grey.Lighten2)
+                                    .ShowOnce()
+                                    .AlignRight()
+                                    .AlignMiddle()
+                                    .PaddingRight(4);
+                                }
+
+                                returnsTable.ColumnsDefinition(columns =>
+                                {
+                                    columns.ConstantColumn(24);  // NO
+                                    columns.ConstantColumn(56);  // DATE
+                                    columns.ConstantColumn(90);  // RETURN NO
+                                    columns.ConstantColumn(70);  // INVOICE NO
+                                    columns.RelativeColumn();    // CUSTOMER
+                                    columns.ConstantColumn(75);  // CITY
+                                    columns.ConstantColumn(70);  // AMOUNT
+                                });
+
+                                returnsTable.Header(header =>
+                                {
+                                    header.Cell().Element(HeaderCellStyle).Text("NO");
+                                    header.Cell().Element(HeaderCellStyle).Text("DATE");
+                                    header.Cell().Element(HeaderCellStyle).Text("RETURN NO");
+                                    header.Cell().Element(HeaderCellStyle).Text("INVOICE NO");
+                                    header.Cell().Element(HeaderCellStyle).Text("CUSTOMER");
+                                    header.Cell().Element(HeaderCellStyle).Text("CITY");
+                                    header.Cell().Element(HeaderCellStyle).Text("AMOUNT (Rs)");
+                                });
+
+                                int returnCounter = 0;
+
+                                foreach (var returnItem in returns)
+                                {
+                                    returnCounter++;
+                                    returnsTable.Cell().Element(CellStyle).Text(returnCounter.ToString());
+                                    returnsTable.Cell().Element(CellStyle).AlignCenter().Text(returnItem.Date.ToString("yyyy-MM-dd"));
+                                    returnsTable.Cell().Element(CellStyle).AlignCenter().Text(returnItem.ReturnNo);
+                                    returnsTable.Cell().Element(CellStyle).AlignCenter().Text(returnItem.InvoiceNo);
+                                    returnsTable.Cell().Element(CellStyle).AlignLeft().Text(returnItem.CustomerName);
+                                    returnsTable.Cell().Element(CellStyle).AlignLeft().Text(returnItem.CustomerCity);
+                                    returnsTable.Cell().Element(CellStyle).AlignRight().Text(returnItem.TotalAmount.ToString("N2"));
+
+                                    totalReturnAmount += returnItem.TotalAmount;
+                                }
+
+                                returnCounter++;
+                                returnsTable.Cell().Row((uint)returnCounter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("RETURNS TOTAL");
+                                returnsTable.Cell().Row((uint)returnCounter).Column(7).Element(CellStyle).AlignRight().Text(totalReturnAmount.ToString("N2")).Bold().FontSize(10);
+                            });
+
+                            // Net Total
+                            c.Item().PaddingTop(20)
+                            .Table(netTable =>
+                            {
+
+                                QuestPDF.Infrastructure.IContainer TotalCellStyle(QuestPDF.Infrastructure.IContainer cont)
+                                {
+                                    return cont
+                                    .DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Calibri).Bold())
+                                    .Border((float)0.6)
+                                    .Background(Colors.Grey.Lighten2)
+                                    .ShowOnce()
+                                    .AlignRight()
+                                    .AlignMiddle()
+                                    .PaddingRight(4);
+                                }
+
+                                QuestPDF.Infrastructure.IContainer CellStyle(QuestPDF.Infrastructure.IContainer cont)
+                                {
+                                    return cont
+                                    .DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Calibri))
+                                    .Border((float)0.6)
+                                    .ShowOnce()
+                                    .AlignMiddle()
+                                    .PaddingHorizontal(4)
+                                    .PaddingVertical(4);
+                                }
+
+                                netTable.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.ConstantColumn(70);
+                                });
+
+                                netTable.Cell().Element(TotalCellStyle).Text("NET TOTAL");
+                                netTable.Cell().Element(CellStyle).AlignRight().Text((totalAmount - totalReturnAmount).ToString("N2")).Bold();
+                            });
+                        }
+                        else
+                        {
+                            // Net Total (same as invoice total when no returns)
+                            c.Item().PaddingTop(20)
+                            .Table(netTable =>
+                            {
+                                QuestPDF.Infrastructure.IContainer TotalCellStyle(QuestPDF.Infrastructure.IContainer cont)
+                                {
+                                    return cont
+                                    .DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Calibri).Bold())
+                                    .Border((float)0.6)
+                                    .Background(Colors.Grey.Lighten2)
+                                    .ShowOnce()
+                                    .AlignRight()
+                                    .AlignMiddle()
+                                    .PaddingRight(4);
+                                }
+
+                                QuestPDF.Infrastructure.IContainer CellStyle(QuestPDF.Infrastructure.IContainer cont)
+                                {
+                                    return cont
+                                    .DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Calibri))
+                                    .Border((float)0.6)
+                                    .ShowOnce()
+                                    .AlignMiddle()
+                                    .PaddingHorizontal(4)
+                                    .PaddingVertical(4);
+                                }
+
+                                netTable.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn();
+                                    columns.ConstantColumn(70);
+                                });
+
+                                netTable.Cell().Element(TotalCellStyle).Text("NET TOTAL");
+                                netTable.Cell().Element(CellStyle).AlignRight().Text(totalAmount.ToString("N2")).Bold();
+                            });
+                        }
                     });
                 });
             }).GeneratePdf(filePath);

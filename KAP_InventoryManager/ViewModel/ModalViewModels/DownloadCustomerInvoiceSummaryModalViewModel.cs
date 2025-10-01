@@ -25,6 +25,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private readonly ICustomerRepository _customerRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IReturnRepository _returnRepository;
 
         public List<string> ReportTypes
         {
@@ -103,6 +104,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             _userRepository = new UserRepository();
             _customerRepository = new CustomerRepository();
+            _returnRepository = new ReturnRepository();
 
             ReportTypes = new List<string> { "all", "only paid", "only pending or overdue" };
             FileTypes = new List<string> { "PDF", "Excel" };
@@ -151,16 +153,20 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
                 foreach (var customer in customers)
                 {
-                    var payments = await _customerRepository.GetCustomerInvoiceSummary(customer, StartDate, EndDate, ReportType);
-                    decimal totalAmount = payments.Sum(payment => payment.TotalAmount);
-                    decimal totalReturnAmount = payments.Sum(payment => payment.ReturnAmount);
+                    var invoices = await _customerRepository.GetCustomerInvoices(customer, StartDate, EndDate, ReportType);
+                    decimal totalAmount = invoices.Sum(invoice => invoice.TotalAmount);
+
+                    var returns = await _customerRepository.GetCustomerReturns(customer, StartDate, EndDate);
+                    decimal totalReturnAmount = returns.Sum(returnItem => returnItem.TotalAmount);
+
                     Customer = await _customerRepository.GetByCustomerIDAsync(customer);
 
                     customerInvoiceSummaryReports.Add(new CustomerInvoiceSummaryModel
                     {
                         CustomrName = Customer.Name,
                         CustomerCity = Customer.City,
-                        Payments = payments,
+                        Invoices = invoices,
+                        Returns = returns,
                         TotalAmount = totalAmount,
                         TotalReturnAmount = totalReturnAmount
                     });

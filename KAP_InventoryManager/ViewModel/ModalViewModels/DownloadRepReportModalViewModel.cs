@@ -180,17 +180,22 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
                     foreach (var customer in customers)
                     {
-                        var payments = await _salesRepRepository.GetRepReport(customer, Rep.RepID, StartDate, EndDate, ReportType);
-                        decimal totalAmount = payments.Sum(payment => payment.TotalAmount);
-                        decimal totalReturnAmount = payments.Sum(payment => payment.ReturnAmount);
+                        var invoices = await _salesRepRepository.GetRepInvoices(customer, Rep.RepID, StartDate, EndDate, ReportType);
+                        decimal totalAmount = invoices.Sum(invoice => invoice.TotalAmount);
+
+                        var returns = await _salesRepRepository.GetRepReturns(customer, Rep.RepID, StartDate, EndDate);
+                        decimal totalReturnAmount = returns.Sum(returnItem => returnItem.TotalAmount);
+
                         decimal commissionAmount = (totalAmount - totalReturnAmount) * Rep.CommissionPercentage / 100;
+
                         Customer = await _customerRepository.GetByCustomerIDAsync(customer);
 
                         repReports.Add(new RepReportModel
                         {
                             CustomrName = Customer.Name,
                             CustomerCity = Customer.City,
-                            Payments = payments,
+                            Invoices = invoices,
+                            Returns = returns,
                             TotalAmount = totalAmount,
                             TotalReturnAmount = totalReturnAmount,
                             CommissionAmount = commissionAmount

@@ -639,8 +639,6 @@ namespace KAP_InventoryManager.Repositories
                             PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"]),
                             PaymentAmount = reader["PaymentAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["PaymentAmount"]),
                             Comment = reader["Comment"] is DBNull ? "" : reader["Comment"].ToString(),
-                            ReturnNo = reader["ReturnNo"] is DBNull ? "" : reader["ReturnNo"].ToString(),
-                            ReturnAmount = reader["ReturnAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["ReturnAmount"])
                         });
                     }
                     return invoices;

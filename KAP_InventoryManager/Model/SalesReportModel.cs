@@ -23,7 +23,5 @@ namespace KAP_InventoryManager.Model
         public DateTime PaymentDate { get; set; }
         public decimal PaymentAmount { get; set; }
         public string Comment { get; set; }
-        public string ReturnNo { get; set; }
-        public decimal ReturnAmount { get; set; }
     }
 }

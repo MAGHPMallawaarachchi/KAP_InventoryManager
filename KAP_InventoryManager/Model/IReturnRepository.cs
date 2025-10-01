@@ -15,5 +15,6 @@ namespace KAP_InventoryManager.Model
         Task<IEnumerable<ReturnModel>> SearchReturnListAsync(string returnNo);
         Task<ReturnModel> GetByReturnNoAsync(string returnNo);
         Task<IEnumerable<ReturnItemModel>> GetReturnItemsAsync(string returnNo);
+        Task<IEnumerable<ReturnModel>> GetReturns(DateTime startDate, DateTime endDate);
     }
 }

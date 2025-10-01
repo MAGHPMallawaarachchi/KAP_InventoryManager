@@ -20,7 +20,7 @@ namespace KAP_InventoryManager.Utils
 {
     public class CustomerReport
     {
-        public void GenerateCustomerReportPDF(CustomerModel customer, IEnumerable<PaymentModel> payments, string path, string month, string reportType, DateTime start, DateTime end)
+        public void GenerateCustomerReportPDF(CustomerModel customer, IEnumerable<PaymentModel> invoices, IEnumerable<ReturnModel> returns, string path, string month, string reportType, DateTime start, DateTime end)
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -34,6 +34,8 @@ namespace KAP_InventoryManager.Utils
 
             var filePath = $@"{directoryPath}\{customer.Name}, {customer.City}-{date}.pdf";
             bool showPaymentColumns = reportType != "only pending or overdue";
+            decimal totalAmount = 0;
+            decimal totalReturnAmount = 0;
 
             Document.Create(container =>
             {
@@ -100,120 +102,132 @@ namespace KAP_InventoryManager.Utils
                             });
                         });
 
-                        c.Item().PaddingTop(10)
-                        .Table(table =>
-                        {
-                            IContainer CellStyle(IContainer cont)
+                        c.Item().EnsureSpace()
+                            .Column(column =>
                             {
-                                return cont
-                                .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri))
-                                .BorderVertical((float)0.6)
-                                .BorderBottom((float)0.6)
-                                .ShowOnce()
-                                .AlignMiddle()
-                                .PaddingHorizontal(4);
-                            }
-
-                            IContainer TotalCellStyle(IContainer cont)
-                            {
-                                return cont
-                                .DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Calibri).Bold())
-                                .Border((float)0.6)
-                                .Background(Colors.Grey.Lighten2)
-                                .ShowOnce()
-                                .AlignRight()
-                                .AlignMiddle()
-                                .PaddingRight(4);
-                            }
-
-                            table.ColumnsDefinition(columns =>
-                            {
-                                columns.ConstantColumn(18);
-                                columns.ConstantColumn(55);
-                                columns.ConstantColumn(70);
-                                columns.RelativeColumn();
-                                columns.ConstantColumn(40);
-                                columns.ConstantColumn(55);
-                                columns.RelativeColumn();
-                                if (showPaymentColumns)
+                                column.Item().PaddingTop(15).PaddingBottom(10)
+                                .Table(table =>
                                 {
-                                    columns.ConstantColumn(50);
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                }
-                            });
-
-                            table.Header(header =>
-                            {
-                                header.Cell().Element(HeaderCellStyle).Text("NO");
-                                header.Cell().Element(HeaderCellStyle).Text("DATE");
-                                header.Cell().Element(HeaderCellStyle).Text("INVOICE NO");
-                                header.Cell().Element(HeaderCellStyle).Text("PAYMENT TERM");
-                                header.Cell().Element(HeaderCellStyle).Text("STATUS");
-                                header.Cell().Element(HeaderCellStyle).Text("DUE DATE");
-                                header.Cell().Element(HeaderCellStyle).Text("TOTAL AMOUNT");
-                                if (showPaymentColumns)
-                                {
-                                    header.Cell().Element(HeaderCellStyle).Text("RECEIPT NO");
-                                    header.Cell().Element(HeaderCellStyle).Text("PAYMENT TYPE");
-                                    header.Cell().Element(HeaderCellStyle).Text("PAYMENT DATE");
-                                }
-                            });
-
-                            int invoiceCounter = 0;
-                            int returnCounter = 0;
-                            decimal totalAmount = 0;
-                            foreach (var payment in payments) 
-                            {
-                                invoiceCounter++;
-                                table.Cell().Element(CellStyle).Text(invoiceCounter.ToString());
-                                table.Cell().Element(CellStyle).AlignCenter().Text(payment.Date.ToString("yyyy-MM-dd"));
-                                table.Cell().Element(CellStyle).AlignCenter().Text(payment.InvoiceNo);
-                                table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentTerm);
-                                table.Cell().Element(CellStyle).AlignCenter().Text(payment.Status);
-                                table.Cell().Element(CellStyle).AlignLeft().Text(
-                                    payment.PaymentTerm == "CASH" ? "1 WEEK" : payment.DueDate.ToString("yyyy-MM-dd")
-                                );
-                                table.Cell().Element(CellStyle).AlignRight().Text(payment.TotalAmount.ToString("N2"));
-                                if (showPaymentColumns)
-                                {
-                                    table.Cell().Element(CellStyle).AlignCenter().Text(payment.ReceiptNo ?? " ");
-                                    table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentType ?? " ");
-                                    table.Cell().Element(CellStyle).AlignCenter().Text(payment.PaymentDate != default(DateTime) ? payment.PaymentDate.ToString("yyyy-MM-dd") : " ");
-                                }
-
-                                if (payment.ReturnAmount != 0)
-                                {
-                                    returnCounter++;
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).Text("");
-                                    table.Cell().Element(CellStyle).AlignCenter().Text(payment.ReturnNo);
-                                    table.Cell().Element(CellStyle).AlignRight().Text("-" + payment.ReturnAmount.ToString("N2"));
-
-                                    if (showPaymentColumns)
+                                    IContainer CellStyle(IContainer cont)
                                     {
-                                        table.Cell().Element(CellStyle).AlignCenter().Text("");
-                                        table.Cell().Element(CellStyle).AlignCenter().Text("");
-                                        table.Cell().Element(CellStyle).AlignCenter().Text("");
+                                        return cont
+                                        .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri))
+                                        .BorderVertical((float)0.6)
+                                        .BorderBottom((float)0.6)
+                                        .ShowOnce()
+                                        .AlignMiddle()
+                                        .PaddingHorizontal(4);
                                     }
-                                }
 
-                                totalAmount = totalAmount + payment.TotalAmount - payment.ReturnAmount;
-                            }
+                                    IContainer TotalCellStyle(IContainer cont)
+                                    {
+                                        return cont
+                                        .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri).Bold())
+                                        .Border((float)0.6)
+                                        .Background(Colors.Grey.Lighten2)
+                                        .ShowOnce()
+                                        .AlignRight()
+                                        .AlignMiddle()
+                                        .PaddingRight(4);
+                                    }
 
-                            invoiceCounter = invoiceCounter + returnCounter + 1;
-                            table.Cell().Row((uint)invoiceCounter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
-                            table.Cell().Row((uint)invoiceCounter).Column(7).Element(CellStyle).AlignRight().Text(totalAmount.ToString("N2")).Bold().FontSize(10);
-                        });
+                                    table.ColumnsDefinition(columns =>
+                                    {
+                                        columns.ConstantColumn(24);
+                                        columns.ConstantColumn(55);
+                                        columns.ConstantColumn(70);
+                                        columns.RelativeColumn();
+                                        columns.ConstantColumn(40);
+                                        columns.ConstantColumn(55);
+                                        columns.RelativeColumn();
+                                        if (showPaymentColumns)
+                                        {
+                                            columns.ConstantColumn(50);
+                                            columns.RelativeColumn();
+                                            columns.RelativeColumn();
+                                        }
+                                    });
+
+                                    table.Header(header =>
+                                    {
+                                        header.Cell().Element(HeaderCellStyle).Text("NO");
+                                        header.Cell().Element(HeaderCellStyle).Text("DATE");
+                                        header.Cell().Element(HeaderCellStyle).Text("INVOICE NO");
+                                        header.Cell().Element(HeaderCellStyle).Text("PAYMENT TERM");
+                                        header.Cell().Element(HeaderCellStyle).Text("STATUS");
+                                        header.Cell().Element(HeaderCellStyle).Text("DUE DATE");
+                                        header.Cell().Element(HeaderCellStyle).Text("TOTAL AMOUNT");
+                                        if (showPaymentColumns)
+                                        {
+                                            header.Cell().Element(HeaderCellStyle).Text("RECEIPT NO");
+                                            header.Cell().Element(HeaderCellStyle).Text("PAYMENT TYPE");
+                                            header.Cell().Element(HeaderCellStyle).Text("PAYMENT DATE");
+                                        }
+                                    });
+
+                                    int invoiceCounter = 0;
+
+                                    // First, display all invoices
+                                    foreach (var invoice in invoices)
+                                    {
+                                        invoiceCounter++;
+                                        table.Cell().Element(CellStyle).Text(invoiceCounter.ToString());
+                                        table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Date.ToString("yyyy-MM-dd"));
+                                        table.Cell().Element(CellStyle).AlignCenter().Text(invoice.InvoiceNo);
+                                        table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentTerm);
+                                        table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Status);
+                                        table.Cell().Element(CellStyle).AlignLeft().Text(
+                                            invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd")
+                                        );
+                                        table.Cell().Element(CellStyle).AlignRight().Text(invoice.TotalAmount.ToString("N2"));
+
+                                        if (showPaymentColumns)
+                                        {
+                                            table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReceiptNo ?? " ");
+                                            table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentType ?? " ");
+                                            table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentDate != default(DateTime) ? invoice.PaymentDate.ToString("yyyy-MM-dd") : " ");
+                                        }
+
+                                        totalAmount += invoice.TotalAmount;
+                                    }
+
+                                    // Now display all returns from this customer
+                                    if (returns.Any())
+                                    {
+                                        int returnCounter = 0;
+                                        foreach (var returnItem in returns)
+                                        {
+                                            returnCounter++;
+                                            invoiceCounter++;
+                                            table.Cell().Element(CellStyle).Text("R" + returnCounter.ToString());
+                                            table.Cell().Element(CellStyle).AlignCenter().Text(returnItem.Date.ToString("yyyy-MM-dd"));
+                                            table.Cell().ColumnSpan(4).Element(CellStyle).AlignLeft().Text(returnItem.ReturnNo + " (" + returnItem.InvoiceNo + ")");
+                                            table.Cell().Element(CellStyle).AlignRight().Text("-" + returnItem.TotalAmount.ToString("N2"));
+
+                                            if (showPaymentColumns)
+                                            {
+                                                table.Cell().Element(CellStyle).Text("");
+                                                table.Cell().Element(CellStyle).Text("");
+                                                table.Cell().Element(CellStyle).Text("");
+                                            }
+
+                                            totalReturnAmount += returnItem.TotalAmount;
+                                        }                                      
+                                    }
+
+                                    // Add final net total row
+                                    invoiceCounter++;
+                                    table.Cell().Row((uint)invoiceCounter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("NET TOTAL");
+                                    table.Cell().Row((uint)invoiceCounter).Column(7).Element(CellStyle).AlignRight().Text((totalAmount - totalReturnAmount).ToString("N2")).Bold().FontSize(10);
+
+                                });
+                            });
                     });
                 });
             }).GeneratePdf(filePath);
         }
 
-        public void GenerateCustomerReportExcel(CustomerModel customer, IEnumerable<PaymentModel> payments, string path, string month, string reportType, DateTime start, DateTime end)
+        public void GenerateCustomerReportExcel(CustomerModel customer, IEnumerable<PaymentModel> invoices, IEnumerable<ReturnModel> returns, string path, string month, string reportType, DateTime start, DateTime end)
         {
             // Ensure EPPlus license is set
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
@@ -228,6 +242,8 @@ namespace KAP_InventoryManager.Utils
 
             var filePath = $@"{directoryPath}\{customer.Name}, {customer.City}-{date}.xlsx";
             bool showPaymentColumns = reportType != "only pending or overdue";
+            decimal totalAmount = 0;
+            decimal totalReturnAmount = 0;
 
             using (ExcelPackage package = new ExcelPackage())
             {
@@ -288,13 +304,10 @@ namespace KAP_InventoryManager.Utils
                 worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                rowCounter++;
-
                 int invoiceCounter = 0;
-                int returnCounter = 0;
-                decimal totalAmount = 0;
 
-                foreach (var invoice in payments)
+                // Invoices Data
+                foreach (var invoice in invoices)
                 {
                     invoiceCounter++;
                     worksheet.Cells[rowCounter, 1].Value = invoiceCounter;
@@ -333,16 +346,29 @@ namespace KAP_InventoryManager.Utils
                     worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                     worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
+                    totalAmount += invoice.TotalAmount;
                     rowCounter++;
+                }
 
-                    // If there's a return, add return information as a separate row
-                    if (invoice.ReturnAmount != 0)
+                // Now display all returns from this customer
+                if (returns.Any())
+                {
+                    int returnCounter = 0;
+                    foreach (var returnItem in returns)
                     {
                         returnCounter++;
-                        worksheet.Cells[rowCounter, 6].Value = invoice.ReturnNo;
-                        worksheet.Cells[rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                        worksheet.Cells[rowCounter, 1].Value = "R" + returnCounter.ToString();
+                        worksheet.Cells[rowCounter, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
-                        worksheet.Cells[rowCounter, 7].Value = invoice.ReturnAmount * (-1);
+                        worksheet.Cells[rowCounter, 2].Value = returnItem.Date;
+                        worksheet.Cells[rowCounter, 2].Style.Numberformat.Format = "yyyy-MM-dd";
+                        worksheet.Cells[rowCounter, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                        worksheet.Cells[rowCounter, 3, rowCounter, 6].Merge = true;
+                        worksheet.Cells[rowCounter, 3].Value = returnItem.ReturnNo + " (" + returnItem.InvoiceNo + ")";
+                        worksheet.Cells[rowCounter, 3].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                        worksheet.Cells[rowCounter, 7].Value = returnItem.TotalAmount * (-1);
                         worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
 
                         worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
@@ -350,19 +376,19 @@ namespace KAP_InventoryManager.Utils
                         worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                         worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
+                        totalReturnAmount += returnItem.TotalAmount;
                         rowCounter++;
                     }
-
-                    totalAmount = totalAmount + invoice.TotalAmount - invoice.ReturnAmount;
                 }
 
-                worksheet.Cells[rowCounter, 6].Value = "TOTAL";
+                // Add final net total row
+                worksheet.Cells[rowCounter, 6].Value = "NET TOTAL";
                 worksheet.Cells[rowCounter, 6].Style.Font.Bold = true;
                 worksheet.Cells[rowCounter, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
                 worksheet.Cells[rowCounter, 6].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
                 worksheet.Cells[rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
 
-                worksheet.Cells[rowCounter, 7].Value = totalAmount;
+                worksheet.Cells[rowCounter, 7].Value = totalAmount - totalReturnAmount;
                 worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
                 worksheet.Cells[rowCounter, 7].Style.Font.Bold = true;
 
@@ -370,9 +396,12 @@ namespace KAP_InventoryManager.Utils
                 worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Right.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                 worksheet.Cells[rowCounter, 6, rowCounter, 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
-               
-                // AutoFit Columns
-                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                rowCounter++;
+                rowCounter++;
+
+            // AutoFit Columns
+            worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
                 // Save the file
                 FileInfo fileInfo = new FileInfo(filePath);

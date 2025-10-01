@@ -24,6 +24,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IReturnRepository _returnRepository;
 
         public DateTime StartDate
         {
@@ -92,6 +93,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
         {
             _invoiceRepository = new InvoiceRepository();
             _userRepository = new UserRepository();
+            _returnRepository = new ReturnRepository();
 
             ReportTypes = new List<string> { "all", "only paid", "only pending or overdue" };
             FileTypes = new List<string> { "PDF", "Excel" };
@@ -138,11 +140,12 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                     string path = await GetPathAsync();
                     string month = StartDate.ToString("MMMM yyyy");
                     var invoices = await _invoiceRepository.GetSalesReportAsync(StartDate, EndDate, ReportType);
+                    var returns = await _returnRepository.GetReturns(StartDate, EndDate);
 
                     if (FileType == "PDF")
-                        SalesReport.GenerateSalesReportPDF(invoices, path, month, ReportType, StartDate, EndDate);
+                        SalesReport.GenerateSalesReportPDF(invoices, returns, path, month, ReportType, StartDate, EndDate);
                     else
-                        SalesReport.GenerateSalesReportExcel(invoices, path, month, ReportType, StartDate, EndDate);
+                        SalesReport.GenerateSalesReportExcel(invoices, returns,path, month, ReportType, StartDate, EndDate);
 
                     Initialize();
                     Messenger.Default.Send(new NotificationMessage("CloseDialog"));

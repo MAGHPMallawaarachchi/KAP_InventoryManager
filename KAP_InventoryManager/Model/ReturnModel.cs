@@ -12,6 +12,8 @@ namespace KAP_InventoryManager.Model
         public string ReturnNo { get; set; }
         public string InvoiceNo { get; set; }
         public string CustomerID { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerCity { get; set; }
         public string RepID { get; set; }
         public DateTime Date { get; set; }
         public string DateString { get; set; }

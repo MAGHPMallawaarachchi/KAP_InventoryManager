@@ -202,5 +202,40 @@ namespace KAP_InventoryManager.Repositories
                 return null;
             }
         }
+
+        public async Task<IEnumerable<ReturnModel>> GetReturns(DateTime startDate, DateTime endDate)
+        {
+            var returns = new List<ReturnModel>();
+
+            try
+            {
+                var parameters = new MySqlParameter[]
+                {
+                    new MySqlParameter("@p_StartDate", MySqlDbType.DateTime) { Value = startDate },
+                    new MySqlParameter("@p_EndDate", MySqlDbType.DateTime) { Value = endDate }
+                };
+
+                using (var reader = await ExecuteReaderAsync("GetReturns", CommandType.StoredProcedure, parameters))
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        returns.Add(new ReturnModel
+                        {
+                            Date = reader["Date"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["Date"]),
+                            ReturnNo = reader["ReturnNo"] is DBNull ? "" : reader["ReturnNo"].ToString(),
+                            TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
+                            InvoiceNo = reader["InvoiceNo"] is DBNull ? "" : reader["InvoiceNo"].ToString(),
+                            CustomerName = reader["CustomerName"] is DBNull ? "" : reader["CustomerName"].ToString(),
+                            CustomerCity = reader["CustomerCity"] is DBNull ? "" : reader["CustomerCity"].ToString()
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to get returns. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            return returns;
+        }
     }
 }

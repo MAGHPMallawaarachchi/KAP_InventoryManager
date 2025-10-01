@@ -21,7 +21,7 @@ namespace KAP_InventoryManager.Utils
 {
     public class CustomerInvoiceSummaryReport
     {
-        public void GenerateCustomerInvoiceSummaryReportPDF(IEnumerable<CustomerInvoiceSummaryModel> customerInvoiceSummaryReports, string path, string month, string reportType, DateTime start, DateTime end)
+        public void GenerateCustomerInvoiceSummaryReportPDF(IEnumerable<CustomerInvoiceSummaryModel> reports, string path, string month, string reportType, DateTime start, DateTime end)
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -60,12 +60,12 @@ namespace KAP_InventoryManager.Utils
                     {
                         c.Item().PaddingTop(10).Text(month + " (" + start.ToString("yyyy-MM-dd") + " - " + end.ToString("yyyy-MM-dd") + ")").FontSize(14).FontFamily(Fonts.Calibri).Bold();
 
-                        foreach (var summary in customerInvoiceSummaryReports)
+                        foreach (var report in reports)
                         {
                             c.Item().EnsureSpace()
                             .Column(column =>
                             {
-                                column.Item().PaddingTop(10).Text(summary.CustomrName + " - " + summary.CustomerCity).FontSize(10).FontFamily(Fonts.Calibri).Bold();
+                                column.Item().PaddingTop(10).Text(report.CustomrName + " - " + report.CustomerCity).FontSize(10).FontFamily(Fonts.Calibri).Bold();
 
                                 column.Item().PaddingTop(5).PaddingBottom(10)
                                 .Table(table =>
@@ -84,7 +84,7 @@ namespace KAP_InventoryManager.Utils
                                     IContainer TotalCellStyle(IContainer cont)
                                     {
                                         return cont
-                                        .DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Calibri).Bold())
+                                        .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri).Bold())
                                         .Border((float)0.6)
                                         .Background(Colors.Grey.Lighten2)
                                         .ShowOnce()
@@ -95,7 +95,7 @@ namespace KAP_InventoryManager.Utils
 
                                     table.ColumnsDefinition(columns =>
                                     {
-                                        columns.ConstantColumn(18);
+                                        columns.ConstantColumn(24);
                                         columns.ConstantColumn(55);
                                         columns.ConstantColumn(70);
                                         columns.RelativeColumn();
@@ -128,8 +128,9 @@ namespace KAP_InventoryManager.Utils
                                     });
 
                                     int invoiceCounter = 0;
-                                    int returnCounter = 0;
-                                    foreach (var invoice in summary.Payments)
+
+                                    // First, display all invoices
+                                    foreach (var invoice in report.Invoices)
                                     {
                                         invoiceCounter++;
                                         table.Cell().Element(CellStyle).Text(invoiceCounter.ToString());
@@ -141,36 +142,41 @@ namespace KAP_InventoryManager.Utils
                                             invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd")
                                         );
                                         table.Cell().Element(CellStyle).AlignRight().Text(invoice.TotalAmount.ToString("N2"));
+
                                         if (showPaymentColumns)
                                         {
                                             table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReceiptNo ?? " ");
                                             table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentType ?? " ");
                                             table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentDate != default(DateTime) ? invoice.PaymentDate.ToString("yyyy-MM-dd") : " ");
                                         }
+                                    }
 
-                                        if (invoice.ReturnAmount != 0)
+                                    // Now display all returns from this customer
+                                    if (report.Returns.Any())
+                                    {
+                                        int returnCounter = 0;
+                                        foreach (var returnItem in report.Returns)
                                         {
                                             returnCounter++;
-                                            table.Cell().Element(CellStyle).Text("");
-                                            table.Cell().Element(CellStyle).Text("");
-                                            table.Cell().Element(CellStyle).Text("");
-                                            table.Cell().Element(CellStyle).Text("");
-                                            table.Cell().Element(CellStyle).Text("");
-                                            table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReturnNo);
-                                            table.Cell().Element(CellStyle).AlignRight().Text("-" + invoice.ReturnAmount.ToString("N2"));
+                                            invoiceCounter++;
+                                            table.Cell().Element(CellStyle).Text("R" + returnCounter.ToString());
+                                            table.Cell().Element(CellStyle).AlignCenter().Text(returnItem.Date.ToString("yyyy-MM-dd"));
+                                            table.Cell().ColumnSpan(4).Element(CellStyle).AlignLeft().Text(returnItem.ReturnNo + " (" + returnItem.InvoiceNo + ")");
+                                            table.Cell().Element(CellStyle).AlignRight().Text("-" + returnItem.TotalAmount.ToString("N2"));
 
                                             if (showPaymentColumns)
                                             {
-                                                table.Cell().Element(CellStyle).AlignCenter().Text("");
-                                                table.Cell().Element(CellStyle).AlignCenter().Text("");
-                                                table.Cell().Element(CellStyle).AlignCenter().Text("");
+                                                table.Cell().Element(CellStyle).Text("");
+                                                table.Cell().Element(CellStyle).Text("");
+                                                table.Cell().Element(CellStyle).Text("");
                                             }
                                         }
                                     }
 
-                                    invoiceCounter = invoiceCounter + returnCounter + 1;
-                                    table.Cell().Row((uint)invoiceCounter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
-                                    table.Cell().Row((uint)invoiceCounter).Column(7).Element(CellStyle).AlignRight().Text((summary.TotalAmount - summary.TotalReturnAmount).ToString("N2")).Bold().FontSize(10);
+                                    // Add final net total row
+                                    invoiceCounter++;
+                                    table.Cell().Row((uint)invoiceCounter).Column(6).ColumnSpan(1).Element(TotalCellStyle).Text("NET TOTAL");
+                                    table.Cell().Row((uint)invoiceCounter).Column(7).Element(CellStyle).AlignRight().Text((report.TotalAmount - report.TotalReturnAmount).ToString("N2")).Bold().FontSize(10);
 
                                 });
                             });
@@ -182,24 +188,24 @@ namespace KAP_InventoryManager.Utils
                             IContainer CellStyle(IContainer cont)
                             {
                                 return cont
-                                .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri))
-                                .BorderVertical((float)0.6)
-                                .BorderBottom((float)0.6)
-                                .ShowOnce()
-                                .AlignMiddle()
-                                .PaddingHorizontal(4);
+                                    .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri))
+                                    .BorderVertical((float)0.6)
+                                    .BorderBottom((float)0.6)
+                                    .ShowOnce()
+                                    .AlignMiddle()
+                                    .PaddingHorizontal(4);
                             }
 
                             IContainer TotalCellStyle(IContainer cont)
                             {
                                 return cont
-                                .DefaultTextStyle(x => x.FontSize(11).FontFamily(Fonts.Calibri).Bold())
-                                .Border((float)0.6)
-                                .Background(Colors.Grey.Lighten2)
-                                .ShowOnce()
-                                .AlignRight()
-                                .AlignMiddle()
-                                .PaddingRight(4);
+                                    .DefaultTextStyle(x => x.FontSize(9).FontFamily(Fonts.Calibri).Bold())
+                                    .Border((float)0.6)
+                                    .Background(Colors.Grey.Lighten2)
+                                    .ShowOnce()
+                                    .AlignRight()
+                                    .AlignMiddle()
+                                    .PaddingRight(4);
                             }
 
                             table.ColumnsDefinition(columns =>
@@ -216,28 +222,29 @@ namespace KAP_InventoryManager.Utils
                                 header.Cell().Element(HeaderCellStyle).Text("TOTAL AMOUNT");
                             });
 
-                            int counter = 0;
+                            int summaryCounter = 0;
                             decimal totalAmount = 0;
-                            foreach (var summary in customerInvoiceSummaryReports)
-                            {
-                                counter++;
-                                table.Cell().Element(CellStyle).Text(counter.ToString());
-                                table.Cell().Element(CellStyle).AlignLeft().Text(summary.CustomrName);
-                                table.Cell().Element(CellStyle).AlignRight().Text((summary.TotalAmount - summary.TotalReturnAmount).ToString("N2"));
 
-                                totalAmount += summary.TotalAmount - summary.TotalReturnAmount;
+                            foreach (var report in reports)
+                            {
+                                summaryCounter++;
+                                table.Cell().Element(CellStyle).Text(summaryCounter.ToString());
+                                table.Cell().Element(CellStyle).AlignLeft().Text(report.CustomrName);
+                                table.Cell().Element(CellStyle).AlignRight().Text((report.TotalAmount - report.TotalReturnAmount).ToString("N2"));
+
+                                totalAmount += (report.TotalAmount - report.TotalReturnAmount);
                             }
 
-                            counter++;
-                            table.Cell().Row((uint)counter).Column(2).ColumnSpan(1).Element(TotalCellStyle).Text("TOTAL");
-                            table.Cell().Row((uint)counter).Column(3).Element(CellStyle).AlignRight().Text(totalAmount.ToString("N2")).Bold().FontSize(10);
+                            summaryCounter++;
+                            table.Cell().Row((uint)summaryCounter).Column(2).ColumnSpan(1).Element(TotalCellStyle).Text("NET TOTAL");
+                            table.Cell().Row((uint)summaryCounter).Column(3).Element(CellStyle).AlignRight().Text(totalAmount.ToString("N2")).Bold().FontSize(10);
                         });
                     });
                 });
             }).GeneratePdf(filePath);
         }
 
-        public void GenerateCustomerInvoiceSummaryReportExcel(IEnumerable<CustomerInvoiceSummaryModel> customerInvoiceSummaryReports, string path, string month, string reportType, DateTime start, DateTime end)
+        public void GenerateCustomerInvoiceSummaryReportExcel(IEnumerable<CustomerInvoiceSummaryModel> reports, string path, string month, string reportType, DateTime start, DateTime end)
         {
             // Ensure EPPlus license is set
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
@@ -259,16 +266,18 @@ namespace KAP_InventoryManager.Utils
 
                 worksheet.DefaultRowHeight = 18;
 
-                worksheet.Cells[1, 2].Value = month + " (" + start.ToString("yyyy-MM-dd") + " - " + end.ToString("yyyy-MM-dd") + ")";
-                worksheet.Cells[1, 2].Style.Font.Bold = true;
+                worksheet.Cells[1, 1, 1, 2].Merge = true;
+                worksheet.Cells[1, 1].Value = month + " (" + start.ToString("yyyy-MM-dd") + " - " + end.ToString("yyyy-MM-dd") + ")";
+                worksheet.Cells[1, 1, 1, 2].Style.Font.Bold = true;
 
                 int rowCounter = 3; // Starting row for the reports
 
-                foreach (var summary in customerInvoiceSummaryReports)
+                foreach (var report in reports)
                 {
                     // Customer Info Section
-                    worksheet.Cells[rowCounter, 2].Value = summary.CustomrName + " - " + summary.CustomerCity;
-                    worksheet.Cells[rowCounter, 2].Style.Font.Bold = true;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 2].Merge = true;
+                    worksheet.Cells[rowCounter, 1].Value = report.CustomrName + " - " + report.CustomerCity;
+                    worksheet.Cells[rowCounter, 1, rowCounter, 2].Style.Font.Bold = true;
                     rowCounter++;
 
                     // Header for Invoices
@@ -302,10 +311,9 @@ namespace KAP_InventoryManager.Utils
                     rowCounter++;
 
                     int invoiceCounter = 0;
-                    int returnCounter = 0;
 
                     // Invoices Data
-                    foreach (var invoice in summary.Payments)
+                    foreach (var invoice in report.Invoices)
                     {
                         invoiceCounter++;
                         worksheet.Cells[rowCounter, 1].Value = invoiceCounter;
@@ -344,16 +352,28 @@ namespace KAP_InventoryManager.Utils
                         worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Left.Style = ExcelBorderStyle.Thin;
                         worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
 
-                        rowCounter++;
+                        rowCounter++;                   
+                    }
 
-                        // If there's a return, add return information as a separate row
-                        if (invoice.ReturnAmount != 0)
+                    // Now display all returns from this customer
+                    if (report.Returns.Any())
+                    {
+                        int returnCounter = 0;
+                        foreach (var returnItem in report.Returns)
                         {
                             returnCounter++;
-                            worksheet.Cells[rowCounter, 6].Value = invoice.ReturnNo;
-                            worksheet.Cells[rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                            worksheet.Cells[rowCounter, 1].Value = "R" + returnCounter.ToString();
+                            worksheet.Cells[rowCounter, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
-                            worksheet.Cells[rowCounter, 7].Value = invoice.ReturnAmount * (-1);
+                            worksheet.Cells[rowCounter, 2].Value = returnItem.Date;
+                            worksheet.Cells[rowCounter, 2].Style.Numberformat.Format = "yyyy-MM-dd";
+                            worksheet.Cells[rowCounter, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+
+                            worksheet.Cells[rowCounter, 3, rowCounter, 6].Merge = true;
+                            worksheet.Cells[rowCounter, 3].Value = returnItem.ReturnNo + " (" + returnItem.InvoiceNo + ")";
+                            worksheet.Cells[rowCounter, 3].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
+
+                            worksheet.Cells[rowCounter, 7].Value = returnItem.TotalAmount * (-1);
                             worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
 
                             worksheet.Cells[rowCounter, 1, rowCounter, showPaymentColumns ? 14 : 7].Style.Border.Top.Style = ExcelBorderStyle.Thin;
@@ -365,13 +385,14 @@ namespace KAP_InventoryManager.Utils
                         }
                     }
 
-                    worksheet.Cells[rowCounter, 6].Value = "TOTAL";
+                    // Add final net total row
+                    worksheet.Cells[rowCounter, 6].Value = "NET TOTAL";
                     worksheet.Cells[rowCounter, 6].Style.Font.Bold = true;
                     worksheet.Cells[rowCounter, 6].Style.Fill.PatternType = ExcelFillStyle.Solid;
                     worksheet.Cells[rowCounter, 6].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
                     worksheet.Cells[rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Right;
 
-                    worksheet.Cells[rowCounter, 7].Value = summary.TotalAmount - summary.TotalReturnAmount;
+                    worksheet.Cells[rowCounter, 7].Value = report.TotalAmount - report.TotalReturnAmount;
                     worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
                     worksheet.Cells[rowCounter, 7].Style.Font.Bold = true;
 
@@ -406,16 +427,16 @@ namespace KAP_InventoryManager.Utils
 
                 rowCounter++;
 
-                foreach (var summary in customerInvoiceSummaryReports)
+                foreach (var report in reports)
                 {
                     summaryCounter++;
                     worksheet.Cells[rowCounter, 1].Value = summaryCounter;
                     worksheet.Cells[rowCounter, 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
 
-                    worksheet.Cells[rowCounter, 2].Value = summary.CustomrName + " - " + summary.CustomerCity;
+                    worksheet.Cells[rowCounter, 2].Value = report.CustomrName + " - " + report.CustomerCity;
                     worksheet.Cells[rowCounter, 2].Style.HorizontalAlignment = ExcelHorizontalAlignment.Left;
 
-                    worksheet.Cells[rowCounter, 3].Value = summary.TotalAmount - summary.TotalReturnAmount;
+                    worksheet.Cells[rowCounter, 3].Value = report.TotalAmount - report.TotalReturnAmount;
                     worksheet.Cells[rowCounter, 3].Style.Numberformat.Format = "#,##0.00";
 
                     worksheet.Cells[rowCounter, 1, rowCounter, 3].Style.Border.Top.Style = ExcelBorderStyle.Thin;
@@ -425,7 +446,7 @@ namespace KAP_InventoryManager.Utils
 
                     rowCounter++;
 
-                    totalAmount += (summary.TotalAmount - summary.TotalReturnAmount);
+                    totalAmount += (report.TotalAmount - report.TotalReturnAmount);
                 }
 
                 worksheet.Cells[rowCounter, 2].Value = "TOTAL";

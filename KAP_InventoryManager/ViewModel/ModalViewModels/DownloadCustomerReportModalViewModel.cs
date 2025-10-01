@@ -165,12 +165,13 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                     string path = await GetPathAsync();
                     string month = StartDate.ToString("MMMM yyyy");
 
-                    var payments = await _customerRepository.GetCustomerReport(Customer.CustomerID, StartDate, EndDate, ReportType);
+                    var invoices = await _customerRepository.GetCustomerInvoices(Customer.CustomerID, StartDate, EndDate, ReportType);
+                    var returns = await _customerRepository.GetCustomerReturns(Customer.CustomerID, StartDate, EndDate);
 
                     if (FileType == "PDF")
-                        customerReport.GenerateCustomerReportPDF(Customer, payments, path, month, ReportType, StartDate, EndDate);
+                        customerReport.GenerateCustomerReportPDF(Customer, invoices, returns, path, month, ReportType, StartDate, EndDate);
                     else
-                        customerReport.GenerateCustomerReportExcel(Customer, payments, path, month, ReportType, StartDate, EndDate);
+                        customerReport.GenerateCustomerReportExcel(Customer, invoices, returns, path, month, ReportType, StartDate, EndDate);
 
                     Initialize();
                     Messenger.Default.Send(new NotificationMessage("CloseDialog"));

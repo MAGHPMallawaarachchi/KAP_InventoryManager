@@ -17,6 +17,8 @@ namespace KAP_InventoryManager.Repositories
         Task<IEnumerable<string>> GetCustomersFromInvoice(DateTime startDate, DateTime endDate);
         Task<string> GetCustomerName(string customerID);
         Task<IEnumerable<string>> GetCustomersWithoutReps(DateTime startDate, DateTime endDate, string statusFilter);
-        Task<IEnumerable<PaymentModel>> GetCustomerInvoiceSummary(string customerId, DateTime startDate, DateTime endDate, string statusFilter);
+        Task<IEnumerable<PaymentModel>> GetCustomerInvoices(string customerId, DateTime startDate, DateTime endDate, string statusFilter);
+        Task<IEnumerable<ReturnModel>> GetCustomerReturns(string customerId, DateTime startDate, DateTime endDate);
+
     }
 }
