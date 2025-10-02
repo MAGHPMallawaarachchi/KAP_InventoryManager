@@ -203,52 +203,6 @@ namespace KAP_InventoryManager.Repositories
             return customer;
         }
 
-        public async Task<IEnumerable<PaymentModel>> GetCustomerReport(string customerId, DateTime startDate, DateTime endDate, string statusFilter)
-        {
-            var payments = new List<PaymentModel>();
-
-            try
-            {
-                var parameters = new MySqlParameter[]
-                {
-                    new MySqlParameter("@p_CustomerID", MySqlDbType.VarChar) { Value = customerId },
-                    new MySqlParameter("@p_StartDate", MySqlDbType.DateTime) { Value = startDate },
-                    new MySqlParameter("@p_EndDate", MySqlDbType.DateTime) { Value = endDate },
-                    new MySqlParameter("@statusFilter", MySqlDbType.VarChar) { Value = statusFilter }
-                };
-
-                using (var reader = await ExecuteReaderAsync("GetCustomerReport", CommandType.StoredProcedure, parameters))
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        payments.Add(new PaymentModel
-                        {
-                            Date = reader["Date"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["Date"]),
-                            InvoiceNo = reader["InvoiceNo"] is DBNull ? " " : reader["InvoiceNo"].ToString(),
-                            PaymentTerm = reader["PaymentTerm"] is DBNull ? " " : reader["PaymentTerm"].ToString(),
-                            Status = reader["Status"] is DBNull ? " " : reader["Status"].ToString(),
-                            DueDate = reader["DueDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["DueDate"]),
-                            TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
-                            PaymentType = reader["PaymentType"] is DBNull ? " " : reader["PaymentType"].ToString(),
-                            ReceiptNo = reader["ReceiptNo"] is DBNull ? " " : reader["ReceiptNo"].ToString(),
-                            ChequeNo = reader["ChequeNo"] is DBNull ? " " : reader["ChequeNo"].ToString(),
-                            Bank = reader["Bank"] is DBNull ? " " : reader["Bank"].ToString(),
-                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"]),
-                            PaymentAmount = reader["PaymentAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["PaymentAmount"]),
-                            Comment = reader["Comment"] is DBNull ? "" : reader["Comment"].ToString(),
-                            ReturnNo = reader["ReturnNo"] is DBNull ? "" : reader["ReturnNo"].ToString(),
-                            ReturnAmount = reader["ReturnAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["ReturnAmount"])
-                        });
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show($"Failed to get payments. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            return payments;
-        }
-
         public async Task<IEnumerable<string>> GetCustomersFromInvoice(DateTime startDate, DateTime endDate)
         {
             var customers = new List<string>();
@@ -331,9 +285,9 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public async Task<IEnumerable<PaymentModel>> GetCustomerInvoices(string customerId, DateTime startDate, DateTime endDate, string statusFilter)
+        public async Task<IEnumerable<InvoiceModel>> GetCustomerInvoices(string customerId, DateTime startDate, DateTime endDate, string statusFilter)
         {
-            var invoices = new List<PaymentModel>();
+            var invoices = new List<InvoiceModel>();
 
             try
             {
@@ -349,21 +303,14 @@ namespace KAP_InventoryManager.Repositories
                 {
                     while (await reader.ReadAsync())
                     {
-                        invoices.Add(new PaymentModel
+                        invoices.Add(new InvoiceModel
                         {
                             Date = reader["Date"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["Date"]),
                             InvoiceNo = reader["InvoiceNo"] is DBNull ? " " : reader["InvoiceNo"].ToString(),
-                            PaymentTerm = reader["PaymentTerm"] is DBNull ? " " : reader["PaymentTerm"].ToString(),
+                            Terms = reader["PaymentTerm"] is DBNull ? " " : reader["PaymentTerm"].ToString(),
                             Status = reader["Status"] is DBNull ? " " : reader["Status"].ToString(),
                             DueDate = reader["DueDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["DueDate"]),
                             TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
-                            PaymentType = reader["PaymentType"] is DBNull ? " " : reader["PaymentType"].ToString(),
-                            ReceiptNo = reader["ReceiptNo"] is DBNull ? " " : reader["ReceiptNo"].ToString(),
-                            ChequeNo = reader["ChequeNo"] is DBNull ? " " : reader["ChequeNo"].ToString(),
-                            Bank = reader["Bank"] is DBNull ? " " : reader["Bank"].ToString(),
-                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"]),
-                            PaymentAmount = reader["PaymentAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["PaymentAmount"]),
-                            Comment = reader["Comment"] is DBNull ? "" : reader["Comment"].ToString(),
                         });
                     }
                 }
