@@ -10,7 +10,7 @@ namespace KAP_InventoryManager.Model
     {
         public string CustomrName { get; set; }
         public string CustomerCity {  get; set; }
-        public IEnumerable<PaymentModel> Invoices { get; set; }
+        public IEnumerable<InvoiceModel> Invoices { get; set; }
         public IEnumerable<ReturnModel> Returns { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal TotalReturnAmount { get; set; }
