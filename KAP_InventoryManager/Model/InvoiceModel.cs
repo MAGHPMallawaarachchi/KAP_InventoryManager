@@ -21,5 +21,6 @@ namespace KAP_InventoryManager.Model
         public string RepID { get; set; }
         public string CustomerName { get; set; }
         public string CustomerCity { get; set; }
+        public IEnumerable<PaymentModel> Payments { get; set; }
     }
 }
