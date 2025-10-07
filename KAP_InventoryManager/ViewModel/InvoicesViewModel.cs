@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Xceed.Wpf.Toolkit.Primitives;
 
 namespace KAP_InventoryManager.ViewModel
@@ -22,6 +23,7 @@ namespace KAP_InventoryManager.ViewModel
 
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cancellationTokenSource;
+        private DispatcherTimer _searchDebounceTimer;
 
         private ObservableCollection<InvoiceModel> _invoices;
         private IEnumerable<InvoiceItemModel> _invoiceItems;
@@ -31,6 +33,7 @@ namespace KAP_InventoryManager.ViewModel
         private InvoiceModel _previousInvoice;
         private CustomerModel _customer;
         private Timer _timer;
+        private bool _isLoading;
 
         public ObservableCollection<InvoiceModel> Invoices
         {
@@ -60,7 +63,15 @@ namespace KAP_InventoryManager.ViewModel
                 _invoiceSearchText = value;
                 OnPropertyChanged(nameof(InvoiceSearchText));
 
-                PopulateInvoicesAsync();
+                // Debounce search - wait 300ms after user stops typing
+                _searchDebounceTimer?.Stop();
+                _searchDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
+                _searchDebounceTimer.Tick += (s, e) =>
+                {
+                    _searchDebounceTimer.Stop();
+                    PopulateInvoicesAsync();
+                };
+                _searchDebounceTimer.Start();
             }
         }
 
@@ -102,6 +113,16 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _customer = value;
                 OnPropertyChanged(nameof(Customer));
+            }
+        }
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                OnPropertyChanged(nameof(IsLoading));
             }
         }
 
@@ -166,30 +187,26 @@ namespace KAP_InventoryManager.ViewModel
             _cancellationTokenSource?.Cancel();
             _cancellationTokenSource = new CancellationTokenSource();
 
-            if(CurrentInvoice != null) 
+            if(CurrentInvoice != null)
             {
                 PreviousInvoice = CurrentInvoice;
             }
 
+            IsLoading = true;
+
             try
             {
-
                 var invoices = (string.IsNullOrEmpty(InvoiceSearchText)
                     ? await _invoiceRepository.GetPastTwoDaysInvoicesAsync()
                     : await _invoiceRepository.SearchInvoiceListAsync(InvoiceSearchText));
 
-                var invoicesList = new List<InvoiceModel>(invoices);
+                var invoicesList = invoices.ToList();
 
-                Invoices.Clear();
-
-                foreach (var invoice in invoicesList)
+                // Smart update - only add/remove changed items
+                Application.Current.Dispatcher.Invoke(() =>
                 {
-                    if (_cancellationTokenSource.Token.IsCancellationRequested)
-                        break;
-
-                    Invoices.Add(invoice);
-                    await Task.Delay(0, _cancellationTokenSource.Token);
-                }
+                    UpdateCollection(Invoices, invoicesList);
+                });
 
                 if(PreviousInvoice != null)
                 {
@@ -203,7 +220,7 @@ namespace KAP_InventoryManager.ViewModel
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (TaskCanceledException)
             {
@@ -211,6 +228,7 @@ namespace KAP_InventoryManager.ViewModel
             }
             finally
             {
+                IsLoading = false;
                 _semaphore.Release();
             }
         }
@@ -230,14 +248,6 @@ namespace KAP_InventoryManager.ViewModel
                         var items = await _invoiceRepository.GetInvoiceItemsAsync(CurrentInvoice.InvoiceNo);
                         if (items != null)
                         {
-                            foreach (var item in items)
-                            {
-                                if (item.Description.Length > 42)
-                                {
-                                    item.Description = item.Description.Substring(0, 42) + "...";
-                                }
-                            }
-
                             InvoiceItems = new ObservableCollection<InvoiceItemModel>(items);
                         }
                         else
@@ -264,6 +274,40 @@ namespace KAP_InventoryManager.ViewModel
 
             TimeSpan initialDelay = nextRun - now;
             _timer = new Timer(async _ => await _invoiceRepository.UpdateOverdueInvoices(), null, initialDelay, TimeSpan.FromHours(24));
+        }
+
+        private void UpdateCollection(ObservableCollection<InvoiceModel> collection, List<InvoiceModel> newItems)
+        {
+            // Remove items not in new list
+            for (int i = collection.Count - 1; i >= 0; i--)
+            {
+                var existingItem = collection[i];
+                if (!newItems.Any(x => x.InvoiceNo == existingItem.InvoiceNo))
+                {
+                    collection.RemoveAt(i);
+                }
+            }
+
+            // Add or update items
+            for (int i = 0; i < newItems.Count; i++)
+            {
+                var newItem = newItems[i];
+                var existingItem = collection.FirstOrDefault(x => x.InvoiceNo == newItem.InvoiceNo);
+
+                if (existingItem == null)
+                {
+                    // Add new item at correct position
+                    if (i < collection.Count)
+                        collection.Insert(i, newItem);
+                    else
+                        collection.Add(newItem);
+                }
+                else if (collection.IndexOf(existingItem) != i)
+                {
+                    // Move item to correct position
+                    collection.Move(collection.IndexOf(existingItem), i);
+                }
+            }
         }
     }
 }

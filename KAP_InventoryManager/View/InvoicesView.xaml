@@ -1,15 +1,16 @@
 ﻿<UserControl x:Class="KAP_InventoryManager.View.InvoicesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:KAP_InventoryManager.View"
              xmlns:locals="clr-namespace:KAP_InventoryManager.View"
              xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel"
              xmlns:customcontrols="clr-namespace:KAP_InventoryManager.CustomControls"
+             xmlns:converters="clr-namespace:KAP_InventoryManager.Converters"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="725" d:DesignWidth="1200">
 
     <UserControl.DataContext>
@@ -18,6 +19,7 @@
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:TextTruncateConverter x:Key="TextTruncateConverter" />
 
         <!-- ScrollBar Style -->
         <Style TargetType="{x:Type ScrollBar}">
@@ -152,7 +154,7 @@
                         </Grid>
                     </Border>
 
-                    <ListBox ItemsSource="{Binding Invoices}" 
+                    <ListBox ItemsSource="{Binding Invoices}"
                              SelectedItem="{Binding SelectedInvoice, Mode=TwoWay}"
                              Background="Transparent"
                              BorderThickness="0"
@@ -160,7 +162,10 @@
                              HorizontalContentAlignment="Stretch"
                              Cursor="Hand"
                              SelectionMode="Single"
-                             Grid.Row="2">
+                             Grid.Row="2"
+                             VirtualizingPanel.IsVirtualizing="True"
+                             VirtualizingPanel.VirtualizationMode="Recycling"
+                             ScrollViewer.CanContentScroll="True">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
@@ -171,7 +176,7 @@
                                             <!--<ColumnDefinition Width="*"/>-->
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{Binding Id}"                   
+                                        <TextBlock Text="{Binding Id}"
                                                    Style="{StaticResource regular-text}"/>
 
                                         <Border Grid.Column="1"
@@ -241,11 +246,11 @@
                                         </StackPanel>-->
                                     </Grid>
                                     <StackPanel Orientation="Horizontal" Margin="40,10,20,0">
-                                        <TextBlock Text="{Binding CustomerName}"                   
+                                        <TextBlock Text="{Binding CustomerName}"
                                                    Style="{StaticResource light-text}"/>
-                                        <TextBlock Text=" - "                   
+                                        <TextBlock Text=" - "
                                                    Style="{StaticResource light-text}"/>
-                                        <TextBlock Text="{Binding CustomerCity}"                   
+                                        <TextBlock Text="{Binding CustomerCity}"
                                                    Style="{StaticResource light-text}"/>
                                     </StackPanel>
                                 </StackPanel>
@@ -572,7 +577,7 @@
 
                             <!-- ListBox for Invoice Items -->
                             <ListBox Grid.Row="1"
-                                        ItemsSource="{Binding InvoiceItems, Mode=TwoWay}" 
+                                        ItemsSource="{Binding InvoiceItems, Mode=TwoWay}"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         BorderBrush="Transparent"
@@ -582,7 +587,10 @@
                                         SelectionMode="Single"
                                         Margin="0,10,0,0"
                                         IsHitTestVisible="True"
-                                        ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                        VirtualizingPanel.IsVirtualizing="True"
+                                        VirtualizingPanel.VirtualizationMode="Recycling"
+                                        ScrollViewer.CanContentScroll="True">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Grid VerticalAlignment="Stretch">
@@ -618,7 +626,7 @@
                                                        Style="{StaticResource regular-text}"
                                                        Grid.Column="2"/>
 
-                                            <TextBlock Text="{Binding Description}"                 
+                                            <TextBlock Text="{Binding Description, Converter={StaticResource TextTruncateConverter}, ConverterParameter=42}"
                                                        Style="{StaticResource regular-text}"
                                                        Grid.Column="3"/>
 

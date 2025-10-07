@@ -22,6 +22,8 @@ namespace KAP_InventoryManager.View
     public partial class InvoicesView : UserControl
     {
         private AddInvoiceView addInvoiceWindow;
+        private ConfirmPaymentModalView confirmPaymentWindow;
+        private ViewPaymentModalView viewPaymentWindow;
 
         public InvoicesView()
         {
@@ -48,14 +50,38 @@ namespace KAP_InventoryManager.View
 
         private void ConfirmPaymentButton_Click(object sender, RoutedEventArgs e)
         {
-            var confirmPaymentWindow = new ConfirmPaymentModalView();
-            confirmPaymentWindow.Show();
+            if (confirmPaymentWindow == null || !confirmPaymentWindow.IsLoaded)
+            {
+                confirmPaymentWindow = new ConfirmPaymentModalView();
+                confirmPaymentWindow.Closed += (s, args) => confirmPaymentWindow = null;
+                confirmPaymentWindow.Show();
+            }
+            else
+            {
+                if (confirmPaymentWindow.WindowState == WindowState.Minimized)
+                {
+                    confirmPaymentWindow.WindowState = WindowState.Normal;
+                }
+                confirmPaymentWindow.Activate();
+            }
         }
 
         private void ViewPaymentButton_Click(object sender, RoutedEventArgs e)
         {
-            var viewPaymentWindow = new ViewPaymentModalView();
-            viewPaymentWindow.Show();
+            if (viewPaymentWindow == null || !viewPaymentWindow.IsLoaded)
+            {
+                viewPaymentWindow = new ViewPaymentModalView();
+                viewPaymentWindow.Closed += (s, args) => viewPaymentWindow = null;
+                viewPaymentWindow.Show();
+            }
+            else
+            {
+                if (viewPaymentWindow.WindowState == WindowState.Minimized)
+                {
+                    viewPaymentWindow.WindowState = WindowState.Normal;
+                }
+                viewPaymentWindow.Activate();
+            }
         }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
