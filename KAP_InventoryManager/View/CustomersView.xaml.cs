@@ -31,7 +31,18 @@ namespace KAP_InventoryManager.View
             viewModel = new CustomersViewModel();
             DataContext = viewModel;
 
+            // Subscribe to property changes to update chart
+            viewModel.PropertyChanged += ViewModel_PropertyChanged;
+
             UpdateChart();
+        }
+
+        private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(viewModel.DebtPercentage) || e.PropertyName == nameof(viewModel.DebtRemainder))
+            {
+                Dispatcher.Invoke(() => UpdateChart());
+            }
         }
 
         private void AddCustomerButton_Click(object sender, RoutedEventArgs e)
@@ -60,8 +71,17 @@ namespace KAP_InventoryManager.View
 
         private void UpdateChart()
         {
-            List<double> chartValues = new List<double> { viewModel.DebtPercentage, viewModel.DebtRemainder };
-            DebtChart.Series[0].Values = new ChartValues<double>(chartValues);
+            // If debt exceeds 100%, fill entire chart with green but display actual percentage
+            if (viewModel.DebtPercentage > 100)
+            {
+                DebtChart.Series[0].Values = new ChartValues<double> { 100 };
+                DebtChart.Series[1].Values = new ChartValues<double> { 0 };
+            }
+            else
+            {
+                DebtChart.Series[0].Values = new ChartValues<double> { viewModel.DebtPercentage };
+                DebtChart.Series[1].Values = new ChartValues<double> { viewModel.DebtRemainder };
+            }
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
