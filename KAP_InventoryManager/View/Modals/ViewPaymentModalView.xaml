@@ -9,7 +9,7 @@
         xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel.ModalViewModels"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="" Width="370" Height="470"
+        Title="" Width="800" Height="600"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
         Background="Transparent">
@@ -19,8 +19,17 @@
     </Window.DataContext>
 
     <Border Background="{StaticResource Color2}" CornerRadius="8">
-        <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Control Bar -->
             <StackPanel x:Name="pnlControlBar"
+                        Grid.Row="0"
                         Orientation="Horizontal"
                         FlowDirection="RightToLeft"
                         Background="{StaticResource Color2}"
@@ -34,15 +43,10 @@
                 </Button>
             </StackPanel>
 
-            <Grid Margin="20,10,20,20">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <!--<RowDefinition/>-->
-                </Grid.RowDefinitions>
-
-                <DockPanel Margin="0,0,0,20">
-                    <TextBlock Text="View Payment" Style="{StaticResource header}"
+            <!-- Header and Summary Panel -->
+            <StackPanel Grid.Row="1" Margin="20,10,20,10">
+                <DockPanel Margin="0,0,0,15">
+                    <TextBlock Text="Payment History" Style="{StaticResource header}"
                                Margin="0,0,20,0"/>
                     <Border Background="{StaticResource Color3}"
                             CornerRadius="3"
@@ -54,97 +58,147 @@
                     </Border>
                 </DockPanel>
 
-                <Grid Grid.Row="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="3*"/>
-                    </Grid.ColumnDefinitions>
+                <!-- Payment Summary Panel -->
+                <Border Background="{StaticResource Color1}"
+                        CornerRadius="5"
+                        Padding="15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Payment Type" Style="{StaticResource regular-text}" Margin="0,0,0,20"/>
-                    <TextBlock Text="Receipt No" Style="{StaticResource regular-text}" Grid.Row="1" Margin="0,0,0,20"/>
-                    <TextBlock Text="Cheque No" Style="{StaticResource regular-text}" Grid.Row="2" Margin="0,0,0,20"/>
-                    <TextBlock Text="Bank" Style="{StaticResource regular-text}" Grid.Row="3" Margin="0,0,0,20"/>
-                    <TextBlock Text="Date" Style="{StaticResource regular-text}" Grid.Row="4" Margin="0,0,0,20"/>
-                    <TextBlock Text="Comments" Style="{StaticResource regular-text}" Grid.Row="5" Margin="0,0,0,20"/>
-
-                    <TextBox Text="{Binding Payment.PaymentType, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="1"
-                             Grid.Row="0"
-                             Margin="0,0,0,20"
-                             IsReadOnly="True"/>
-
-                    <TextBox Text="{Binding Payment.ReceiptNo, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="1"
-                             Grid.Row="1"
-                             Margin="0,0,0,20"
-                             IsReadOnly="True"/>
-
-                    <TextBox Text="{Binding Payment.ChequeNo, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="1"
-                             Grid.Row="2"
-                             Margin="0,0,0,20"
-                             IsReadOnly="True"/>
-
-                    <TextBox Text="{Binding Payment.Bank, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="1" 
-                             Grid.Row="3"
-                             Margin="0,0,0,20"
-                             IsReadOnly="True"/>
-
-                    <TextBox Text="{Binding Payment.Date, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="1" 
-                             Grid.Row="4"
-                             Margin="0,0,0,20"
-                             IsReadOnly="True"/>
-
-                    <TextBox Text="{Binding Payment.Comment, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource ModalTextBox}"
-                             Grid.Column="1" 
-                             Grid.Row="5"
-                             Height="100" 
-                             TextWrapping="Wrap"
-                             AcceptsReturn="True"
-                             Margin="0,0,0,20"
-                             IsReadOnly="True"/>
-
-                </Grid>
-
-
-                <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
-                    <Button Margin="0,0,12,0" 
-                            Style="{StaticResource DiscardButton}"
-                            Command="{Binding DiscardCommand}">
-                        <TextBlock Text="Discard"
-                                   FontFamily="Inter"
-                                   FontSize="12"
-                                   Margin="10,0,10,0"
-                                   Foreground="{StaticResource Color4}"/>
-                    </Button>
-                    <Button Style="{StaticResource AddButton}"
-                            Command="{Binding ConfirmPaymentCommand}">
-                        <StackPanel Orientation="Horizontal"
-                                    Margin="10,2,10,2">
-                            <fa:IconImage Icon="CircleCheck" Style="{StaticResource AddButtonIcon}"/>
-                            <TextBlock Text="Confirm Payment" Style="{StaticResource AddButtontext}"/>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Invoice Total"
+                                       Style="{StaticResource regular-text}"
+                                       FontSize="11"
+                                       Opacity="0.7"/>
+                            <TextBlock Text="{Binding PaymentSummary.InvoiceTotal, StringFormat='Rs. {0:N2}'}"
+                                       Style="{StaticResource regular-text}"
+                                       FontWeight="Bold"
+                                       FontSize="16"/>
                         </StackPanel>
-                    </Button>
-                </StackPanel>-->
-            </Grid>
 
-        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Total Paid"
+                                       Style="{StaticResource regular-text}"
+                                       FontSize="11"
+                                       Opacity="0.7"/>
+                            <TextBlock Text="{Binding PaymentSummary.TotalPaid, StringFormat='Rs. {0:N2}'}"
+                                       Style="{StaticResource regular-text}"
+                                       FontWeight="Bold"
+                                       FontSize="16"
+                                       Foreground="#4CAF50"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Remaining Balance"
+                                       Style="{StaticResource regular-text}"
+                                       FontSize="11"
+                                       Opacity="0.7"/>
+                            <TextBlock Text="{Binding PaymentSummary.RemainingBalance, StringFormat='Rs. {0:N2}'}"
+                                       Style="{StaticResource regular-text}"
+                                       FontWeight="Bold"
+                                       FontSize="16"
+                                       Foreground="#FF9800"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="3">
+                            <TextBlock Text="Payment Count"
+                                       Style="{StaticResource regular-text}"
+                                       FontSize="11"
+                                       Opacity="0.7"/>
+                            <TextBlock Text="{Binding PaymentSummary.PaymentCount}"
+                                       Style="{StaticResource regular-text}"
+                                       FontWeight="Bold"
+                                       FontSize="16"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <!-- DataGrid for Payments -->
+            <DataGrid Grid.Row="2"
+                      Margin="20,0,20,10"
+                      ItemsSource="{Binding Payments}"
+                      SelectedItem="{Binding SelectedPayment}"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      IsReadOnly="{Binding IsTableReadOnly}"
+                      SelectionMode="Single"
+                      HeadersVisibility="Column"
+                      GridLinesVisibility="None"
+                      Style="{StaticResource DataGridStyle}"
+                      ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                      RowStyle="{StaticResource DataGridRowStyle}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Date"
+                                        Binding="{Binding Date, StringFormat=dd-MM-yyyy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="100"/>
+                    <DataGridTextColumn Header="Type"
+                                        Binding="{Binding PaymentType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="80"/>
+                    <DataGridTextColumn Header="Amount"
+                                        Binding="{Binding Amount, StringFormat='Rs. {0:N2}', Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="100"/>
+                    <DataGridTextColumn Header="Receipt No"
+                                        Binding="{Binding ReceiptNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="120"/>
+                    <DataGridTextColumn Header="Cheque No"
+                                        Binding="{Binding ChequeNo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="120"/>
+                    <DataGridTextColumn Header="Bank"
+                                        Binding="{Binding Bank, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="*"/>
+                    <DataGridTextColumn Header="Comment"
+                                        Binding="{Binding Comment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                        Width="150"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Action Buttons -->
+            <StackPanel Grid.Row="3"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="20,0,20,20">
+                <Button Margin="0,0,12,0"
+                        Style="{StaticResource DiscardButton}"
+                        Command="{Binding AddPaymentCommand}">
+                    <StackPanel Orientation="Horizontal" Margin="10,2,10,2">
+                        <fa:IconImage Icon="CirclePlus" Style="{StaticResource AddButtonIcon}"/>
+                        <TextBlock Text="Add Payment" Style="{StaticResource AddButtontext}"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Margin="0,0,12,0"
+                        Style="{StaticResource DiscardButton}"
+                        Command="{Binding EditPaymentCommand}">
+                    <StackPanel Orientation="Horizontal" Margin="10,2,10,2">
+                        <fa:IconImage Icon="FloppyDisk" Style="{StaticResource AddButtonIcon}"/>
+                        <TextBlock Text="Save Changes" Style="{StaticResource AddButtontext}"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Margin="0,0,12,0"
+                        Style="{StaticResource DeleteButton}"
+                        Command="{Binding DeletePaymentCommand}">
+                    <StackPanel Orientation="Horizontal" Margin="10,2,10,2">
+                        <fa:IconImage Icon="TrashCan" Style="{StaticResource AddButtonIcon}"/>
+                        <TextBlock Text="Delete" Style="{StaticResource AddButtontext}"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource AddButton}"
+                        Command="{Binding RefreshCommand}">
+                    <StackPanel Orientation="Horizontal" Margin="10,2,10,2">
+                        <fa:IconImage Icon="RotateRight" Style="{StaticResource AddButtonIcon}"/>
+                        <TextBlock Text="Refresh" Style="{StaticResource AddButtontext}"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
     </Border>
 </Window>

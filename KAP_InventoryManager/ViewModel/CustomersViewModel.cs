@@ -312,9 +312,9 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        public async Task<IEnumerable<PaymentModel>> GetReportsForAllCustomers(DateTime startDate, DateTime endDate, string statusFilter)
+        public async Task<IEnumerable<InvoiceModel>> GetReportsForAllCustomers(DateTime startDate, DateTime endDate, string statusFilter)
         {
-            var allReports = new List<PaymentModel>();
+            var allReports = new List<InvoiceModel>();
 
             try
             {
@@ -322,7 +322,7 @@ namespace KAP_InventoryManager.ViewModel
                 var customers = await _customerRepository.GetCustomersFromInvoice(startDate, endDate);
 
                 // Process reports for each customer in parallel
-                var tasks = customers.Select(customerId => _customerRepository.GetCustomerReport(customerId, startDate, endDate, statusFilter));
+                var tasks = customers.Select(customerId => _customerRepository.GetCustomerInvoices(customerId, startDate, endDate, statusFilter));
 
                 var results = await Task.WhenAll(tasks);
 
