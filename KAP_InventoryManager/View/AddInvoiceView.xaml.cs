@@ -26,12 +26,25 @@ namespace KAP_InventoryManager.View
 
         public AddInvoiceView()
         {
-            InitializeComponent();     
+            InitializeComponent();
 
             var viewModel = DataContext as AddInvoiceViewModel;
             if (viewModel != null)
             {
                 viewModel.PropertyChanged += ViewModel_PropertyChanged;
+            }
+
+            // Handle window closing to dispose resources
+            this.Closed += AddInvoiceView_Closed;
+        }
+
+        private void AddInvoiceView_Closed(object sender, EventArgs e)
+        {
+            var viewModel = DataContext as AddInvoiceViewModel;
+            if (viewModel != null)
+            {
+                viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+                viewModel.Dispose();
             }
         }
 

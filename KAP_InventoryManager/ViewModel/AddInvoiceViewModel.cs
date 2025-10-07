@@ -3,6 +3,7 @@ using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
 using KAP_InventoryManager.Utils;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,10 +14,14 @@ using System.Windows.Input;
 
 namespace KAP_InventoryManager.ViewModel
 {
-    public class AddInvoiceViewModel : ViewModelBase
+    public class AddInvoiceViewModel : ViewModelBase, IDisposable
     {
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private CancellationTokenSource _cancellationTokenSource;
+
+        // Caching
+        private Dictionary<string, CustomerModel> _customerCache = new Dictionary<string, CustomerModel>();
+        private const int MAX_CACHE_SIZE = 50;
 
         private string _invoiceNo;
         private string _customerSearchText;
@@ -100,9 +105,12 @@ namespace KAP_InventoryManager.ViewModel
             get => _selectedCustomerId;
             set
             {
-                _selectedCustomerId = value;
-                OnPropertyChanged(nameof(SelectedCustomerId));
-                PopulateCustomerDetailsAsync();
+                if (_selectedCustomerId != value)
+                {
+                    _selectedCustomerId = value;
+                    OnPropertyChanged(nameof(SelectedCustomerId));
+                    _ = PopulateCustomerDetailsAsync();
+                }
             }
         }
 
@@ -123,7 +131,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _partNoSearchText = value;
                 OnPropertyChanged(nameof(PartNoSearchText));
-                _ = FetchPartNumbersAsync(value);
+                DebouncePopulatePartNumbersAsync();
             }
         }
 
@@ -132,9 +140,12 @@ namespace KAP_InventoryManager.ViewModel
             get => _selectedPartNo;
             set
             {
-                _selectedPartNo = value;
-                OnPropertyChanged(nameof(SelectedPartNo));
-                PopulateItemDetailsAsync();
+                if (_selectedPartNo != value)
+                {
+                    _selectedPartNo = value;
+                    OnPropertyChanged(nameof(SelectedPartNo));
+                    _ = PopulateItemDetailsAsync();
+                }
             }
         }
 
@@ -491,11 +502,35 @@ namespace KAP_InventoryManager.ViewModel
             }
         }
 
-        private async void PopulateCustomerDetailsAsync()
+        private async Task PopulateCustomerDetailsAsync()
         {
+            if (string.IsNullOrEmpty(SelectedCustomerId))
+                return;
+
             try
             {
-                SelectedCustomer = await _customerRepository.GetByCustomerIDAsync(SelectedCustomerId);
+                // Check cache first
+                if (_customerCache.ContainsKey(SelectedCustomerId))
+                {
+                    SelectedCustomer = _customerCache[SelectedCustomerId];
+                }
+                else
+                {
+                    SelectedCustomer = await _customerRepository.GetByCustomerIDAsync(SelectedCustomerId);
+
+                    // Add to cache
+                    if (SelectedCustomer != null)
+                    {
+                        if (_customerCache.Count >= MAX_CACHE_SIZE)
+                        {
+                            // Remove first (oldest) entry
+                            var firstKey = _customerCache.Keys.First();
+                            _customerCache.Remove(firstKey);
+                        }
+                        _customerCache[SelectedCustomerId] = SelectedCustomer;
+                    }
+                }
+
                 if (SelectedCustomer != null)
                 {
                     SelectedPaymentType = SelectedCustomer.PaymentType;
@@ -638,8 +673,11 @@ namespace KAP_InventoryManager.ViewModel
         }
 
 
-        private async void PopulateItemDetailsAsync()
+        private async Task PopulateItemDetailsAsync()
         {
+            if (string.IsNullOrEmpty(SelectedPartNo))
+                return;
+
             try
             {
                 SelectedItem = await _itemRepository.GetByPartNoAsync(SelectedPartNo);
@@ -741,7 +779,6 @@ namespace KAP_InventoryManager.ViewModel
                     Total += Amount;
                 }
             }
-            InvoiceItems = new ObservableCollection<InvoiceItemModel>(InvoiceItems);
 
             SelectedInvoiceItem = null;
             ClearItemDetails();
@@ -765,11 +802,7 @@ namespace KAP_InventoryManager.ViewModel
                 foreach (var item in InvoiceItems)
                 {
                     item.No = newNumber++;
-                    OnPropertyChanged(nameof(item.No));
                 }
-
-                OnPropertyChanged(nameof(InvoiceItems));
-                InvoiceItems = new ObservableCollection<InvoiceItemModel>(InvoiceItems);
             }
             else
             {
@@ -897,6 +930,14 @@ namespace KAP_InventoryManager.ViewModel
         private void ShowErrorMessage(string message)
         {
             MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        public void Dispose()
+        {
+            _cancellationTokenSource?.Cancel();
+            _cancellationTokenSource?.Dispose();
+            _semaphore?.Dispose();
+            _customerCache?.Clear();
         }
     }
 }

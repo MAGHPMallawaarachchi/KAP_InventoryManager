@@ -16,6 +16,7 @@
                 <ResourceDictionary Source="Styles\TextBoxStyles.xaml"/>
                 <ResourceDictionary Source="Styles\ListBoxStyles.xaml"/>
                 <ResourceDictionary Source="Styles\ChartStyles.xaml"/>
+                <ResourceDictionary Source="Styles\ScrollBarStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <FontFamily x:Key="FontAwesome">/Fonts/FontAwesome.otf#Font Awesome 6 Free Solid</FontFamily>
