@@ -27,6 +27,16 @@ namespace KAP_InventoryManager.View.Modals
             InitializeComponent();
             DataContext = new ViewModel.ModalViewModels.ViewPaymentModalViewModel();
             Messenger.Default.Register<NotificationMessage>(this, Notify);
+            Messenger.Default.Register<string>(this, OnMessageReceived);
+        }
+
+        private void OnMessageReceived(string message)
+        {
+            if (message == "OpenAddPaymentModal")
+            {
+                var confirmPaymentWindow = new ConfirmPaymentModalView();
+                confirmPaymentWindow.Show();
+            }
         }
 
         [DllImport("user32.dll")]
