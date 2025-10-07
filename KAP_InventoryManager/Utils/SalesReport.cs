@@ -16,7 +16,7 @@ namespace KAP_InventoryManager.Utils
 {
     public class SalesReport
     {
-        public void GenerateSalesReportExcel(IEnumerable<SalesReportModel> invoices, IEnumerable<ReturnModel> returns, string path, string month, string reportType, DateTime start, DateTime end)
+        public void GenerateSalesReportExcel(IEnumerable<InvoiceModel> invoices, IEnumerable<ReturnModel> returns, string path, string month, string reportType, DateTime start, DateTime end)
         {
             // Ensure EPPlus license is set
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
@@ -88,7 +88,7 @@ namespace KAP_InventoryManager.Utils
 
                     worksheet.Cells[rowCounter, 3].Value = invoice.InvoiceNo;
 
-                    worksheet.Cells[rowCounter, 4].Value = invoice.PaymentTerm;
+                    worksheet.Cells[rowCounter, 4].Value = invoice.Terms;
 
                     worksheet.Cells[rowCounter, 5].Value = invoice.Status;
 
@@ -96,12 +96,12 @@ namespace KAP_InventoryManager.Utils
 
                     worksheet.Cells[rowCounter, 7].Value = invoice.CustomerCity;
 
-                    worksheet.Cells[rowCounter, 8].Value = invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd");
+                    worksheet.Cells[rowCounter, 8].Value = invoice.Terms == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd");
 
-                    worksheet.Cells[rowCounter, 9].Value = invoice.Amount;
+                    worksheet.Cells[rowCounter, 9].Value = invoice.TotalAmount;
                     worksheet.Cells[rowCounter, 9].Style.Numberformat.Format = "#,##0.00";
 
-                    if (showPaymentColumns)
+/*                    if (showPaymentColumns)
                     {
                         worksheet.Cells[rowCounter, 10].Value = invoice.ReceiptNo ?? " ";
                         worksheet.Cells[rowCounter, 11].Value = invoice.PaymentType ?? " ";
@@ -113,7 +113,7 @@ namespace KAP_InventoryManager.Utils
                         worksheet.Cells[rowCounter, 15].Style.Numberformat.Format = "#,##0.00";
 
                         worksheet.Cells[rowCounter, 16].Value = invoice.Comment ?? " ";
-                    }
+                    }*/
 
                     worksheet.Cells[rowCounter, 1, rowCounter, 5].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                     worksheet.Cells[rowCounter, 8].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
@@ -128,7 +128,7 @@ namespace KAP_InventoryManager.Utils
 
                     rowCounter++;
 
-                    totalAmount = totalAmount + invoice.Amount;
+                    totalAmount = totalAmount + invoice.TotalAmount;
                 }
 
                 // Invoice Total Row
@@ -279,7 +279,7 @@ namespace KAP_InventoryManager.Utils
             }
         }
 
-        public void GenerateSalesReportPDF(IEnumerable<SalesReportModel> invoices, IEnumerable<ReturnModel> returns, string path, string month, string reportType, DateTime start, DateTime end)
+        public void GenerateSalesReportPDF(IEnumerable<InvoiceModel> invoices, IEnumerable<ReturnModel> returns, string path, string month, string reportType, DateTime start, DateTime end)
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
@@ -379,15 +379,15 @@ namespace KAP_InventoryManager.Utils
                                 table.Cell().Element(CellStyle).Text(counter.ToString());
                                 table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Date.ToString("yyyy-MM-dd"));
                                 table.Cell().Element(CellStyle).AlignCenter().Text(invoice.InvoiceNo);
-                                table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentTerm);
+                                table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Terms);
                                 table.Cell().Element(CellStyle).AlignLeft().Text(invoice.CustomerName);
                                 table.Cell().Element(CellStyle).AlignLeft().Text(invoice.CustomerCity);
                                 table.Cell().Element(CellStyle).AlignLeft().Text(
-                                    invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd")
+                                    invoice.Terms == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd")
                                 );
-                                table.Cell().Element(CellStyle).AlignRight().Text(invoice.Amount.ToString("N2"));
+                                table.Cell().Element(CellStyle).AlignRight().Text(invoice.TotalAmount.ToString("N2"));
 
-                                totalAmount = totalAmount + invoice.Amount;
+                                totalAmount = totalAmount + invoice.TotalAmount;
                             }
 
                             counter++;

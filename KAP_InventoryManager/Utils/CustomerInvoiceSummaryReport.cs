@@ -136,19 +136,19 @@ namespace KAP_InventoryManager.Utils
                                         table.Cell().Element(CellStyle).Text(invoiceCounter.ToString());
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Date.ToString("yyyy-MM-dd"));
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.InvoiceNo);
-                                        table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentTerm);
+                                        table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Terms);
                                         table.Cell().Element(CellStyle).AlignCenter().Text(invoice.Status);
                                         table.Cell().Element(CellStyle).AlignLeft().Text(
-                                            invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd")
+                                            invoice.Terms == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd")
                                         );
                                         table.Cell().Element(CellStyle).AlignRight().Text(invoice.TotalAmount.ToString("N2"));
 
-                                        if (showPaymentColumns)
+/*                                        if (showPaymentColumns)
                                         {
                                             table.Cell().Element(CellStyle).AlignCenter().Text(invoice.ReceiptNo ?? " ");
                                             table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentType ?? " ");
                                             table.Cell().Element(CellStyle).AlignCenter().Text(invoice.PaymentDate != default(DateTime) ? invoice.PaymentDate.ToString("yyyy-MM-dd") : " ");
-                                        }
+                                        }*/
                                     }
 
                                     // Now display all returns from this customer
@@ -323,16 +323,16 @@ namespace KAP_InventoryManager.Utils
 
                         worksheet.Cells[rowCounter, 3].Value = invoice.InvoiceNo;
 
-                        worksheet.Cells[rowCounter, 4].Value = invoice.PaymentTerm;
+                        worksheet.Cells[rowCounter, 4].Value = invoice.Terms;
 
                         worksheet.Cells[rowCounter, 5].Value = invoice.Status;
 
-                        worksheet.Cells[rowCounter, 6].Value = invoice.PaymentTerm == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd");
+                        worksheet.Cells[rowCounter, 6].Value = invoice.Terms == "CASH" ? "1 WEEK" : invoice.DueDate.ToString("yyyy-MM-dd");
 
                         worksheet.Cells[rowCounter, 7].Value = invoice.TotalAmount;
                         worksheet.Cells[rowCounter, 7].Style.Numberformat.Format = "#,##0.00";
 
-                        if (showPaymentColumns)
+/*                        if (showPaymentColumns)
                         {
                             worksheet.Cells[rowCounter, 8].Value = invoice.ReceiptNo ?? " ";
                             worksheet.Cells[rowCounter, 9].Value = invoice.PaymentType ?? " ";
@@ -342,7 +342,7 @@ namespace KAP_InventoryManager.Utils
                             worksheet.Cells[rowCounter, 13].Value = invoice.PaymentAmount;
                             worksheet.Cells[rowCounter, 13].Style.Numberformat.Format = "#,##0.00";
                             worksheet.Cells[rowCounter, 14].Value = invoice.Comment ?? " ";
-                        }
+                        }*/
 
                         worksheet.Cells[rowCounter, 1, rowCounter, 6].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
                         worksheet.Cells[rowCounter, 8, rowCounter, 14].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;

@@ -13,11 +13,10 @@ namespace KAP_InventoryManager.Repositories
         Task<IEnumerable<string>> SearchCustomerAsync(string searchText);
         Task<IEnumerable<CustomerModel>> SearchCustomerListAsync(string customerId);
         Task<CustomerModel> GetByCustomerIDAsync(string customerID);
-        Task<IEnumerable<PaymentModel>> GetCustomerReport(string customerId, DateTime startDate, DateTime endDate, string statusFilter);
         Task<IEnumerable<string>> GetCustomersFromInvoice(DateTime startDate, DateTime endDate);
         Task<string> GetCustomerName(string customerID);
         Task<IEnumerable<string>> GetCustomersWithoutReps(DateTime startDate, DateTime endDate, string statusFilter);
-        Task<IEnumerable<PaymentModel>> GetCustomerInvoices(string customerId, DateTime startDate, DateTime endDate, string statusFilter);
+        Task<IEnumerable<InvoiceModel>> GetCustomerInvoices(string customerId, DateTime startDate, DateTime endDate, string statusFilter);
         Task<IEnumerable<ReturnModel>> GetCustomerReturns(string customerId, DateTime startDate, DateTime endDate);
 
     }

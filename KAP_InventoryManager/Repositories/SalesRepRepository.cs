@@ -257,9 +257,9 @@ namespace KAP_InventoryManager.Repositories
             }
         }
 
-        public async Task<IEnumerable<PaymentModel>> GetRepInvoices(string customerId, string repId, DateTime startDate, DateTime endDate, string statusFilter)
+        public async Task<IEnumerable<InvoiceModel>> GetRepInvoices(string customerId, string repId, DateTime startDate, DateTime endDate, string statusFilter)
         {
-            var invoices = new List<PaymentModel>();
+            var invoices = new List<InvoiceModel>();
 
             try
             {
@@ -276,21 +276,14 @@ namespace KAP_InventoryManager.Repositories
                 {
                     while (await reader.ReadAsync())
                     {
-                        invoices.Add(new PaymentModel
+                        invoices.Add(new InvoiceModel
                         {
                             Date = reader["Date"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["Date"]),
                             InvoiceNo = reader["InvoiceNo"] is DBNull ? " " : reader["InvoiceNo"].ToString(),
-                            PaymentTerm = reader["PaymentTerm"] is DBNull ? " " : reader["PaymentTerm"].ToString(),
+                            Terms = reader["PaymentTerm"] is DBNull ? " " : reader["PaymentTerm"].ToString(),
                             Status = reader["Status"] is DBNull ? " " : reader["Status"].ToString(),
                             DueDate = reader["DueDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["DueDate"]),
                             TotalAmount = reader["TotalAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["TotalAmount"]),
-                            PaymentType = reader["PaymentType"] is DBNull ? " " : reader["PaymentType"].ToString(),
-                            ReceiptNo = reader["ReceiptNo"] is DBNull ? " " : reader["ReceiptNo"].ToString(),
-                            ChequeNo = reader["ChequeNo"] is DBNull ? " " : reader["ChequeNo"].ToString(),
-                            Bank = reader["Bank"] is DBNull ? " " : reader["Bank"].ToString(),
-                            PaymentDate = reader["PaymentDate"] is DBNull ? default(DateTime) : Convert.ToDateTime(reader["PaymentDate"]),
-                            PaymentAmount = reader["PaymentAmount"] is DBNull ? 0 : Convert.ToDecimal(reader["PaymentAmount"]),
-                            Comment = reader["Comment"] is DBNull ? "" : reader["Comment"].ToString(),
                         });
                     }
                 }
