@@ -3,6 +3,7 @@ using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -11,10 +12,11 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
     internal class ConfirmPaymentModalViewModel : ViewModelBase
     {
         private List<string> _paymentTypes = new List<string> { "DEPOSIT", "CHEQUE", "CASH" };
-        private InvoiceCustomerModel _payment = new InvoiceCustomerModel();
+        private PaymentModel _payment = new PaymentModel();
         private InvoiceModel _invoice;
+        private PaymentSummaryModel _paymentSummary;
 
-        private readonly IInvoiceCustomerRepository _invoiceCustomerRepository;
+        private readonly IPaymentRepository _paymentRepository;
 
         public List<string> PaymentTypes
         {
@@ -26,7 +28,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
-        public InvoiceCustomerModel Payment
+        public PaymentModel Payment
         {
             get => _payment;
             set
@@ -46,12 +48,22 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             }
         }
 
+        public PaymentSummaryModel PaymentSummary
+        {
+            get => _paymentSummary;
+            set
+            {
+                _paymentSummary = value;
+                OnPropertyChanged(nameof(PaymentSummary));
+            }
+        }
+
         public ICommand ConfirmPaymentCommand { get; }
         public ICommand DiscardCommand { get; }
 
         public ConfirmPaymentModalViewModel()
         {
-            _invoiceCustomerRepository = new InvoiceCustomerRepository();
+            _paymentRepository = new PaymentRepository();
 
             // Register to receive the InvoiceModel
             Messenger.Default.Register<InvoiceModel>(this, OnMessageReceived);
@@ -63,7 +75,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             DiscardCommand = new ViewModelCommand(ExecuteDiscardCommand);
         }
 
-        private void OnMessageReceived(InvoiceModel invoice)
+        private async void OnMessageReceived(InvoiceModel invoice)
         {
             if (invoice != null)
             {
@@ -72,10 +84,21 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                 Payment.InvoiceNo = Invoice.InvoiceNo;
                 Payment.CustomerId = Invoice.CustomerID;
                 Payment.Date = DateTime.Now;
+
+                // Load payment summary to show remaining balance
+                await LoadPaymentSummary();
             }
             else
             {
                 Console.WriteLine("Received null invoice");
+            }
+        }
+
+        private async Task LoadPaymentSummary()
+        {
+            if (Invoice != null)
+            {
+                PaymentSummary = await _paymentRepository.GetPaymentSummaryAsync(Invoice.InvoiceNo);
             }
         }
 
@@ -90,11 +113,35 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
             {
                 if (Invoice != null)
                 {
-                    MessageBoxResult result = MessageBox.Show("Are you sure you want to confirm payment?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    // Validation
+                    if (Payment.Amount <= 0)
+                    {
+                        MessageBox.Show("Payment amount must be greater than zero.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(Payment.PaymentType))
+                    {
+                        MessageBox.Show("Please select a payment type.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    // Check if payment exceeds remaining balance
+                    if (PaymentSummary != null && Payment.Amount > PaymentSummary.RemainingBalance)
+                    {
+                        MessageBoxResult confirmOverpayment = MessageBox.Show(
+                            $"Payment amount ({Payment.Amount:C}) exceeds remaining balance ({PaymentSummary.RemainingBalance:C}).\n\nMaximum allowed: {PaymentSummary.RemainingBalance:C}",
+                            "Payment Exceeds Balance",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    MessageBoxResult result = MessageBox.Show("Are you sure you want to add this payment?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                     if (result == MessageBoxResult.Yes)
                     {
-                        InvoiceCustomerModel payment = new InvoiceCustomerModel
+                        PaymentModel payment = new PaymentModel
                         {
                             CustomerId = Invoice.CustomerID,
                             InvoiceNo = Invoice.InvoiceNo,
@@ -107,13 +154,16 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
                             Comment = Payment.Comment,
                         };
 
-                        await _invoiceCustomerRepository.ConfirmPaymentAsync(payment);
+                        int paymentId = await _paymentRepository.AddPaymentAsync(payment);
 
-                        // Close the dialog view
-                        Messenger.Default.Send(new NotificationMessage("CloseDialog"));
+                        if (paymentId > 0)
+                        {
+                            // Close the dialog view
+                            Messenger.Default.Send(new NotificationMessage("CloseDialog"));
 
-                        // Send the edited item back to the details view
-                        Messenger.Default.Send("PaymentConfirmed");
+                            // Send notification that payment was added
+                            Messenger.Default.Send("PaymentConfirmed");
+                        }
                     }
                 }
                 else
@@ -129,6 +179,7 @@ namespace KAP_InventoryManager.ViewModel.ModalViewModels
 
         private void ResetTextBoxes()
         {
+            Payment.PaymentType = null;
             Payment.ChequeNo = string.Empty;
             Payment.Bank = string.Empty;
             Payment.Date = DateTime.Now;

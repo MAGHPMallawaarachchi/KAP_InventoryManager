@@ -9,7 +9,7 @@
         xmlns:viewModel="clr-namespace:KAP_InventoryManager.ViewModel.ModalViewModels"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="" Width="370" Height="560"
+        Title="" Width="450" Height="640"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
         Background="Transparent">
@@ -41,23 +41,74 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 
-                <DockPanel Margin="0,0,0,20">
-                    <TextBlock Text="Confirm Payment" Style="{StaticResource header}"
-                               Margin="0,0,20,0"/>
-                    <Border Background="{StaticResource Color3}"
-                            CornerRadius="3"
-                            Padding="8,2,8,2"
-                            DockPanel.Dock="Right">
-                        <TextBlock Text="{Binding Invoice.InvoiceNo}"
-                                   Style="{StaticResource button-text}"
-                                   HorizontalAlignment="Center"/>
+                <StackPanel Margin="0,0,0,20">
+                    <DockPanel Margin="0,0,0,10">
+                        <TextBlock Text="Add Payment" Style="{StaticResource header}"
+                                   Margin="0,0,20,0"/>
+                        <Border Background="{StaticResource Color3}"
+                                CornerRadius="3"
+                                Padding="8,2,8,2"
+                                DockPanel.Dock="Right">
+                            <TextBlock Text="{Binding Invoice.InvoiceNo}"
+                                       Style="{StaticResource button-text}"
+                                       HorizontalAlignment="Center"/>
+                        </Border>
+                    </DockPanel>
+
+                    <!-- Payment Summary Panel -->
+                    <Border Background="{StaticResource Color1}"
+                            CornerRadius="5"
+                            Padding="10"
+                            Margin="0,10,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Invoice Total"
+                                           Style="{StaticResource regular-text}"
+                                           FontSize="10"
+                                           Opacity="0.7"/>
+                                <TextBlock Text="{Binding PaymentSummary.InvoiceTotal, StringFormat='Rs. {0:N2}'}"
+                                           Style="{StaticResource regular-text}"
+                                           FontWeight="Bold"
+                                           FontSize="14"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Total Paid"
+                                           Style="{StaticResource regular-text}"
+                                           FontSize="10"
+                                           Opacity="0.7"/>
+                                <TextBlock Text="{Binding PaymentSummary.TotalPaid, StringFormat='Rs. {0:N2}'}"
+                                           Style="{StaticResource regular-text}"
+                                           FontWeight="Bold"
+                                           FontSize="14"
+                                           Foreground="#4CAF50"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Remaining Balance"
+                                           Style="{StaticResource regular-text}"
+                                           FontSize="10"
+                                           Opacity="0.7"/>
+                                <TextBlock Text="{Binding PaymentSummary.RemainingBalance, StringFormat='Rs. {0:N2}'}"
+                                           Style="{StaticResource regular-text}"
+                                           FontWeight="Bold"
+                                           FontSize="14"
+                                           Foreground="#FF9800"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
-                </DockPanel>
+                </StackPanel>
 
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="4*"/>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
@@ -146,8 +197,8 @@
                             Command="{Binding ConfirmPaymentCommand}">
                         <StackPanel Orientation="Horizontal"
                                     Margin="10,2,10,2">
-                            <fa:IconImage Icon="CircleCheck" Style="{StaticResource AddButtonIcon}"/>
-                            <TextBlock Text="Confirm Payment" Style="{StaticResource AddButtontext}"/>
+                            <fa:IconImage Icon="CirclePlus" Style="{StaticResource AddButtonIcon}"/>
+                            <TextBlock Text="Add Payment" Style="{StaticResource AddButtontext}"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
