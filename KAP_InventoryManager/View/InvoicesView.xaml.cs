@@ -33,11 +33,16 @@ namespace KAP_InventoryManager.View
             if (addInvoiceWindow == null || !addInvoiceWindow.IsLoaded)
             {
                 addInvoiceWindow = new AddInvoiceView();
+                addInvoiceWindow.Closed += (s, args) => addInvoiceWindow = null;
                 addInvoiceWindow.Show();
             }
             else
             {
-                addInvoiceWindow.Focus();
+                if (addInvoiceWindow.WindowState == WindowState.Minimized)
+                {
+                    addInvoiceWindow.WindowState = WindowState.Normal;
+                }
+                addInvoiceWindow.Activate();
             }
         }
 
