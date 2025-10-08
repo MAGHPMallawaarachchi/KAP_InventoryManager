@@ -371,16 +371,24 @@ namespace KAP_InventoryManager.Repositories
 
             try
             {
-                using (var connection = GetConnection())
+                ConnectionSemaphore.Wait();
+                try
                 {
-                    connection.Open();
-                    using (var command = new MySqlCommand("SELECT CheckQty(@PartNo, @Quantity)", connection))
+                    using (var connection = GetConnection())
                     {
-                        command.Parameters.AddWithValue("@PartNo", partNo);
-                        command.Parameters.AddWithValue("@Quantity", qty);
+                        connection.Open();
+                        using (var command = new MySqlCommand("SELECT CheckQty(@PartNo, @Quantity)", connection))
+                        {
+                            command.Parameters.AddWithValue("@PartNo", partNo);
+                            command.Parameters.AddWithValue("@Quantity", qty);
 
-                        isAvailable = Convert.ToBoolean(command.ExecuteScalar());
+                            isAvailable = Convert.ToBoolean(command.ExecuteScalar());
+                        }
                     }
+                }
+                finally
+                {
+                    ConnectionSemaphore.Release();
                 }
             }
             catch (Exception ex)

@@ -23,24 +23,32 @@ namespace KAP_InventoryManager.Repositories
         {
             bool validUser;
 
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("UserLogin", connection))
+            ConnectionSemaphore.Wait();
+            try
             {
-                connection.Open();
-                command.CommandType = CommandType.StoredProcedure;
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("UserLogin", connection))
+                {
+                    connection.Open();
+                    command.CommandType = CommandType.StoredProcedure;
 
-                // Add parameters
-                command.Parameters.AddWithValue("@p_EnteredUsername", credential.UserName);
-                command.Parameters.AddWithValue("@p_EnteredPassword", credential.Password);
+                    // Add parameters
+                    command.Parameters.AddWithValue("@p_EnteredUsername", credential.UserName);
+                    command.Parameters.AddWithValue("@p_EnteredPassword", credential.Password);
 
-                // Add output parameter for login success
-                command.Parameters.Add("@p_LoginSuccess", MySqlDbType.Bit).Direction = ParameterDirection.Output;
+                    // Add output parameter for login success
+                    command.Parameters.Add("@p_LoginSuccess", MySqlDbType.Bit).Direction = ParameterDirection.Output;
 
-                // Execute the stored procedure
-                command.ExecuteNonQuery();
+                    // Execute the stored procedure
+                    command.ExecuteNonQuery();
 
-                // Retrieve the output parameter value
-                validUser = Convert.ToBoolean(command.Parameters["@p_LoginSuccess"].Value);
+                    // Retrieve the output parameter value
+                    validUser = Convert.ToBoolean(command.Parameters["@p_LoginSuccess"].Value);
+                }
+            }
+            finally
+            {
+                ConnectionSemaphore.Release();
             }
 
             return validUser;
@@ -66,24 +74,32 @@ namespace KAP_InventoryManager.Repositories
         {
             UserModel user = null;
 
-            using (var connection = GetConnection())
-            using (var command = new MySqlCommand("SELECT * FROM Admin WHERE Username = @Username", connection))
+            ConnectionSemaphore.Wait();
+            try
             {
-                connection.Open();
-
-                command.Parameters.Add("@Username", MySqlDbType.VarChar).Value = username;
-
-                using (var reader = command.ExecuteReader())
+                using (var connection = GetConnection())
+                using (var command = new MySqlCommand("SELECT * FROM Admin WHERE Username = @Username", connection))
                 {
-                    if (reader.Read())
+                    connection.Open();
+
+                    command.Parameters.Add("@Username", MySqlDbType.VarChar).Value = username;
+
+                    using (var reader = command.ExecuteReader())
                     {
-                        user = new UserModel()
+                        if (reader.Read())
                         {
-                            UserName = reader["Username"].ToString(),
-                            Name = reader["Name"].ToString(),
-                        };
+                            user = new UserModel()
+                            {
+                                UserName = reader["Username"].ToString(),
+                                Name = reader["Name"].ToString(),
+                            };
+                        }
                     }
                 }
+            }
+            finally
+            {
+                ConnectionSemaphore.Release();
             }
 
             return user;
