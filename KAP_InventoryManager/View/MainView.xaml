@@ -95,7 +95,7 @@
                         <RowDefinition Height="100"/>
                     </Grid.RowDefinitions>
 
-                    <Grid Margin="16,40,16,16">
+                    <Grid Margin="16,30,16,16">
                         <StackPanel>
                             <StackPanel 
                                 Orientation="Horizontal"
@@ -207,7 +207,7 @@
                 <!-- Main View -->
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="45"/>
+                        <RowDefinition Height="30"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
