@@ -1,4 +1,4 @@
-﻿using KAP_InventoryManager.View.Modals;
+using KAP_InventoryManager.View.Modals;
 using System;
 using System.Collections.Generic;
 using System.Linq;

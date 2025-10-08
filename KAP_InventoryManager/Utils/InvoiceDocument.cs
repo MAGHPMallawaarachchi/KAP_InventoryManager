@@ -18,18 +18,39 @@ namespace KAP_InventoryManager.Utils
 {
     public class InvoiceDocument
     {
-        public void GenerateInvoicePDF(string invoiceNo, CustomerModel customer, InvoiceModel invoice, IEnumerable<InvoiceItemModel> invoiceItems, string path, string shopName, int totalQty)
+        public string GenerateInvoicePDF(string invoiceNo, CustomerModel customer, InvoiceModel invoice, IEnumerable<InvoiceItemModel> invoiceItems, string path, string shopName, int totalQty, bool shouldPrint = true)
         {
             QuestPDF.Settings.License = LicenseType.Community;
-            //var filePath = @"C:\Users\Hasini\OneDrive\Documents\Kamal Auto Parts\invoices\"+ invoiceNo +".pdf";
 
-            var directoryPath = $@"{path}invoices";
-            if (!Directory.Exists(directoryPath))
+            if (string.IsNullOrWhiteSpace(path))
             {
-                Directory.CreateDirectory(directoryPath);
+                path = AppDomain.CurrentDomain.BaseDirectory;
             }
 
-            var filePath = $@"{directoryPath}\{invoiceNo}.pdf";
+            string filePath;
+
+            if (Path.HasExtension(path))
+            {
+                var directoryPath = Path.GetDirectoryName(path);
+
+                if (!string.IsNullOrWhiteSpace(directoryPath) && !Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                filePath = Path.ChangeExtension(path, ".pdf");
+            }
+            else
+            {
+                var directoryPath = Path.Combine(path, "invoices");
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                filePath = Path.Combine(directoryPath, $"{invoiceNo}.pdf");
+            }
+
             var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "logo_color.png");
 
             Document.Create(container =>
@@ -273,7 +294,7 @@ namespace KAP_InventoryManager.Utils
                                 table.Cell().Element(CellStyle).AlignLeft().Text(item.Description.Length > 55 ? item.Description.Substring(0, 55) + "..." : item.Description);
                                 table.Cell().Element(CellStyle).AlignCenter().Text(item.Quantity.ToString());
                                 table.Cell().Element(CellStyle).AlignRight().Text(item.UnitPrice.ToString("N2"));
-                                table.Cell().Element(CellStyle).AlignCenter().Text(item.Discount.ToString());
+                                table.Cell().Element(CellStyle).AlignCenter().Text(item.Discount.ToString("0.##"));
                                 table.Cell().Element(CellStyle).AlignRight().Text(item.Amount.ToString("N2"));
                             }
 
@@ -312,7 +333,12 @@ namespace KAP_InventoryManager.Utils
                 });
             }).GeneratePdf(filePath);
 
-            PrintPDF("LBP6030w/6018w", "A4", filePath, 2);
+            if (shouldPrint)
+            {
+                PrintPDF("LBP6030w/6018w", "A4", filePath, 2);
+            }
+
+            return filePath;
         }
 
         public bool PrintPDF(string printer, string paperName, string filename, int copies)

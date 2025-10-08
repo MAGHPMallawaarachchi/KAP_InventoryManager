@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
 using KAP_InventoryManager.Model;
 using KAP_InventoryManager.Repositories;
+using KAP_InventoryManager.Utils;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Xceed.Wpf.Toolkit.Primitives;
+using Microsoft.Win32;
 
 namespace KAP_InventoryManager.ViewModel
 {
@@ -93,6 +95,7 @@ namespace KAP_InventoryManager.ViewModel
             {
                 _currentInvoice = value;
                 OnPropertyChanged(nameof(CurrentInvoice));
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
@@ -127,6 +130,7 @@ namespace KAP_InventoryManager.ViewModel
         }
 
         public ICommand CancelInvoiceCommand { get; }
+        public ICommand DownloadInvoiceCommand { get; }
 
         public InvoicesViewModel()
         {
@@ -134,6 +138,7 @@ namespace KAP_InventoryManager.ViewModel
             _invoiceRepository = new InvoiceRepository();
 
             CancelInvoiceCommand = new ViewModelCommand(ExecuteCancelInvoiceCommand);
+            DownloadInvoiceCommand = new ViewModelCommand(ExecuteDownloadInvoiceCommand, CanExecuteDownloadInvoiceCommand);
             Invoices = new ObservableCollection<InvoiceModel>();
 
             SetUpDailyTimer();
@@ -151,6 +156,84 @@ namespace KAP_InventoryManager.ViewModel
             else if(message == "RequestInvoice")
             {
                 Messenger.Default.Send(CurrentInvoice);
+            }
+        }
+
+        private bool CanExecuteDownloadInvoiceCommand(object parameter)
+        {
+            return parameter is InvoiceModel;
+        }
+
+        private async void ExecuteDownloadInvoiceCommand(object parameter)
+        {
+            var invoiceSummary = parameter as InvoiceModel;
+
+            if (invoiceSummary == null)
+            {
+                MessageBox.Show("Invalid invoice selected.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            SelectedInvoice = invoiceSummary;
+
+            var saveFileDialog = new SaveFileDialog
+            {
+                FileName = $"{invoiceSummary.InvoiceNo}.pdf",
+                Filter = "PDF Files (*.pdf)|*.pdf",
+                DefaultExt = ".pdf",
+                AddExtension = true
+            };
+
+            if (saveFileDialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            try
+            {
+                IsLoading = true;
+
+                var invoice = await _invoiceRepository.GetByInvoiceNoAsync(invoiceSummary.InvoiceNo);
+                if (invoice == null)
+                {
+                    MessageBox.Show("Unable to load invoice details.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var customer = await _customerRepository.GetByCustomerIDAsync(invoice.CustomerID);
+                if (customer == null)
+                {
+                    MessageBox.Show("Unable to load customer details for this invoice.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var invoiceItems = await _invoiceRepository.GetInvoiceItemsAsync(invoice.InvoiceNo) ?? Enumerable.Empty<InvoiceItemModel>();
+                var invoiceItemList = invoiceItems.ToList();
+                var totalQty = invoiceItemList.Sum(item => item.Quantity);
+                var shopName = !string.IsNullOrWhiteSpace(invoice.CustomerName)
+                    ? invoice.CustomerName
+                    : customer.Name ?? string.Empty;
+
+                var invoiceDocument = new InvoiceDocument();
+                var savedPath = invoiceDocument.GenerateInvoicePDF(
+                    invoice.InvoiceNo,
+                    customer,
+                    invoice,
+                    invoiceItemList,
+                    saveFileDialog.FileName,
+                    shopName,
+                    totalQty,
+                    shouldPrint: false);
+
+                MessageBox.Show($"Invoice saved to {savedPath}", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to download invoice. Error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
